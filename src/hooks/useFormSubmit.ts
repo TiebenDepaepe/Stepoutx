@@ -134,7 +134,9 @@ export function useFormSubmit() {
 
       if (insertError) {
         console.error('Insert error:', insertError);
-        throw new Error(`Database error: ${insertError.message}`);
+        // Don't expose raw database errors to users
+        // Log the full error for debugging, but show a generic message
+        throw new Error('Er ging iets mis bij het verwerken van je inschrijving. Controleer of alle velden correct zijn ingevuld en probeer opnieuw.');
       }
 
       setState({
@@ -147,7 +149,20 @@ export function useFormSubmit() {
 
       return { success: true };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Onbekende fout bij verzenden';
+      let errorMessage = 'Er ging iets mis bij het verzenden. Probeer het later opnieuw.';
+      
+      // Only use the error message if it's already a user-friendly one (not a raw database error)
+      if (error instanceof Error) {
+        const msg = error.message;
+        // Check if this looks like a database error (contains technical terms)
+        const isDatabaseError = /database|constraint|column|table|sql|postgres|supabase/i.test(msg);
+        const isValidationError = msg.includes('Controleer of alle velden');
+        
+        if (!isDatabaseError || isValidationError) {
+          errorMessage = msg;
+        }
+        // Otherwise, keep the generic error message
+      }
       
       setState({
         isSubmitting: false,

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2 } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { validateForm, validateFile } from '@/lib/validation';
 
 // Form data and options
 const availableDates = ['6-12 april 2025', '20-26 april 2025', '4-10 mei 2025', '18-24 mei 2025', '1-7 juni 2025', '15-21 juni 2025'];
@@ -40,6 +41,10 @@ export default function ContactAndSignup() {
   
   // Form submission hook
   const { submitForm, isSubmitting, isError, error, uploadProgress } = useFormSubmit();
+  
+  // Form validation errors
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setIsVisible(true); }, { threshold: 0.05 });
@@ -50,6 +55,26 @@ export default function ContactAndSignup() {
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleBlur = (fieldName: string) => {
+    setTouchedFields((prev) => new Set(prev).add(fieldName));
+    // Validate single field on blur
+    const result = validateForm({ ...formData, [fieldName]: formData[fieldName as keyof FormData] });
+    if (!result.success) {
+      const fieldError = result.errors[fieldName];
+      if (fieldError) {
+        setFormErrors((prev) => ({ ...prev, [fieldName]: fieldError }));
+      }
+    }
   };
 
   const handleCheckboxChange = (field: keyof FormData, value: string, max?: number) => {
@@ -59,19 +84,80 @@ export default function ContactAndSignup() {
       if (max && current.length >= max) return prev;
       return { ...prev, [field]: [...current, value] };
     });
+    // Clear error when user makes a selection
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
-  const handleRadioChange = (field: keyof FormData, value: string) => setFormData((prev) => ({ ...prev, [field]: value }));
-  const handleFileChange = (field: 'foto' | 'video', file: File | null) => setFormData((prev) => ({ ...prev, [field]: file }));
+  const handleRadioChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user makes a selection
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+  
+  const handleFileChange = (field: 'foto' | 'video', file: File | null) => {
+    setFormData((prev) => ({ ...prev, [field]: file }));
+    // Validate file
+    if (file) {
+      const error = validateFile(file, field === 'foto' ? 'image' : 'video');
+      if (error) {
+        setFormErrors((prev) => ({ ...prev, [field]: error }));
+      } else {
+        setFormErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Mark all fields as touched
+    setTouchedFields(new Set(Object.keys(formData)));
+    
+    // Validate entire form before submission
+    const validationResult = validateForm(formData);
+    
+    if (!validationResult.success) {
+      setFormErrors(validationResult.errors);
+      
+      // Scroll to first error
+      const firstErrorField = Object.keys(validationResult.errors)[0];
+      const errorElement = document.querySelector(`[name="${firstErrorField}"], [data-field="${firstErrorField}"]`);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (errorElement as HTMLElement).focus();
+      }
+      return;
+    }
+    
+    // Clear any previous errors
+    setFormErrors({});
     
     const result = await submitForm(formData);
     
     if (result.success) {
       setSubmitted(true);
     }
+  };
+
+  // Helper to show error message for a field
+  const getFieldError = (fieldName: string): string | null => {
+    return touchedFields.has(fieldName) ? formErrors[fieldName] || null : null;
   };
 
   const revealForm = () => {
@@ -205,27 +291,142 @@ export default function ContactAndSignup() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Naam *</label>
-                    <input type="text" name="naam" value={formData.naam} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="Jouw naam" />
+                    <input 
+                      type="text" 
+                      name="naam" 
+                      value={formData.naam} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('naam')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('naam') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="Jouw naam" 
+                    />
+                    {getFieldError('naam') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('naam')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Leeftijd *</label>
-                    <input type="number" name="leeftijd" value={formData.leeftijd} onChange={handleTextChange} required min="18" max="25" className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="18-25" />
+                    <input 
+                      type="number" 
+                      name="leeftijd" 
+                      value={formData.leeftijd} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('leeftijd')}
+                      required 
+                      min="18" 
+                      max="30" 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('leeftijd') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="18-30" 
+                    />
+                    {getFieldError('leeftijd') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('leeftijd')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Woonplaats *</label>
-                    <input type="text" name="woonplaats" value={formData.woonplaats} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="Stad/dorp" />
+                    <input 
+                      type="text" 
+                      name="woonplaats" 
+                      value={formData.woonplaats} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('woonplaats')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('woonplaats') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="Stad/dorp" 
+                    />
+                    {getFieldError('woonplaats') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('woonplaats')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">GSM-nummer *</label>
-                    <input type="tel" name="gsm" value={formData.gsm} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="+32 4XX XX XX XX" />
+                    <input 
+                      type="tel" 
+                      name="gsm" 
+                      value={formData.gsm} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('gsm')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('gsm') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="+32 4XX XX XX XX" 
+                    />
+                    {getFieldError('gsm') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('gsm')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">E-mailadres *</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="jouw@email.be" />
+                    <input 
+                      type="email" 
+                      name="email" 
+                      value={formData.email} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('email')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('email') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="jouw@email.be" 
+                    />
+                    {getFieldError('email') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('email')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Instagram <span className="text-charcoal/50">(optioneel)</span></label>
-                    <input type="text" name="instagram" value={formData.instagram} onChange={handleTextChange} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="@jouwprofiel" />
+                    <input 
+                      type="text" 
+                      name="instagram" 
+                      value={formData.instagram} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('instagram')}
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('instagram') 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                      }`} 
+                      placeholder="@jouwprofiel" 
+                    />
+                    {getFieldError('instagram') && (
+                      <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('instagram')}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -242,13 +443,19 @@ export default function ContactAndSignup() {
                       <h4 className="text-lg font-display font-bold text-charcoal">Deel 2 – Beschikbaarheid</h4>
                     </div>
                     <p className="text-sm text-charcoal/70 mb-4">Welke data kan je? (meerkeuze)</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div data-field="beschikbaarheid" className="flex flex-wrap gap-2">
                       {availableDates.map((date) => (
                         <button key={date} type="button" onClick={() => handleCheckboxChange('beschikbaarheid', date)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${formData.beschikbaarheid.includes(date) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
                           {date}
                         </button>
                       ))}
                     </div>
+                    {getFieldError('beschikbaarheid') && (
+                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('beschikbaarheid')}
+                      </p>
+                    )}
                   </div>
 
                   {/* Part 3 - Motivation */}
@@ -262,17 +469,42 @@ export default function ContactAndSignup() {
                     <div className="space-y-6">
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-2">Waarom wil je mee met StepOut? *</label>
-                        <textarea name="motivatie" value={formData.motivatie} onChange={handleTextChange} required rows={4} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all resize-none" placeholder="Vertel ons waarom je mee wilt..." />
+                        <textarea 
+                          name="motivatie" 
+                          value={formData.motivatie} 
+                          onChange={handleTextChange} 
+                          onBlur={() => handleBlur('motivatie')}
+                          required 
+                          rows={4} 
+                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                            getFieldError('motivatie') 
+                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                          }`} 
+                          placeholder="Vertel ons waarom je mee wilt..." 
+                        />
+                        {getFieldError('motivatie') && (
+                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('motivatie')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-3">Wat hoop je uit deze reis te halen? <span className="text-charcoal/50">(kies max. 2)</span></label>
-                        <div className="flex flex-wrap gap-2">
+                        <div data-field="doelen" className="flex flex-wrap gap-2">
                           {motivationOptions.map((option) => (
                             <button key={option} type="button" onClick={() => handleCheckboxChange('doelen', option, 2)} className={`px-4 py-2 rounded-full text-sm transition-all ${formData.doelen.includes(option) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
                               {option}
                             </button>
                           ))}
                         </div>
+                        {getFieldError('doelen') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('doelen')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -288,17 +520,23 @@ export default function ContactAndSignup() {
                     <div className="space-y-8">
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-3">Hoe zouden je vrienden jou omschrijven? <span className="text-charcoal/50">(kies max. 3)</span></label>
-                        <div className="flex flex-wrap gap-2">
+                        <div data-field="persoonlijkheid" className="flex flex-wrap gap-2">
                           {personalityOptions.map((option) => (
                             <button key={option} type="button" onClick={() => handleCheckboxChange('persoonlijkheid', option, 3)} className={`px-3 py-2 rounded-full text-sm transition-all ${formData.persoonlijkheid.includes(option) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
                               {option}
                             </button>
                           ))}
                         </div>
+                        {getFieldError('persoonlijkheid') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('persoonlijkheid')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-3">In een nieuwe groep ben jij meestal: *</label>
-                        <div className="space-y-2">
+                        <div data-field="groepsrol" className={`space-y-2 rounded-xl p-1 ${getFieldError('groepsrol') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                           {groupRoleOptions.map((option) => (
                             <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.groepsrol === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
                               <input type="radio" name="groepsrol" value={option.value} checked={formData.groepsrol === option.value} onChange={(e) => handleRadioChange('groepsrol', e.target.value)} required className="w-5 h-5 text-purple-accent" />
@@ -306,10 +544,16 @@ export default function ContactAndSignup() {
                             </label>
                           ))}
                         </div>
+                        {getFieldError('groepsrol') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('groepsrol')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-3">Wat vind je het spannendst aan deze reis? *</label>
-                        <div className="space-y-2">
+                        <div data-field="spannendst" className={`space-y-2 rounded-xl p-1 ${getFieldError('spannendst') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                           {excitementOptions.map((option) => (
                             <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.spannendst === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
                               <input type="radio" name="spannendst" value={option.value} checked={formData.spannendst === option.value} onChange={(e) => handleRadioChange('spannendst', e.target.value)} required className="w-5 h-5 text-purple-accent" />
@@ -317,14 +561,58 @@ export default function ContactAndSignup() {
                             </label>
                           ))}
                         </div>
+                        {getFieldError('spannendst') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('spannendst')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-2">Hoe ga jij meestal om met ongemakkelijke of spannende situaties? *</label>
-                        <textarea name="ongemakkelijk" value={formData.ongemakkelijk} onChange={handleTextChange} required rows={3} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all resize-none" placeholder="Beschrijf kort..." />
+                        <textarea 
+                          name="ongemakkelijk" 
+                          value={formData.ongemakkelijk} 
+                          onChange={handleTextChange} 
+                          onBlur={() => handleBlur('ongemakkelijk')}
+                          required 
+                          rows={3} 
+                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                            getFieldError('ongemakkelijk') 
+                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                          }`} 
+                          placeholder="Beschrijf kort..." 
+                        />
+                        {getFieldError('ongemakkelijk') && (
+                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('ongemakkelijk')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-2">Waarom zou jij goed in een StepOut-groep passen? *</label>
-                        <textarea name="waaromPassen" value={formData.waaromPassen} onChange={handleTextChange} required rows={3} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all resize-none" placeholder="Vertel ons waarom..." />
+                        <textarea 
+                          name="waaromPassen" 
+                          value={formData.waaromPassen} 
+                          onChange={handleTextChange} 
+                          onBlur={() => handleBlur('waaromPassen')}
+                          required 
+                          rows={3} 
+                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                            getFieldError('waaromPassen') 
+                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                          }`} 
+                          placeholder="Vertel ons waarom..." 
+                        />
+                        {getFieldError('waaromPassen') && (
+                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('waaromPassen')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -357,11 +645,49 @@ export default function ContactAndSignup() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-charcoal mb-2">Noodcontact naam *</label>
-                          <input type="text" name="noodcontactNaam" value={formData.noodcontactNaam} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="Naam" />
+                          <input 
+                            type="text" 
+                            name="noodcontactNaam" 
+                            value={formData.noodcontactNaam} 
+                            onChange={handleTextChange} 
+                            onBlur={() => handleBlur('noodcontactNaam')}
+                            required 
+                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                              getFieldError('noodcontactNaam') 
+                                ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                                : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                            }`} 
+                            placeholder="Naam" 
+                          />
+                          {getFieldError('noodcontactNaam') && (
+                            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3" />
+                              {getFieldError('noodcontactNaam')}
+                            </p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-charcoal mb-2">Noodcontact GSM *</label>
-                          <input type="tel" name="noodcontactGsm" value={formData.noodcontactGsm} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="+32 4XX XX XX XX" />
+                          <input 
+                            type="tel" 
+                            name="noodcontactGsm" 
+                            value={formData.noodcontactGsm} 
+                            onChange={handleTextChange} 
+                            onBlur={() => handleBlur('noodcontactGsm')}
+                            required 
+                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                              getFieldError('noodcontactGsm') 
+                                ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                                : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                            }`} 
+                            placeholder="+32 4XX XX XX XX" 
+                          />
+                          {getFieldError('noodcontactGsm') && (
+                            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3" />
+                              {getFieldError('noodcontactGsm')}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -380,22 +706,48 @@ export default function ContactAndSignup() {
                         <label className="block text-sm font-medium text-charcoal mb-3">Upload een foto <span className="text-charcoal/50">(optioneel)</span></label>
                         <div className="relative">
                           <input type="file" accept="image/*" onChange={(e) => handleFileChange('foto', e.target.files?.[0] || null)} className="hidden" id="foto-upload" />
-                          <label htmlFor="foto-upload" className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed border-charcoal/20 cursor-pointer hover:border-purple-accent hover:bg-purple-accent/5 transition-all">
-                            <Upload className="w-5 h-5 text-charcoal/50" />
-                            <span className="text-charcoal/70">{formData.foto ? formData.foto.name : 'Klik om een foto te uploaden'}</span>
+                          <label 
+                            htmlFor="foto-upload" 
+                            className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
+                              getFieldError('foto')
+                                ? 'border-red-400 hover:border-red-500 hover:bg-red-50/30'
+                                : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
+                            }`}
+                          >
+                            <Upload className={`w-5 h-5 ${getFieldError('foto') ? 'text-red-400' : 'text-charcoal/50'}`} />
+                            <span className={`${getFieldError('foto') ? 'text-red-600' : 'text-charcoal/70'}`}>{formData.foto ? formData.foto.name : 'Klik om een foto te uploaden'}</span>
                           </label>
                         </div>
+                        {getFieldError('foto') && (
+                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('foto')}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-charcoal mb-2">Upload een korte video <span className="text-charcoal/50">(15–30 sec, optioneel)</span></label>
                         <p className="text-xs text-charcoal/50 mb-3">Vertel kort wie je bent en waarom je mee wil.</p>
                         <div className="relative">
                           <input type="file" accept="video/*" onChange={(e) => handleFileChange('video', e.target.files?.[0] || null)} className="hidden" id="video-upload" />
-                          <label htmlFor="video-upload" className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed border-charcoal/20 cursor-pointer hover:border-purple-accent hover:bg-purple-accent/5 transition-all">
-                            <Video className="w-5 h-5 text-charcoal/50" />
-                            <span className="text-charcoal/70">{formData.video ? formData.video.name : 'Klik om een video te uploaden'}</span>
+                          <label 
+                            htmlFor="video-upload" 
+                            className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
+                              getFieldError('video')
+                                ? 'border-red-400 hover:border-red-500 hover:bg-red-50/30'
+                                : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
+                            }`}
+                          >
+                            <Video className={`w-5 h-5 ${getFieldError('video') ? 'text-red-400' : 'text-charcoal/50'}`} />
+                            <span className={`${getFieldError('video') ? 'text-red-600' : 'text-charcoal/70'}`}>{formData.video ? formData.video.name : 'Klik om een video te uploaden'}</span>
                           </label>
                         </div>
+                        {getFieldError('video') && (
+                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('video')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
