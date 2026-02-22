@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 120 100% 95%;
+    --secondary-foreground: 0 0% 11%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 0 0% 53%;
+    --accent: 240 100% 95%;
+    --accent-foreground: 0 0% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24;
+  }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-white border-2 border-charcoal text-charcoal font-medium rounded-xl hover:bg-charcoal hover:text-white transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(29,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(29,29,29,1)] hover:translate-x-[2px] hover:translate-y-[2px];
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-transparent border-2 border-charcoal text-charcoal font-medium rounded-xl hover:bg-charcoal hover:text-white transition-all duration-300;
+  }
+  
+  .card-pastel {
+    @apply rounded-2xl p-6 border border-charcoal/10;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-purple-accent to-blue-500 bg-clip-text text-transparent;
+  }
+  
+  .arch-shape {
+    border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  }
+  
+  .circle-shape {
+    @apply rounded-full;
+  }
+}
+
+@layer utilities {
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Selection color */
+::selection {
+  background: #E3FFE4;
+  color: #1D1D1D;
+}
