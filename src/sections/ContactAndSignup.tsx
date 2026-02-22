@@ -70,7 +70,14 @@ export default function ContactAndSignup() {
     setShowForm(true);
     setTimeout(() => {
       const formElement = document.getElementById('signup-form');
-      if (formElement) formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (formElement) {
+        const navbarHeight = 80; // Approximate Navbar height
+        const elementPosition = formElement.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: elementPosition - navbarHeight,
+          behavior: 'smooth'
+        });
+      }
     }, 100);
   };
 
@@ -146,14 +153,21 @@ export default function ContactAndSignup() {
       </div>
 
       {/* PART 2: Form Section with Gradient Reveal - less top padding */}
+      {/* 
+        STRUCTURE NOTE FOR FUTURE DEVELOPERS:
+        This section has a "peek" effect where the form is partially hidden until clicked.
+        The clipped-container (the div with max-h-[450px] or max-h-[8000px]) controls the visible height.
+        The reveal button MUST be positioned INSIDE this container to appear at the correct % height.
+      */}
       <div id="signup-form" className="relative">
+        {/* Clipped container: this is the positioning context for the reveal button */}
         <div 
           className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-[8000px]' : 'max-h-[450px]'} overflow-hidden`}
         >
-          {/* Gradient overlay when hidden - creates the peek effect */}
+          {/* Gradient overlay when hidden - creates the fade-out effect at the bottom */}
           {!showForm && (
-            <div className="absolute inset-0 z-20 pointer-events-none">
-              <div className="h-full w-full bg-gradient-to-b from-white via-white/80 via-white/50 via-white/20 to-transparent" />
+            <div className="absolute inset-0 z-20 backdrop-blur-[1px]">
+              <div className="h-full w-full bg-gradient-to-b from-white via-white via-[20%] to-transparent" />
             </div>
           )}
 
@@ -163,7 +177,7 @@ export default function ContactAndSignup() {
             
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               {/* Form Header - partially visible */}
-              <div className={`text-center mb-6 transition-all duration-500 ${showForm ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`text-center mb-6 transition-all duration-500 ${showForm ? 'opacity-100' : 'opacity-70'}`}>
                 <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
                   Inschrijfformulier
                 </h3>
@@ -173,7 +187,7 @@ export default function ContactAndSignup() {
               </div>
 
               {/* Part 1 - Basic Info (partially visible with more fields) */}
-              <div className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 transition-opacity duration-500 ${showForm ? 'opacity-100' : 'opacity-30'}`}>
+              <div className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 transition-opacity duration-500 ${showForm ? 'opacity-100' : 'opacity-60'}`}>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
                     <User className="w-5 h-5 text-purple-accent" />
@@ -382,21 +396,26 @@ export default function ContactAndSignup() {
               )}
             </div>
           </div>
-        </div>
 
-        {/* Button overlay - positioned on top of the peeking form */}
-        {!showForm && (
-          <div className="absolute bottom-4 left-0 right-0 z-30 flex justify-center">
-            <button 
-              onClick={revealForm}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 group"
-            >
-              <Mail className="w-5 h-5" />
-              Schrijf je hier in
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-        )}
+          {/* 
+            REVEAL BUTTON - POSITIONED INSIDE THE CLIPPED CONTAINER
+            This button sits at ~10% from the top of the visible form area when collapsed.
+            It's positioned relative to the clipped container (max-h-[450px]), 
+            NOT the full form height, so the percentage works correctly.
+          */}
+          {!showForm && (
+            <div className="absolute top-[10%] left-0 right-0 z-30 flex justify-center">
+              <button 
+                onClick={revealForm}
+                className="btn-primary text-lg px-8 py-4 group"
+              >
+                <Mail className="w-5 h-5" />
+                Schrijf je hier in
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
