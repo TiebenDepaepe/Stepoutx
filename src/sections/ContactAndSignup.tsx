@@ -4,7 +4,7 @@ import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 
 // Form data and options
-const availableDates = ['6-12 april 2025', '20-26 april 2025', '4-10 mei 2025', '18-24 mei 2025', '1-7 juni 2025', '15-21 juni 2025'];
+const availableDates = ['22 juni - 27 juni', '29 juni - 4 juli', '6 juli - 11 juli', '13 juli - 18 juli', '27 juli - 1 augustus', '3 - 8 augustus', '10 - 15 augustus'];
 const motivationOptions = ['nieuwe vrienden', 'zelfvertrouwen', 'avontuur', 'uit comfortzone', 'even weg uit mijn omgeving', 'iets totaal nieuws proberen'];
 const personalityOptions = ['rustig', 'sociaal', 'humoristisch', 'gevoelig', 'direct', 'spontaan', 'zorgzaam', 'avontuurlijk', 'georganiseerd', 'dromerig'];
 const groupRoleOptions = [{ value: 'stille-observator', label: 'de stille observator' }, { value: 'rustig-aanwezig', label: 'rustig maar aanwezig' }, { value: 'snel-praten', label: 'iemand die snel praat met iedereen' }, { value: 'grappenmaker', label: 'de grappenmaker' }, { value: 'initiatief', label: 'degene die initiatief neemt' }];
