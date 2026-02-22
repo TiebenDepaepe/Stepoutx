@@ -97,7 +97,7 @@ export default function Pricing() {
               {/* Activity examples note */}
               <div className="mt-4 p-3 bg-lavender/50 rounded-xl">
                 <p className="text-xs text-charcoal/60">
-                  Activiteiten bijvoorbeeld: klimmen, kajakken, bijlwerpen, escaperoom of stadsspel
+                  Activiteiten bijvoorbeeld: klimmen, kajakken, bijlwerpen, escaperoom, stadsspel, ragerooom, boulderen, hoogteparcour enzovoort
                 </p>
               </div>
             </div>
