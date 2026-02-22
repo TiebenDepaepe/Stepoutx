@@ -219,6 +219,14 @@ export default function ContactAndSignup() {
                     <label className="block text-sm font-medium text-charcoal mb-2">GSM-nummer *</label>
                     <input type="tel" name="gsm" value={formData.gsm} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="+32 4XX XX XX XX" />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">E-mailadres *</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleTextChange} required className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="jouw@email.be" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">Instagram <span className="text-charcoal/50">(optioneel)</span></label>
+                    <input type="text" name="instagram" value={formData.instagram} onChange={handleTextChange} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all" placeholder="@jouwprofiel" />
+                  </div>
                 </div>
               </div>
 
