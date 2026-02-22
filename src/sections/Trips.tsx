@@ -49,6 +49,8 @@ const TripCard = ({ trip, index, isVisible }: TripCardProps) => {
           src={trip.image}
           alt={trip.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
         />
         
         {/* Gradient overlay */}

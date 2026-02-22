@@ -1,5 +1,18 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Camera, X, ChevronLeft, ChevronRight, Maximize2, ArrowRight, Images } from 'lucide-react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import { Camera, X, ChevronLeft, ChevronRight, Maximize2, ArrowRight, Images, Loader2 } from 'lucide-react';
+
+// Helper to get thumbnail path from full image path
+const getThumbPath = (src: string): string => {
+  // Extract filename and extension
+  const filename = src.split('/').pop() || '';
+  const lastDotIndex = filename.lastIndexOf('.');
+  const name = filename.substring(0, lastDotIndex);
+  const ext = filename.substring(lastDotIndex); // .jpeg, .jpg, or .webp
+  
+  // Use .jpg for jpeg/jpg, keep original extension for webp
+  const thumbExt = ext === '.webp' ? '.webp' : '.jpg';
+  return `/images/thumbs/${name}_thumb${thumbExt}`;
+};
 
 // Main page images (visible in grid)
 const mainImages = [
@@ -7,17 +20,17 @@ const mainImages = [
   { src: '/images/width-1024.jpeg', alt: 'Groep op de camping' },
   { src: '/images/width-1200.jpeg', alt: 'Klimmen' },
   { src: '/images/width-1536.jpeg', alt: 'Kajakken' },
-  { src: '/images/width-1536.png', alt: 'Geiten voeren' },
-  { src: '/images/width-1600.png', alt: 'Raften op het water' },
+  { src: '/images/width-1536.webp', alt: 'Geiten voeren' },
+  { src: '/images/width-1600.webp', alt: 'Raften op het water' },
   { src: '/images/width-1800.jpeg', alt: 'Molen bezoek' },
-  { src: '/images/width-2048.png', alt: 'Emma en Daria' },
+  { src: '/images/width-2048.webp', alt: 'Emma en Daria' },
   { src: '/images/width-2400.jpeg', alt: 'Geiten selfie' },
-  { src: '/images/width-15364.png', alt: 'Hert ontmoeting' },
+  { src: '/images/width-15364.webp', alt: 'Hert ontmoeting' },
 ];
 
 // Additional carousel-only images
 const carouselOnlyImages = [
-  { src: '/images/width-20488.png', alt: 'Groep raften' },
+  { src: '/images/width-20488.webp', alt: 'Groep raften' },
   { src: '/images/1f4a6734-e58b-4ba3-a568-e9f82b5d9aed.jpeg', alt: 'Avontuur' },
   { src: '/images/2773dbc8-25f8-4f32-997b-a383fb13eba8.jpeg', alt: 'Vriendschap' },
   { src: '/images/4136f488-2458-45b0-a2c2-33cbab5a34f4.jpeg', alt: 'Natuur' },
@@ -50,10 +63,54 @@ const carouselOnlyImages = [
 // Combine all images for carousel
 const allImages = [...mainImages, ...carouselOnlyImages];
 
+// Memoized thumbnail component to prevent re-renders
+interface ThumbnailButtonProps {
+  index: number;
+  currentIndex: number;
+  imageSrc: string;
+  imageAlt: string;
+  onClick: () => void;
+}
+
+const ThumbnailButton = memo(({ index, currentIndex, imageSrc, imageAlt, onClick }: ThumbnailButtonProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const isActive = index === currentIndex;
+  
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden transition-all duration-300 relative ${
+        isActive
+          ? 'ring-2 ring-white scale-110'
+          : 'opacity-50 hover:opacity-80'
+      }`}
+    >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-charcoal/50">
+          <Loader2 className="w-4 h-4 text-white/60 animate-spin" />
+        </div>
+      )}
+      <img
+        src={getThumbPath(imageSrc)}
+        alt={imageAlt}
+        className={`w-full h-full object-cover transition-opacity duration-200 ${
+          isLoading ? 'opacity-0' : 'opacity-100'
+        }`}
+        onLoad={() => setIsLoading(false)}
+        loading="lazy"
+        decoding="async"
+      />
+    </button>
+  );
+});
+
+ThumbnailButton.displayName = 'ThumbnailButton';
+
 export default function Gallery() {
   const [isVisible, setIsVisible] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -105,6 +162,7 @@ export default function Gallery() {
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index);
+    setIsImageLoading(true);
     setLightboxOpen(true);
   };
 
@@ -113,15 +171,20 @@ export default function Gallery() {
   };
 
   const goToPrevious = useCallback(() => {
+    setIsImageLoading(true);
     setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   }, []);
 
   const goToNext = useCallback(() => {
+    setIsImageLoading(true);
     setCurrentIndex((prev) => (prev + 1) % allImages.length);
   }, []);
 
   const goToImage = (index: number) => {
-    setCurrentIndex(index);
+    if (index !== currentIndex) {
+      setIsImageLoading(true);
+      setCurrentIndex(index);
+    }
   };
 
   // Get visible thumbnails (prev 3, current, next 3)
@@ -269,10 +332,19 @@ export default function Gallery() {
 
             {/* Current image */}
             <div className="relative max-w-4xl max-h-[70vh] w-full h-full flex items-center justify-center">
+              {/* Loading spinner */}
+              {isImageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <Loader2 className="w-12 h-12 text-white/60 animate-spin" />
+                </div>
+              )}
               <img
                 src={allImages[currentIndex].src}
                 alt={allImages[currentIndex].alt}
-                className="max-w-full max-h-full object-contain rounded-lg"
+                className={`max-w-full max-h-full object-contain rounded-lg transition-opacity duration-300 ${
+                  isImageLoading ? 'opacity-0' : 'opacity-100'
+                }`}
+                onLoad={() => setIsImageLoading(false)}
               />
             </div>
 
@@ -287,23 +359,16 @@ export default function Gallery() {
 
           {/* Thumbnails */}
           <div className="bg-charcoal/50 backdrop-blur-md py-4 px-4">
-            <div className="flex items-center justify-center gap-2 md:gap-3 overflow-x-auto">
-              {getVisibleThumbnails().map(({ index, image, offset }) => (
-                <button
-                  key={`${index}-${offset}`}
+            <div className="flex items-center justify-center gap-2 md:gap-3">
+              {getVisibleThumbnails().map(({ index, image }) => (
+                <ThumbnailButton
+                  key={index}
+                  index={index}
+                  currentIndex={currentIndex}
+                  imageSrc={image.src}
+                  imageAlt={image.alt}
                   onClick={() => goToImage(index)}
-                  className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden transition-all duration-300 ${
-                    index === currentIndex
-                      ? 'ring-2 ring-white scale-110'
-                      : 'opacity-50 hover:opacity-80'
-                  }`}
-                >
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
+                />
               ))}
             </div>
             

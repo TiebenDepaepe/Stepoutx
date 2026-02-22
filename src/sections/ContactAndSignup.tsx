@@ -111,7 +111,7 @@ export default function ContactAndSignup() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-8">
-              <div className="space-y-4">
+              <div className="space-y-4 flex flex-col justify-center">
                 <p className="text-lg text-charcoal/80 leading-relaxed">
                   Je vult het <span className="font-semibold text-charcoal bg-purple-200/60 rounded px-1">inschrijfformulier</span> in met een paar vragen over jezelf, je motivatie en je beschikbaarheid.
                 </p>

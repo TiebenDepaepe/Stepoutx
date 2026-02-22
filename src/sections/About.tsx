@@ -61,6 +61,8 @@ export default function About() {
                   src="/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg"
                   alt="StepOut groep"
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               
