@@ -91,7 +91,7 @@ export default function Navbar() {
             {/* Social Icons - Desktop */}
             <div className="hidden md:flex items-center gap-3">
               <a
-                href="https://youtube.com"
+                href="https://youtube.com/@dariakenis?si=9Iyj3OR-mslEzjyX"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -99,7 +99,7 @@ export default function Navbar() {
                 <Youtube className="w-5 h-5" />
               </a>
               <a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@dariahaha._?is_from_webapp=1&sender_device=pc"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -107,7 +107,7 @@ export default function Navbar() {
                 <TikTokIcon className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/dariahaha._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -160,7 +160,7 @@ export default function Navbar() {
           </div>
           <div className="flex items-center gap-3 mt-6 pt-6 border-t border-charcoal/10">
             <a
-              href="https://youtube.com"
+              href="https://youtube.com/@dariakenis?si=9Iyj3OR-mslEzjyX"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 h-12 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -168,7 +168,7 @@ export default function Navbar() {
               <Youtube className="w-5 h-5" />
             </a>
             <a
-              href="https://tiktok.com"
+              href="https://www.tiktok.com/@dariahaha._?is_from_webapp=1&sender_device=pc"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 h-12 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -176,7 +176,7 @@ export default function Navbar() {
               <TikTokIcon className="w-5 h-5" />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/dariahaha._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 h-12 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"

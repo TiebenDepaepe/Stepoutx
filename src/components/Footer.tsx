@@ -36,7 +36,7 @@ export default function Footer() {
           {/* Social Icons */}
           <div className="flex items-center gap-3">
             <a
-              href="https://youtube.com"
+              href="https://youtube.com/@dariakenis?si=9Iyj3OR-mslEzjyX"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-xl bg-white border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -44,7 +44,7 @@ export default function Footer() {
               <Youtube className="w-5 h-5" />
             </a>
             <a
-              href="https://tiktok.com"
+              href="https://www.tiktok.com/@dariahaha._?is_from_webapp=1&sender_device=pc"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-xl bg-white border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -52,7 +52,7 @@ export default function Footer() {
               <TikTokIcon className="w-5 h-5" />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/dariahaha._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 rounded-xl bg-white border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
