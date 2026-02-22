@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2 } from 'lucide-react';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 // Form data and options
 const availableDates = ['6-12 april 2025', '20-26 april 2025', '4-10 mei 2025', '18-24 mei 2025', '1-7 juni 2025', '15-21 juni 2025'];
@@ -36,6 +37,9 @@ export default function ContactAndSignup() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  // Form submission hook
+  const { submitForm, isSubmitting, isError, error, uploadProgress } = useFormSubmit();
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setIsVisible(true); }, { threshold: 0.05 });
@@ -60,10 +64,14 @@ export default function ContactAndSignup() {
   const handleRadioChange = (field: keyof FormData, value: string) => setFormData((prev) => ({ ...prev, [field]: value }));
   const handleFileChange = (field: 'foto' | 'video', file: File | null) => setFormData((prev) => ({ ...prev, [field]: file }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    console.log('Form submitted:', formData);
+    
+    const result = await submitForm(formData);
+    
+    if (result.success) {
+      setSubmitted(true);
+    }
   };
 
   const revealForm = () => {
@@ -384,12 +392,51 @@ export default function ContactAndSignup() {
                     </div>
                   </div>
 
+                  {/* Error Message */}
+                  {isError && (
+                    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-center animate-fade-in">
+                      <p className="text-red-600 font-medium flex items-center justify-center gap-2">
+                        <XCircle className="w-5 h-5" />
+                        Er ging iets mis
+                      </p>
+                      <p className="text-red-500 text-sm mt-1">{error}</p>
+                      <p className="text-red-400 text-xs mt-2">
+                        Probeer het opnieuw of contacteer ons via email.
+                      </p>
+                    </div>
+                  )}
+
                   {/* Submit Button */}
                   <div className="text-center pt-4">
-                    <button type="submit" className="inline-flex items-center gap-3 px-10 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
-                      <Send className="w-5 h-5" />
-                      Verstuur inschrijving
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="inline-flex items-center gap-3 px-10 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 min-w-[280px] justify-center"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Bezig met verzenden...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          Verstuur inschrijving
+                        </>
+                      )}
                     </button>
+                    
+                    {isSubmitting && (
+                      <div className="mt-4 space-y-1">
+                        {uploadProgress.foto > 0 && uploadProgress.foto < 100 && (
+                          <p className="text-xs text-charcoal/50">Foto uploaden...</p>
+                        )}
+                        {uploadProgress.video > 0 && uploadProgress.video < 100 && (
+                          <p className="text-xs text-charcoal/50">Video uploaden...</p>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-sm text-charcoal/50 mt-4">Door te versturen ga je akkoord met onze voorwaarden</p>
                   </div>
                 </form>
@@ -404,7 +451,7 @@ export default function ContactAndSignup() {
             NOT the full form height, so the percentage works correctly.
           */}
           {!showForm && (
-            <div className="absolute top-[10%] left-0 right-0 z-30 flex justify-center">
+            <div className="absolute top-[25%] left-0 right-0 z-30 flex justify-center">
               <button 
                 onClick={revealForm}
                 className="btn-primary text-lg px-8 py-4 group"
