@@ -12,9 +12,22 @@ const TentLogo = ({ className }: { className?: string }) => (
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
+  }, []);
+
+  // Attempt to autoplay programmatically for better browser compatibility
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Try to play programmatically - handles cases where autoPlay attribute fails
+    video.play().catch(() => {
+      // Autoplay blocked by browser policy - poster will show, user can click to play
+      // No additional UI needed per design requirements
+    });
   }, []);
 
   const scrollToOverOns = () => {
@@ -123,12 +136,19 @@ export default function Hero() {
                   </div>
                   
                   <video
+                    ref={videoRef}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    className="w-full aspect-[3/4] object-cover pt-12"
+                    className="w-full aspect-[3/4] object-cover pt-12 cursor-pointer"
                     poster="/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg"
+                    onClick={(e) => {
+                      const video = e.currentTarget;
+                      if (video.paused) {
+                        video.play();
+                      }
+                    }}
                   >
                     <source src="/videos/mBbh6WeyNmkciEOtfI5FtDgL0.mp4" type="video/mp4" />
                   </video>
