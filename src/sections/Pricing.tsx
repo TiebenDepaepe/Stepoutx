@@ -68,7 +68,7 @@ export default function Pricing() {
             </h2>
             <div className="flex items-center justify-center gap-3">
               <span className="text-5xl md:text-6xl font-display font-bold text-purple-accent">€450</span>
-              <span className="text-charcoal/50 text-lg">per persoon</span>
+              <span className="text-charcoal/50 text-lg">inclusief eten</span>
             </div>
           </div>
 
