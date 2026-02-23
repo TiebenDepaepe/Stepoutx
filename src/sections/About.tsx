@@ -116,13 +116,13 @@ export default function About() {
                 Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes dagen</span> op pad met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes jongeren</span> en begeleider <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">Daria</span>. Voor vertrek is er een kennismaking met de groep.
               </p>
               <p>
-                Elke ochtend krijg je een briefing met de dagplanning. Die bestaat uit verplaatsingen, sociale en persoonlijke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en 2 à 3 <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
+                Elke ochtend krijg je een briefing met de dagplanning. Die bestaat uit verplaatsingen, sociale en persoonlijke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en 3 <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
               </p>
               <p>
                 's Avonds zoekt de groep samen een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Lukt dat niet, dan is er altijd een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">back-up</span> met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">noodbudget</span>.
               </p>
               <p className="font-medium text-charcoal">
-                Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>.
+                Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, hierin vinden maandelijkse activiteiten plaats en kan je weer nieuwe mensen leren kennen.
               </p>
             </div>
 

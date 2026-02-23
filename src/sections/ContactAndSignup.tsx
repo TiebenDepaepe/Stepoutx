@@ -4,7 +4,17 @@ import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 
 // Form data and options
-const availableDates = ['22 juni - 27 juni', '29 juni - 4 juli', '6 juli - 11 juli', '13 juli - 18 juli', '27 juli - 1 augustus', '3 - 8 augustus', '10 - 15 augustus'];
+const availableDates = [
+  { date: '22 juni - 27 juni', disabled: false },
+  { date: '29 juni - 4 juli', disabled: false },
+  { date: '6 juli - 11 juli', disabled: false },
+  { date: '13 juli - 18 juli', disabled: false },
+  { date: '20 juli - 25 juli', disabled: true, full: true },
+  { date: '27 juli - 1 augustus', disabled: false },
+  { date: '3 - 8 augustus', disabled: false },
+  { date: '10 - 15 augustus', disabled: false },
+  { date: '20 - 25 augustus', disabled: true, full: true }
+];
 const motivationOptions = ['nieuwe vrienden', 'zelfvertrouwen', 'avontuur', 'uit comfortzone', 'even weg uit mijn omgeving', 'iets totaal nieuws proberen'];
 const personalityOptions = ['rustig', 'sociaal', 'humoristisch', 'gevoelig', 'direct', 'spontaan', 'zorgzaam', 'avontuurlijk', 'georganiseerd', 'dromerig'];
 const groupRoleOptions = [{ value: 'stille-observator', label: 'de stille observator' }, { value: 'rustig-aanwezig', label: 'rustig maar aanwezig' }, { value: 'snel-praten', label: 'iemand die snel praat met iedereen' }, { value: 'grappenmaker', label: 'de grappenmaker' }, { value: 'initiatief', label: 'degene die initiatief neemt' }];
@@ -483,9 +493,31 @@ export default function ContactAndSignup() {
                     </div>
                     <p className="text-sm text-charcoal/70 mb-4">Welke data kan je? (meerkeuze)</p>
                     <div data-field="beschikbaarheid" className="flex flex-wrap gap-2">
-                      {availableDates.map((date) => (
-                        <button key={date} type="button" onClick={() => handleCheckboxChange('beschikbaarheid', date)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${formData.beschikbaarheid.includes(date) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
-                          {date}
+                      {availableDates.map((item) => (
+                        <button 
+                          key={item.date} 
+                          type="button" 
+                          disabled={item.disabled}
+                          onClick={() => !item.disabled && handleCheckboxChange('beschikbaarheid', item.date)} 
+                          className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                            item.disabled 
+                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                              : formData.beschikbaarheid.includes(item.date) 
+                                ? 'bg-purple-accent text-white' 
+                                : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'
+                          }`}
+                        >
+                          {item.full ? (
+                            <span className="flex items-center gap-2">
+                              <span className="opacity-70">{item.date}</span>
+                              <span className="flex items-center gap-1 text-[10px] font-semibold bg-gray-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">
+                                <span className="w-1 h-1 bg-white rounded-full" />
+                                Vol
+                              </span>
+                            </span>
+                          ) : (
+                            item.date
+                          )}
                         </button>
                       ))}
                     </div>
