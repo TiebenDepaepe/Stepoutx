@@ -107,7 +107,7 @@ export default function Navbar() {
                 <TikTokIcon className="w-5 h-5" />
               </a>
               <a
-                href="https://www.instagram.com/dariahaha._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                href="https://www.instagram.com/step_out_x?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
@@ -176,7 +176,7 @@ export default function Navbar() {
               <TikTokIcon className="w-5 h-5" />
             </a>
             <a
-              href="https://www.instagram.com/dariahaha._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              href="https://www.instagram.com/step_out_x?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 h-12 rounded-xl border-2 border-charcoal/20 flex items-center justify-center hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300"
