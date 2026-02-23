@@ -10,8 +10,8 @@ export const signupFormSchema = z.object({
   leeftijd: z.string()
     .refine((val) => {
       const num = parseInt(val, 10);
-      return !isNaN(num) && num >= 18 && num <= 30;
-    }, 'Leeftijd moet tussen 18 en 30 jaar zijn'),
+      return !isNaN(num) && num >= 18 && num <= 25;
+    }, 'Leeftijd moet tussen 18 en 25 jaar zijn'),
   
   woonplaats: z.string()
     .min(2, 'Woonplaats moet minstens 2 karakters bevatten')
@@ -60,6 +60,18 @@ export const signupFormSchema = z.object({
   waaromPassen: z.string()
     .min(10, 'Dit veld moet minstens 10 karakters bevatten')
     .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
+
+  watSpreektAan: z.string()
+    .min(1, 'Selecteer wat jou het meest aanspreekt'),
+
+  sportiviteit: z.string()
+    .min(1, 'Selecteer hoe sportief je bent'),
+
+  socialeInteractie: z.string()
+    .min(1, 'Selecteer hoeveel sociale interactie je fijn vindt'),
+
+  zelfstandigheid: z.string()
+    .min(1, 'Selecteer hoe zelfstandig je je voelt tijdens reizen'),
   
   medisch: z.boolean(),
   

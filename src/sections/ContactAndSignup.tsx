@@ -10,10 +10,41 @@ const personalityOptions = ['rustig', 'sociaal', 'humoristisch', 'gevoelig', 'di
 const groupRoleOptions = [{ value: 'stille-observator', label: 'de stille observator' }, { value: 'rustig-aanwezig', label: 'rustig maar aanwezig' }, { value: 'snel-praten', label: 'iemand die snel praat met iedereen' }, { value: 'grappenmaker', label: 'de grappenmaker' }, { value: 'initiatief', label: 'degene die initiatief neemt' }];
 const excitementOptions = [{ value: 'nieuwe-mensen', label: 'nieuwe mensen leren kennen' }, { value: 'liften', label: 'liften' }, { value: 'overnachten', label: 'overnachten bij onbekenden' }, { value: 'geen-planning', label: 'geen vaste planning' }, { value: 'fysiek', label: 'fysiek moe worden' }];
 
+// New options for the 4 additional questions
+const watSpreektAanOptions = [
+  { value: 'sociale-uitdagingen', label: 'sociale uitdagingen (nieuwe mensen, gesprekken, opdrachten)' },
+  { value: 'fysieke-uitdagingen', label: 'fysieke uitdagingen (wandelen, actief bezig zijn)' },
+  { value: 'combinatie', label: 'een combinatie van beide' }
+];
+
+const sportiviteitOptions = [
+  { value: 'weinig', label: 'weinig sportief' },
+  { value: 'gemiddeld', label: 'gemiddeld sportief' },
+  { value: 'actief', label: 'actief en sport regelmatig' },
+  { value: 'zeer-sportief', label: 'zeer sportief' }
+];
+
+const socialeInteractieOptions = [
+  { value: 'bijna-altijd-samen', label: 'bijna altijd samen met de groep' },
+  { value: 'mix', label: 'een mix van samen en eigen momenten' },
+  { value: 'tijd-voor-mezelf', label: 'ik heb regelmatig tijd voor mezelf nodig' }
+];
+
+const zelfstandigheidOptions = [
+  { value: 'makkelijk-initiatief', label: 'ik neem makkelijk initiatief' },
+  { value: 'volg-mee', label: 'ik volg meestal mee' },
+  { value: 'duidelijke-begeleiding', label: 'ik heb graag duidelijke begeleiding' }
+];
+
 interface FormData {
   naam: string; leeftijd: string; woonplaats: string; gsm: string; email: string; instagram: string;
   beschikbaarheid: string[]; motivatie: string; doelen: string[];
   persoonlijkheid: string[]; groepsrol: string; spannendst: string; ongemakkelijk: string; waaromPassen: string;
+  // New fields for deel 4
+  watSpreektAan: string;
+  sportiviteit: string;
+  socialeInteractie: string;
+  zelfstandigheid: string;
   medisch: boolean; medischUitleg: string; noodcontactNaam: string; noodcontactGsm: string;
   foto: File | null; video: File | null;
 }
@@ -22,6 +53,11 @@ const initialFormData: FormData = {
   naam: '', leeftijd: '', woonplaats: '', gsm: '', email: '', instagram: '',
   beschikbaarheid: [], motivatie: '', doelen: [],
   persoonlijkheid: [], groepsrol: '', spannendst: '', ongemakkelijk: '', waaromPassen: '',
+  // New fields
+  watSpreektAan: '',
+  sportiviteit: '',
+  socialeInteractie: '',
+  zelfstandigheid: '',
   medisch: false, medischUitleg: '', noodcontactNaam: '', noodcontactGsm: '',
   foto: null, video: null,
 };
@@ -276,10 +312,10 @@ export default function ContactAndSignup() {
                   Inschrijfformulier
                 </h3>
                 <p className="text-charcoal/60">
-                  Vul alle velden in zodat we je goed kunnen plaatsen
+                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). StepOut is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen, we vormen diverse groepen, dus ook introverte of rustigere personen zijn helemaal welkom.
                 </p>
                 <p className="text-charcoal/60">
-                  belangrijke note: je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten)
+                  Vul alle velden in zodat we je goed kunnen plaatsen
                 </p>
               </div>
 
@@ -325,13 +361,13 @@ export default function ContactAndSignup() {
                       onBlur={() => handleBlur('leeftijd')}
                       required 
                       min="18" 
-                      max="30" 
+                      max="25" 
                       className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
                         getFieldError('leeftijd') 
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="18-30" 
+                      placeholder="18-25" 
                     />
                     {getFieldError('leeftijd') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -614,6 +650,82 @@ export default function ContactAndSignup() {
                           <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />
                             {getFieldError('waaromPassen')}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* New Question 1: Wat spreekt jou het meest aan? */}
+                      <div>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Wat spreekt jou het meest aan? *</label>
+                        <div data-field="watSpreektAan" className={`space-y-2 rounded-xl p-1 ${getFieldError('watSpreektAan') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                          {watSpreektAanOptions.map((option) => (
+                            <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.watSpreektAan === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
+                              <input type="radio" name="watSpreektAan" value={option.value} checked={formData.watSpreektAan === option.value} onChange={(e) => handleRadioChange('watSpreektAan', e.target.value)} required className="w-5 h-5 text-purple-accent" />
+                              <span className="text-charcoal">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                        {getFieldError('watSpreektAan') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('watSpreektAan')}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* New Question 2: Hoe sportief ben jij? */}
+                      <div>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe sportief ben jij? *</label>
+                        <div data-field="sportiviteit" className={`space-y-2 rounded-xl p-1 ${getFieldError('sportiviteit') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                          {sportiviteitOptions.map((option) => (
+                            <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.sportiviteit === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
+                              <input type="radio" name="sportiviteit" value={option.value} checked={formData.sportiviteit === option.value} onChange={(e) => handleRadioChange('sportiviteit', e.target.value)} required className="w-5 h-5 text-purple-accent" />
+                              <span className="text-charcoal">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                        {getFieldError('sportiviteit') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('sportiviteit')}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* New Question 3: Hoeveel sociale interactie vind je fijn? */}
+                      <div>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Hoeveel sociale interactie vind je fijn tijdens een trip? *</label>
+                        <div data-field="socialeInteractie" className={`space-y-2 rounded-xl p-1 ${getFieldError('socialeInteractie') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                          {socialeInteractieOptions.map((option) => (
+                            <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.socialeInteractie === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
+                              <input type="radio" name="socialeInteractie" value={option.value} checked={formData.socialeInteractie === option.value} onChange={(e) => handleRadioChange('socialeInteractie', e.target.value)} required className="w-5 h-5 text-purple-accent" />
+                              <span className="text-charcoal">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                        {getFieldError('socialeInteractie') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('socialeInteractie')}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* New Question 4: Hoe zelfstandig voel jij je? */}
+                      <div>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe zelfstandig voel jij je tijdens reizen? *</label>
+                        <div data-field="zelfstandigheid" className={`space-y-2 rounded-xl p-1 ${getFieldError('zelfstandigheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                          {zelfstandigheidOptions.map((option) => (
+                            <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.zelfstandigheid === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
+                              <input type="radio" name="zelfstandigheid" value={option.value} checked={formData.zelfstandigheid === option.value} onChange={(e) => handleRadioChange('zelfstandigheid', e.target.value)} required className="w-5 h-5 text-purple-accent" />
+                              <span className="text-charcoal">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                        {getFieldError('zelfstandigheid') && (
+                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {getFieldError('zelfstandigheid')}
                           </p>
                         )}
                       </div>

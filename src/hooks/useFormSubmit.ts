@@ -16,6 +16,10 @@ interface FormData {
   spannendst: string;
   ongemakkelijk: string;
   waaromPassen: string;
+  watSpreektAan: string;
+  sportiviteit: string;
+  socialeInteractie: string;
+  zelfstandigheid: string;
   medisch: boolean;
   medischUitleg: string;
   noodcontactNaam: string;
@@ -124,6 +128,10 @@ export function useFormSubmit() {
           spannendst: data.spannendst,
           ongemakkelijk: data.ongemakkelijk,
           waarom_passen: data.waaromPassen,
+          wat_spreekt_aan: data.watSpreektAan,
+          sportiviteit: data.sportiviteit,
+          sociale_interactie: data.socialeInteractie,
+          zelfstandigheid: data.zelfstandigheid,
           medisch: data.medisch,
           medisch_uitleg: data.medisch ? data.medischUitleg : null,
           noodcontact_naam: data.noodcontactNaam,
