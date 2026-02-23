@@ -28,16 +28,6 @@ const faqs = [
       'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je reist zes dagen in een kleine groep van zes jongeren, met persoonlijke begeleiding door Daria. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
   },
   {
-    question: 'Wat als ik het spannend vind om met onbekenden te vertrekken?',
-    answer:
-      'Dat is juist het punt! De meeste deelnemers kennen elkaar niet van tevoren. We beginnen de reis met kennismakingsspellen en kleine opdrachten zodat de groep snel hecht. Veel deelnemers noemen dit juist als het meest waardevolle aspect.',
-  },
-  {
-    question: 'Wat als ik ziek word of wil stoppen tijdens de reis?',
-    answer:
-      'Onze begeleiders zijn getraind in eerste hulp en hebben altijd een noodplan. Bij ernstige klachten regelen we medische hulp en indien nodig transport naar huis. We werken met een annuleringsverzekering die je kunt afsluiten bij boeking.',
-  },
-  {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',
     answer:
       'Onze reizen zijn voor jongeren van 18 tot 25 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',

@@ -278,6 +278,9 @@ export default function ContactAndSignup() {
                 <p className="text-charcoal/60">
                   Vul alle velden in zodat we je goed kunnen plaatsen
                 </p>
+                <p className="text-charcoal/60">
+                  belangrijke note: je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten)
+                </p>
               </div>
 
               {/* Part 1 - Basic Info (partially visible with more fields) */}

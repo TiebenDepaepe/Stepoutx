@@ -5,31 +5,45 @@ const testimonials = [
   {
     quote: "Dit was de meest leerrijke en avontuurlijke reis die ik ooit heb gedaan. Je leert je comfortzone achter je te laten en amuseert je tegelijk te pletter.",
     author: 'Lawrence Penne',
-    location: 'Antwerpen',
-    age: '19 jaar',
+    location: 'Sint-Niklaas',
+    age: '21 jaar',
     rating: 5,
   },
   {
     quote: "Voor mij was StepOut een unieke ervaring. Het gaat niet alleen om uit je comfortzone stappen, maar ook om het beleven van geweldige momenten die je tijdens een gewone vakantie niet snel zou meemaken. Ik heb enorm veel bijgeleerd, ook over mezelf. Ik zou het echt iedereen aanraden!",
     author: 'Nicole Aguilera',
-    location: 'Gent',
-    age: '18 jaar',
+    location: 'Wilrijk',
+    age: '23 jaar',
     rating: 5,
   },
   {
     quote: "Heel leuke en originele manier om nieuwe mensen te leren kennen!",
     author: 'Mauro Devos',
-    location: 'Antwerpen',
-    age: '21 jaar',
+    location: 'Roeselare',
+    age: '24 jaar',
     rating: 5,
   },
   {
     quote: "Super leuke ervaringen! Nieuwe avonturen, en geweldige mensen leren kennen!",
     author: 'Emma Demolder',
-    location: 'Leuven',
+    location: 'Aarschot',
     age: '20 jaar',
     rating: 5,
   },
+  {
+    quote: "Ik heb zo een onvergetelijke tijd beleefd!!! Je stapt uit je comfortzone door nieuwe mensen te leren kennen en doet leuke activiteiten en praaachtige wandelingen. En het belangrijkste: je houdt er supermooie vriendschappen aan over xoxo",
+    author: 'Luna Ozturk',
+    location: 'Gent',
+    age: '18 jaar',
+    rating: 5,
+  },
+  {
+    quote: "Met zes mensen liftte we door Nederland met de leukste activiteiten tussenin en groeiden we als groep snel naar elkaar toe. Het was spannend, verbindend en voor mij echt een onvergetelijk avontuur.",
+    author: 'Antwan Teirbrood',
+    location: 'Antwerpen',
+    age: '18 jaar',
+    rating: 5,
+  }
 ];
 
 export default function Testimonial() {
