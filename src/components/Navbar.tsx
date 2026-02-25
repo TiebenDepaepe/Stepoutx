@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Youtube, Instagram } from 'lucide-react';
 
 // TikTok icon component since lucide doesn't have it
@@ -27,6 +28,9 @@ const navLinks = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,9 +41,21 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    // If on admin page, navigate to home first, then scroll
+    if (isAdminPage) {
+      navigate('/');
+      // Use setTimeout to wait for navigation and render
+      setTimeout(() => {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
     setIsMobileMenuOpen(false);
   };
@@ -56,17 +72,20 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <a
-              href="#home"
+            <Link
+              to="/"
               onClick={(e) => {
-                e.preventDefault();
-                scrollToSection('#home');
+                if (!isAdminPage) {
+                  e.preventDefault();
+                  scrollToSection('#home');
+                }
+                // If on admin page, let Link handle navigation to home
               }}
               className="flex items-center gap-2 group"
             >
               <TentLogo className="w-8 h-8 text-charcoal group-hover:text-purple-accent transition-colors" />
               <span className="font-display font-bold text-xl text-charcoal">StepOut!</span>
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
