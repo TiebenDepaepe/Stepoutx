@@ -153,19 +153,34 @@ export default function ContactAndSignup() {
   };
   
   const handleFileChange = (field: 'foto' | 'video', file: File | null) => {
-    setFormData((prev) => ({ ...prev, [field]: file }));
-    // Validate file
+    // Mark field as touched immediately so error shows
+    setTouchedFields((prev) => new Set(prev).add(field));
+    
+    // Validate file first before setting it
     if (file) {
       const error = validateFile(file, field === 'foto' ? 'image' : 'video');
       if (error) {
+        // Don't set the file if validation fails - keep previous or null
         setFormErrors((prev) => ({ ...prev, [field]: error }));
+        // Still update the file input to show user selected something, 
+        // but mark it as invalid
+        setFormData((prev) => ({ ...prev, [field]: file }));
       } else {
         setFormErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[field];
           return newErrors;
         });
+        setFormData((prev) => ({ ...prev, [field]: file }));
       }
+    } else {
+      // File was cleared
+      setFormData((prev) => ({ ...prev, [field]: null }));
+      setFormErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
@@ -908,7 +923,7 @@ export default function ContactAndSignup() {
                       </p>
                       <p className="text-red-500 text-sm mt-1">{error}</p>
                       <p className="text-red-400 text-xs mt-2">
-                        Probeer het opnieuw of contacteer ons via email.
+                        Probeer het opnieuw of contacteer ons via instagram.
                       </p>
                     </div>
                   )}

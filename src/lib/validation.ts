@@ -89,8 +89,20 @@ export const signupFormSchema = z.object({
     .max(20, 'GSM-nummer noodcontact is te lang')
     .regex(/^\+?[\d\s\-\(\)\.]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
-  foto: z.instanceof(File).optional().nullable(),
-  video: z.instanceof(File).optional().nullable(),
+  foto: z.instanceof(File).optional().nullable()
+    .refine((file) => !file || file.size <= 10 * 1024 * 1024, {
+      message: 'Afbeelding mag maximaal 10MB zijn',
+    })
+    .refine((file) => !file || ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type), {
+      message: 'Alleen afbeeldingen (JPG, PNG, WebP, GIF) zijn toegestaan',
+    }),
+  video: z.instanceof(File).optional().nullable()
+    .refine((file) => !file || file.size <= 50 * 1024 * 1024, {
+      message: 'Video mag maximaal 50MB zijn',
+    })
+    .refine((file) => !file || ['video/mp4', 'video/webm', 'video/quicktime'].includes(file.type), {
+      message: 'Alleen video\'s (MP4, WebM, MOV) zijn toegestaan',
+    }),
 });
 
 export type SignupFormData = z.infer<typeof signupFormSchema>;
