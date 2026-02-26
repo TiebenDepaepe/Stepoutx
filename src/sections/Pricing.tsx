@@ -3,7 +3,7 @@ import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
 
 const includedItems = [
   '6 dagen op reis met een groep van 6 jongeren',
-  'Begeleiding door Daria, die de hele reis meegaat',
+  'Begeleiding door een begeleider, die de hele reis meegaat',
   'Kennismaking met de groep vóór vertrek',
   'Elke dag een voorbereide dagplanning met briefing',
   'Dagelijkse sociale en persoonlijke challenges',

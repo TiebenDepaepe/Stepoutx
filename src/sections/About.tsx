@@ -113,7 +113,7 @@ export default function About() {
             
             <div className="space-y-4 text-charcoal/70 leading-relaxed mb-8">
               <p>
-                Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes dagen</span> op pad met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes jongeren</span> en begeleider <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">Daria</span>. Voor vertrek is er een kennismaking met de groep.
+                Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes dagen</span> op pad met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes jongeren</span> en een begeleider. Voor vertrek is er een kennismaking met de groep.
               </p>
               <p>
                 Elke ochtend krijg je een briefing met de dagplanning. Die bestaat uit verplaatsingen, sociale en persoonlijke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en 3 <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
