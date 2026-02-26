@@ -187,6 +187,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 **Storage Bucket: `uploads`**
 - `photos/` - Profile pictures
 - `videos/` - Introduction videos
+- **Access Control**: Only authenticated users (admins) can access files in the storage bucket. Files are uploaded via the public registration form, but retrieval requires admin authentication.
 
 ---
 

@@ -114,8 +114,8 @@ export const validateFile = (file: File | null, type: 'image' | 'video'): string
     if (!allowedTypes.includes(file.type)) {
       return 'Alleen video\'s (MP4, WebM, MOV) zijn toegestaan';
     }
-    if (file.size > 100 * 1024 * 1024) {
-      return 'Video mag maximaal 100MB zijn';
+    if (file.size > 50 * 1024 * 1024) {
+      return 'Video mag maximaal 50MB zijn';
     }
   }
   
