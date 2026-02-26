@@ -15,6 +15,40 @@ export interface InschrijvingResponse {
 }
 
 /**
+ * Get a signed URL for a stored file (for private buckets)
+ * The files are stored in 'uploads' bucket with paths like 'photos/filename.jpg'
+ * Signed URLs are valid for 1 hour by default
+ */
+async function getSignedMediaUrl(filePath: string): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+  if (error) {
+    console.error('Error creating signed URL:', error);
+    return null;
+  }
+
+  return data.signedUrl;
+}
+
+/**
+ * Process inschrijving data to convert file paths to signed URLs
+ */
+async function processInschrijving(data: Inschrijving): Promise<Inschrijving> {
+  const [foto_url, video_url] = await Promise.all([
+    data.foto_url ? getSignedMediaUrl(data.foto_url) : null,
+    data.video_url ? getSignedMediaUrl(data.video_url) : null,
+  ]);
+
+  return {
+    ...data,
+    foto_url,
+    video_url,
+  };
+}
+
+/**
  * Fetch all inschrijvingen ordered by creation date (newest first)
  */
 export async function getAllInschrijvingen(): Promise<InschrijvingenResponse> {
@@ -28,7 +62,10 @@ export async function getAllInschrijvingen(): Promise<InschrijvingenResponse> {
     return { data: null, error: new Error(error.message) };
   }
 
-  return { data, error: null };
+  // Convert file paths to signed URLs
+  const processedData = data ? await Promise.all(data.map(processInschrijving)) : null;
+
+  return { data: processedData, error: null };
 }
 
 /**
@@ -46,7 +83,10 @@ export async function getInschrijvingById(id: string): Promise<InschrijvingRespo
     return { data: null, error: new Error(error.message) };
   }
 
-  return { data, error: null };
+  // Convert file paths to signed URLs
+  const processedData = data ? await processInschrijving(data) : null;
+
+  return { data: processedData, error: null };
 }
 
 /**
@@ -89,18 +129,6 @@ export async function updateInschrijvingNotities(
   }
 
   return { success: true, error: null };
-}
-
-/**
- * Get the public URL for a stored file
- * The files are stored in 'uploads' bucket with paths like 'photos/filename.jpg'
- */
-export function getMediaUrl(filePath: string): string {
-  const { data } = supabase.storage
-    .from(STORAGE_BUCKET)
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
 }
 
 /**
