@@ -22,6 +22,7 @@ interface TripRangeInfo {
   weekIndex: number;
   isStartClipped: boolean;  // Trip extends to previous month (not visible in current month)
   isEndClipped: boolean;    // Trip extends to next month (not visible in current month)
+  isVisible: boolean;       // Whether this range has any days in current month (for visual ring)
 }
 
 export function MonthCalendar({
@@ -44,19 +45,21 @@ export function MonthCalendar({
   }, [days]);
 
   // Group consecutive trip days into visual ranges WITHIN EACH WEEK
-  // Clipping at month boundaries
+  // Now includes both current month and non-current month days for functionality
   const tripRanges = useMemo(() => {
     const ranges: TripRangeInfo[] = [];
     
     weeks.forEach((week, weekIdx) => {
       let currentTrip: TripWeek | null = null;
       let currentStart = 0;
-      let isCurrentStartClipped = false;
+      let hasVisibleDay = false;  // Track if any day in range is in current month
       
       const flushRange = (endIdx: number) => {
         if (currentTrip && endIdx >= currentStart) {
-          // Check if end is clipped (the day at endIdx+1 would be in the trip but is not current month)
+          // Check clipping based on whether the start/end are actual trip boundaries
+          const startDay = week[currentStart];
           const endDay = week[endIdx];
+          const isStartClipped = startDay ? !startDay.isTripStart : false;
           const isEndClipped = endDay ? !endDay.isTripEnd : false;
           
           ranges.push({
@@ -64,30 +67,36 @@ export function MonthCalendar({
             startIndex: currentStart,
             endIndex: endIdx,
             weekIndex: weekIdx,
-            isStartClipped: isCurrentStartClipped,
-            isEndClipped: isEndClipped,
+            isStartClipped,
+            isEndClipped,
+            isVisible: hasVisibleDay,
           });
         }
       };
       
       week.forEach((day, dayIdx) => {
-        if (day.tripWeek && day.isCurrentMonth) {
-          // This day is part of a trip AND in current month
+        if (day.tripWeek) {
+          // This day is part of a trip (regardless of month)
           if (!currentTrip || currentTrip.id !== day.tripWeek.id) {
             // Flush previous range
             flushRange(dayIdx - 1);
             // Start new range
             currentTrip = day.tripWeek;
             currentStart = dayIdx;
-            // Check if start is clipped (this is not the actual trip start)
-            isCurrentStartClipped = !day.isTripStart;
+            hasVisibleDay = day.isCurrentMonth;
+          } else {
+            // Continue current range
+            if (day.isCurrentMonth) {
+              hasVisibleDay = true;
+            }
           }
         } else {
-          // This day is either NOT in a trip OR not in current month
+          // This day is NOT in a trip
           // Flush current range if we were building one
           if (currentTrip) {
             flushRange(dayIdx - 1);
             currentTrip = null;
+            hasVisibleDay = false;
           }
         }
       });
@@ -137,7 +146,7 @@ export function MonthCalendar({
         <div className="space-y-1 relative">
           {weeks.map((week, weekIdx) => (
             <div key={weekIdx} className="grid grid-cols-7 relative">
-              {/* Trip range overlays - for hover/selected states only */}
+              {/* Trip range overlays - functional for all, visual only for visible ranges */}
               {tripRanges
                 .filter(r => r.weekIndex === weekIdx)
                 .map((range) => {
@@ -174,23 +183,25 @@ export function MonthCalendar({
                         "absolute h-7 top-0.5 z-20 flex items-center justify-center",
                         "transition-all duration-200 cursor-pointer",
                         
-                        // Only show ring for selected/hovered states
-                        // No background color here - it's on the day cells
+                        // Visual ring ONLY for ranges with visible days (current month)
+                        // Invisible but functional for non-visible ranges
                         isDisabled 
                           ? "cursor-not-allowed" 
-                          : isSelected
+                          : range.isVisible && isSelected
                             ? "ring-2 ring-blue-500/70"
-                            : isHovered
+                            : range.isVisible && isHovered
                               ? "ring-2 ring-blue-300/70"
-                              : "hover:ring-2 hover:ring-blue-300/50",
+                              : range.isVisible
+                                ? "hover:ring-2 hover:ring-blue-300/50"
+                                : "", // No visual ring for non-visible ranges, but still clickable
                         
-                        // Rounded corners - only on non-clipped sides
-                        !range.isStartClipped && "rounded-l-md",
-                        !range.isEndClipped && "rounded-r-md",
+                        // Rounded corners - only on non-clipped sides AND only for visible ranges
+                        range.isVisible && !range.isStartClipped && "rounded-l-md",
+                        range.isVisible && !range.isEndClipped && "rounded-r-md",
                         
                         // Clipped side styling: no rounding
-                        range.isStartClipped && "rounded-l-none",
-                        range.isEndClipped && "rounded-r-none"
+                        range.isVisible && range.isStartClipped && "rounded-l-none",
+                        range.isVisible && range.isEndClipped && "rounded-r-none"
                       )}
                       style={{
                         left: `${(range.startIndex / 7) * 100}%`,
@@ -211,7 +222,7 @@ export function MonthCalendar({
                   );
                 })}
 
-              {/* Day cells - with background colors */}
+              {/* Day cells - purely visual */}
               {week.map((day, dayIdx) => {
                 const hasTrip = !!day.tripWeek;
                 const isSelected = day.tripWeek ? isTripSelected(day.tripWeek.id) : false;
@@ -229,7 +240,6 @@ export function MonthCalendar({
                     bgClass = "bg-mint/60";
                   } else {
                     // Other month trip days: striped pattern
-                    // Using diagonal stripes of mint color
                     bgStyle = {
                       background: `repeating-linear-gradient(
                         45deg,
@@ -259,18 +269,18 @@ export function MonthCalendar({
                       day.isCurrentMonth && !hasTrip && "text-charcoal/70",
                       // Days in current month WITH trip: bold text
                       day.isCurrentMonth && hasTrip && !isDisabled && "font-semibold text-charcoal",
-                      // Selected state: blue text
-                      isSelected && "text-blue-600",
-                      // Hovered state: blue text
-                      isHovered && "text-blue-500",
+                      // Selected state: blue text (only for current month)
+                      day.isCurrentMonth && isSelected && "text-blue-600",
+                      // Hovered state: blue text (only for current month)
+                      day.isCurrentMonth && isHovered && "text-blue-500",
                       // Disabled state: gray text
                       isDisabled && "text-gray-400",
                       // Weekend styling (only for non-trip days in current month)
                       isWeekend && !hasTrip && day.isCurrentMonth && "text-charcoal/30",
                       
-                      // Rounded corners for trip day cells at the edges
-                      hasTrip && day.isCurrentMonth && !isDisabled && day.isTripStart && "rounded-l-md",
-                      hasTrip && day.isCurrentMonth && !isDisabled && day.isTripEnd && "rounded-r-md"
+                      // Rounded corners for trip day cells at the edges (only current month)
+                      day.isCurrentMonth && hasTrip && !isDisabled && day.isTripStart && "rounded-l-md",
+                      day.isCurrentMonth && hasTrip && !isDisabled && day.isTripEnd && "rounded-r-md"
                     )}
                   >
                     <span className="relative z-10">
