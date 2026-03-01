@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useCalendarDates } from './useCalendarDates';
 import { MonthCalendar } from './MonthCalendar';
@@ -15,6 +15,7 @@ export function CalendarDatePicker({
   error 
 }: CalendarDatePickerProps) {
   const { months, getDaysForMonth, weekDays } = useCalendarDates(2026);
+  const [hoveredTripId, setHoveredTripId] = useState<string | null>(null);
 
   const handleSelectTrip = useCallback((tripId: string) => {
     if (selectedDates.includes(tripId)) {
@@ -23,6 +24,10 @@ export function CalendarDatePicker({
       onChange([...selectedDates, tripId]);
     }
   }, [selectedDates, onChange]);
+
+  const handleTripHover = useCallback((tripId: string | null) => {
+    setHoveredTripId(tripId);
+  }, []);
 
   return (
     <div className="w-full">
@@ -60,6 +65,8 @@ export function CalendarDatePicker({
             days={getDaysForMonth(month, year)}
             selectedTrips={selectedDates}
             onSelectTrip={handleSelectTrip}
+            onTripHover={handleTripHover}
+            hoveredTripId={hoveredTripId}
             weekDays={weekDays}
           />
         ))}

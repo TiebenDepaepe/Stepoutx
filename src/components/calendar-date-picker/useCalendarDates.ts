@@ -38,11 +38,12 @@ const rawTripData = [
   { date: '29 juni - 4 juli', disabled: false, full: false },
   { date: '6 juli - 11 juli', disabled: false, full: false },
   { date: '13 juli - 18 juli', disabled: false, full: false },
-  { date: '20 juli - 25 juli', disabled: true, full: true },
+  { date: '20 juli - 25 juli', disabled: false, full: false },
   { date: '27 juli - 1 augustus', disabled: false, full: false },
   { date: '3 - 8 augustus', disabled: false, full: false },
   { date: '10 - 15 augustus', disabled: false, full: false },
-  { date: '20 - 25 augustus', disabled: true, full: true },
+  { date: '20 - 25 augustus', disabled: false, full: false },
+  { date: '27 - 31 augustus', disabled: false, full: false },
 ];
 
 // Helper to parse Dutch month names
