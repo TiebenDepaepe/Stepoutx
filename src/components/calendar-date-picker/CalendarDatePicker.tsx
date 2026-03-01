@@ -28,7 +28,7 @@ export function CalendarDatePicker({
     <div className="w-full">
       {/* Subtitle */}
       <p className="text-sm text-charcoal/60 mb-4">
-        Selecteer alle weken waarin je beschikbaar bent.
+        Klik op alle weken waarin je beschikbaar bent.
       </p>
 
       {/* Legend */}
