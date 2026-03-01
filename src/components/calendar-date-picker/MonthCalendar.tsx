@@ -56,7 +56,6 @@ export function MonthCalendar({
       const flushRange = (endIdx: number) => {
         if (currentTrip && endIdx >= currentStart) {
           // Check if end is clipped (the day at endIdx+1 would be in the trip but is not current month)
-          // Actually: check if the day at endIdx is the last day of this trip that's in current month
           const endDay = week[endIdx];
           const isEndClipped = endDay ? !endDay.isTripEnd : false;
           
@@ -138,7 +137,7 @@ export function MonthCalendar({
         <div className="space-y-1 relative">
           {weeks.map((week, weekIdx) => (
             <div key={weekIdx} className="grid grid-cols-7 relative">
-              {/* Week container - handles click and hover for the trip week */}
+              {/* Trip range overlays - for hover/selected states only */}
               {tripRanges
                 .filter(r => r.weekIndex === weekIdx)
                 .map((range) => {
@@ -172,15 +171,18 @@ export function MonthCalendar({
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
                       className={cn(
-                        "absolute h-7 top-0.5 z-10 flex items-center justify-center",
+                        "absolute h-7 top-0.5 z-20 flex items-center justify-center",
                         "transition-all duration-200 cursor-pointer",
+                        
+                        // Only show ring for selected/hovered states
+                        // No background color here - it's on the day cells
                         isDisabled 
-                          ? "bg-gray-100/80 cursor-not-allowed" 
+                          ? "cursor-not-allowed" 
                           : isSelected
-                            ? "bg-mint/60 ring-2 ring-blue-500/70"
+                            ? "ring-2 ring-blue-500/70"
                             : isHovered
-                              ? "bg-mint/60 ring-2 ring-blue-300/70"
-                              : "bg-mint/60 hover:ring-2 hover:ring-blue-300/50",
+                              ? "ring-2 ring-blue-300/70"
+                              : "hover:ring-2 hover:ring-blue-300/50",
                         
                         // Rounded corners - only on non-clipped sides
                         !range.isStartClipped && "rounded-l-md",
@@ -209,7 +211,7 @@ export function MonthCalendar({
                   );
                 })}
 
-              {/* Day cells - purely visual */}
+              {/* Day cells - with background colors */}
               {week.map((day, dayIdx) => {
                 const hasTrip = !!day.tripWeek;
                 const isSelected = day.tripWeek ? isTripSelected(day.tripWeek.id) : false;
@@ -217,25 +219,58 @@ export function MonthCalendar({
                 const isDisabled = day.tripWeek ? day.tripWeek.disabled : false;
                 const isWeekend = dayIdx >= 5;
                 
+                // Determine background style based on trip and month
+                let bgStyle: React.CSSProperties = {};
+                let bgClass = "";
+                
+                if (hasTrip && !isDisabled) {
+                  if (day.isCurrentMonth) {
+                    // Current month trip days: solid green
+                    bgClass = "bg-mint/60";
+                  } else {
+                    // Other month trip days: striped pattern
+                    // Using diagonal stripes of mint color
+                    bgStyle = {
+                      background: `repeating-linear-gradient(
+                        45deg,
+                        transparent,
+                        transparent 3px,
+                        rgba(227, 255, 228, 0.5) 3px,
+                        rgba(227, 255, 228, 0.5) 6px
+                      )`
+                    };
+                  }
+                } else if (hasTrip && isDisabled) {
+                  bgClass = "bg-gray-100/80";
+                }
+                
                 return (
                   <div
                     key={dayIdx}
+                    style={bgStyle}
                     className={cn(
                       "relative h-8 flex items-center justify-center text-sm pointer-events-none select-none",
-                      // Days not in current month: light grey
+                      bgClass,
+                      
+                      // TEXT COLORS
+                      // Days not in current month: light grey text
                       !day.isCurrentMonth && "text-charcoal/25",
-                      // Days in current month with no trip: normal
+                      // Days in current month with no trip: normal text
                       day.isCurrentMonth && !hasTrip && "text-charcoal/70",
-                      // Days in current month WITH trip: bold
+                      // Days in current month WITH trip: bold text
                       day.isCurrentMonth && hasTrip && !isDisabled && "font-semibold text-charcoal",
-                      // Selected state
+                      // Selected state: blue text
                       isSelected && "text-blue-600",
-                      // Hovered state
+                      // Hovered state: blue text
                       isHovered && "text-blue-500",
-                      // Disabled state
+                      // Disabled state: gray text
                       isDisabled && "text-gray-400",
                       // Weekend styling (only for non-trip days in current month)
-                      isWeekend && !hasTrip && day.isCurrentMonth && "text-charcoal/30"
+                      isWeekend && !hasTrip && day.isCurrentMonth && "text-charcoal/30",
+                      
+                      // Rounded corners for trip day cells at the edges
+                      hasTrip && day.isCurrentMonth && !isDisabled && day.isTripStart && "rounded-l-md",
+                      hasTrip && day.isCurrentMonth && !isDisabled && day.isTripEnd && "rounded-r-md"
                     )}
                   >
                     <span className="relative z-10">
