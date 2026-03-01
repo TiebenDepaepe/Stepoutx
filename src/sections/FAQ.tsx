@@ -25,7 +25,7 @@ const faqs = [
   {
     question: 'Waarom kost de reis €450?',
     answer:
-      'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je reist zes dagen in een kleine groep van zes jongeren, met persoonlijke begeleiding door Daria. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
+      'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je reist zes dagen in een kleine groep van zes jongeren, met persoonlijke begeleiding door een begeleider. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
   },
   {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',
