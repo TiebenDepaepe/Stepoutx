@@ -832,11 +832,11 @@ export default function ContactAndSignup() {
                       <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
                         <Camera className="w-5 h-5 text-purple-accent" />
                       </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 6 – Optioneel (maar waardevol)</h4>
+                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 6 – Foto & Video</h4>
                     </div>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Upload een foto <span className="text-charcoal/50">(optioneel)</span></label>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Upload een foto *</label>
                         <div className="relative">
                           <input type="file" accept="image/*" onChange={(e) => handleFileChange('foto', e.target.files?.[0] || null)} className="hidden" id="foto-upload" />
                           <label 
