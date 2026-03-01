@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CalendarDay, TripWeek } from './useCalendarDates';
@@ -35,6 +35,19 @@ export function MonthCalendar({
   hoveredTripId,
   weekDays,
 }: MonthCalendarProps) {
+  // Track if device supports hover (not touch-only)
+  const [hasHover, setHasHover] = useState(true);
+  
+  useEffect(() => {
+    // Check if device has fine pointer (mouse) support
+    // Devices with only coarse pointers (touch) shouldn't show hover states
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    setHasHover(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setHasHover(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
   // Group days into weeks
   const weeks = useMemo(() => {
     const result: CalendarDay[][] = [];
@@ -162,12 +175,19 @@ export function MonthCalendar({
                   };
 
                   const handleMouseEnter = () => {
-                    if (!isDisabled && onTripHover) {
+                    if (!isDisabled && onTripHover && hasHover) {
                       onTripHover(range.trip.id);
                     }
                   };
 
                   const handleMouseLeave = () => {
+                    if (onTripHover && hasHover) {
+                      onTripHover(null);
+                    }
+                  };
+                  
+                  const handleTouchStart = () => {
+                    // Clear any stuck hover state on touch
                     if (onTripHover) {
                       onTripHover(null);
                     }
@@ -191,7 +211,7 @@ export function MonthCalendar({
                             ? "ring-2 ring-blue-500/70"
                             : range.isVisible && isHovered
                               ? "ring-2 ring-blue-300/70"
-                              : range.isVisible
+                              : range.isVisible && hasHover
                                 ? "hover:ring-2 hover:ring-blue-300/50"
                                 : "", // No visual ring for non-visible ranges, but still clickable
                         
@@ -207,6 +227,7 @@ export function MonthCalendar({
                         left: `${(range.startIndex / 7) * 100}%`,
                         width: `${((range.endIndex - range.startIndex + 1) / 7) * 100}%`,
                       }}
+                      onTouchStart={handleTouchStart}
                       role="button"
                       aria-pressed={isSelected}
                       tabIndex={isDisabled ? -1 : 0}
