@@ -34,14 +34,14 @@ export interface CalendarDay {
 
 // Parse the available dates from the form
 const rawTripData = [
-  { date: '22 juni - 27 juni', disabled: false, full: false },
+  { date: '22 juni - 27 juni', disabled: true, full: true },
   { date: '29 juni - 4 juli', disabled: false, full: false },
-  { date: '6 juli - 11 juli', disabled: false, full: false },
-  { date: '13 juli - 18 juli', disabled: false, full: false },
+  { date: '6 juli - 11 juli', disabled: true, full: true },
+  { date: '13 juli - 18 juli', disabled: true, full: true },
   { date: '20 juli - 25 juli', disabled: false, full: false },
   { date: '27 juli - 1 augustus', disabled: false, full: false },
   { date: '3 - 8 augustus', disabled: false, full: false },
-  { date: '10 - 15 augustus', disabled: false, full: false },
+  { date: '10 - 15 augustus', disabled: true, full: true },
   { date: '20 - 25 augustus', disabled: false, full: false },
   { date: '27 - 31 augustus', disabled: false, full: false },
 ];
