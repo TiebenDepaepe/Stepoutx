@@ -55,7 +55,7 @@ export function CalendarDatePicker({
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 gap-4">
         {months.map(({ month, name, year }) => (
           <MonthCalendar
             key={`${year}-${month}`}

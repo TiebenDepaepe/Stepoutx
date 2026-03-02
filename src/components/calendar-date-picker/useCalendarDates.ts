@@ -35,15 +35,18 @@ export interface CalendarDay {
 // Parse the available dates from the form
 const rawTripData = [
   { date: '22 juni - 27 juni', disabled: true, full: true },
-  { date: '29 juni - 4 juli', disabled: false, full: false },
+  { date: '29 juni - 4 juli', disabled: true, full: true },
   { date: '6 juli - 11 juli', disabled: true, full: true },
   { date: '13 juli - 18 juli', disabled: true, full: true },
-  { date: '20 juli - 25 juli', disabled: false, full: false },
-  { date: '27 juli - 1 augustus', disabled: false, full: false },
-  { date: '3 - 8 augustus', disabled: false, full: false },
+  { date: '20 juli - 25 juli', disabled: true, full: true },
+  { date: '27 juli - 1 augustus', disabled: true, full: true },
+  { date: '3 - 8 augustus', disabled: true, full: true },
   { date: '10 - 15 augustus', disabled: true, full: true },
-  { date: '20 - 25 augustus', disabled: false, full: false },
+  { date: '20 - 25 augustus', disabled: true, full: true },
   { date: '27 - 31 augustus', disabled: false, full: false },
+  { date: '7 - 12 september', disabled: false, full: false },
+  { date: '14 - 19 september', disabled: false, full: false },
+  { date: '21 - 26 september', disabled: false, full: false },
 ];
 
 // Helper to parse Dutch month names
@@ -117,6 +120,7 @@ export function useCalendarDates(selectedYear: number = 2026) {
     { month: 5, name: 'Juni', year: selectedYear },
     { month: 6, name: 'Juli', year: selectedYear },
     { month: 7, name: 'Augustus', year: selectedYear },
+    { month: 8, name: 'September', year: selectedYear },
   ], [selectedYear]);
 
   const getDaysForMonth = (month: number, year: number): CalendarDay[] => {
