@@ -14,12 +14,24 @@ export interface InschrijvingResponse {
   error: Error | null;
 }
 
+// Cache for signed URLs to avoid regenerating them on every selection
+const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
+const CACHE_BUFFER_MS = 5 * 60 * 1000; // 5 minutes buffer before expiry
+
 /**
  * Get a signed URL for a stored file (for private buckets)
- * The files are stored in 'uploads' bucket with paths like 'photos/filename.jpg'
+ * Uses caching to avoid regenerating URLs unnecessarily
  * Signed URLs are valid for 1 hour by default
  */
 async function getSignedMediaUrl(filePath: string): Promise<string | null> {
+  // Check cache first
+  const cached = signedUrlCache.get(filePath);
+  const now = Date.now();
+  
+  if (cached && cached.expiresAt > now + CACHE_BUFFER_MS) {
+    return cached.url;
+  }
+
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .createSignedUrl(filePath, 3600); // 1 hour expiry
@@ -29,11 +41,23 @@ async function getSignedMediaUrl(filePath: string): Promise<string | null> {
     return null;
   }
 
+  // Cache the new URL with expiry time
+  const expiresAt = now + 3600 * 1000;
+  signedUrlCache.set(filePath, { url: data.signedUrl, expiresAt });
+
   return data.signedUrl;
 }
 
 /**
+ * Clear the signed URL cache (useful for logout or memory management)
+ */
+export function clearSignedUrlCache(): void {
+  signedUrlCache.clear();
+}
+
+/**
  * Process inschrijving data to convert file paths to signed URLs
+ * Only processes when file paths exist
  */
 async function processInschrijving(data: Inschrijving): Promise<Inschrijving> {
   const [foto_url, video_url] = await Promise.all([
@@ -50,6 +74,8 @@ async function processInschrijving(data: Inschrijving): Promise<Inschrijving> {
 
 /**
  * Fetch all inschrijvingen ordered by creation date (newest first)
+ * NOTE: This does NOT include signed URLs for media files to save egress.
+ * Use getInschrijvingWithMedia() when you need the actual media URLs.
  */
 export async function getAllInschrijvingen(): Promise<InschrijvingenResponse> {
   const { data, error } = await supabase
@@ -62,14 +88,22 @@ export async function getAllInschrijvingen(): Promise<InschrijvingenResponse> {
     return { data: null, error: new Error(error.message) };
   }
 
-  // Convert file paths to signed URLs
-  const processedData = data ? await Promise.all(data.map(processInschrijving)) : null;
-
-  return { data: processedData, error: null };
+  // Return data WITHOUT processing media URLs - the list view doesn't need them
+  // This significantly reduces egress since we don't hit storage for every item
+  return { data, error: null };
 }
 
 /**
- * Fetch a single inschrijving by ID
+ * Fetch a single inschrijving with media URLs generated
+ * Use this when viewing a single registration's details
+ */
+export async function getInschrijvingWithMedia(inschrijving: Inschrijving): Promise<Inschrijving> {
+  return processInschrijving(inschrijving);
+}
+
+/**
+ * Fetch a single inschrijving by ID with media URLs
+ * Uses caching to avoid regenerating URLs unnecessarily
  */
 export async function getInschrijvingById(id: string): Promise<InschrijvingResponse> {
   const { data, error } = await supabase
@@ -83,7 +117,7 @@ export async function getInschrijvingById(id: string): Promise<InschrijvingRespo
     return { data: null, error: new Error(error.message) };
   }
 
-  // Convert file paths to signed URLs
+  // Convert file paths to signed URLs with caching
   const processedData = data ? await processInschrijving(data) : null;
 
   return { data: processedData, error: null };

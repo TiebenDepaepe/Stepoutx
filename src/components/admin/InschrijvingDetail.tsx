@@ -48,9 +48,10 @@ interface InschrijvingDetailProps {
   inschrijving: Inschrijving;
   onBack?: () => void;
   onUpdate?: () => void;
+  isLoadingMedia?: boolean;
 }
 
-export function InschrijvingDetail({ inschrijving, onBack, onUpdate }: InschrijvingDetailProps) {
+export function InschrijvingDetail({ inschrijving, onBack, onUpdate, isLoadingMedia }: InschrijvingDetailProps) {
   const [status, setStatus] = useState<Inschrijving['status']>(inschrijving.status || 'nieuw');
   const [notities, setNotities] = useState(inschrijving.notities || '');
   const [isSaving, setIsSaving] = useState(false);
@@ -265,10 +266,17 @@ export function InschrijvingDetail({ inschrijving, onBack, onUpdate }: Inschrijv
         </div>
 
         {/* Media Section */}
-        {(inschrijving.foto_url || inschrijving.video_url) && (
+        {(inschrijving.foto_url || inschrijving.video_url || isLoadingMedia) && (
           <section>
             <SectionTitle>Media</SectionTitle>
-            <MediaViewer imageUrl={inschrijving.foto_url} videoUrl={inschrijving.video_url} />
+            {isLoadingMedia ? (
+              <div className="bg-gray-50 rounded-xl p-8 text-center border border-dashed border-gray-200">
+                <div className="h-12 w-12 mx-auto mb-3 animate-pulse bg-gray-200 rounded-lg" />
+                <p className="text-gray-soft text-sm">Media laden...</p>
+              </div>
+            ) : (
+              <MediaViewer imageUrl={inschrijving.foto_url} videoUrl={inschrijving.video_url} />
+            )}
           </section>
         )}
 

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Inschrijving } from '@/types/inschrijving';
-import { getAllInschrijvingen } from '@/services/inschrijvingenService';
+import { getAllInschrijvingen, getInschrijvingWithMedia, clearSignedUrlCache } from '@/services/inschrijvingenService';
 import { InschrijvingList } from '@/components/admin/InschrijvingList';
 import { InschrijvingDetail } from '@/components/admin/InschrijvingDetail';
 import { EmptyState } from '@/components/admin/EmptyState';
@@ -26,6 +26,7 @@ export default function AdminDashboard() {
   const [inschrijvingen, setInschrijvingen] = useState<Inschrijving[]>([]);
   const [selectedInschrijving, setSelectedInschrijving] = useState<Inschrijving | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMedia, setIsLoadingMedia] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -51,14 +52,28 @@ export default function AdminDashboard() {
   };
 
   const handleSignOut = async () => {
+    clearSignedUrlCache(); // Clear cached URLs on logout
     await signOut();
     navigate('/admin/login');
   };
 
-  const handleSelect = (inschrijving: Inschrijving) => {
-    setSelectedInschrijving(inschrijving);
+  const handleSelect = useCallback(async (inschrijving: Inschrijving) => {
+    // Check if URLs are already signed (start with http) or just storage paths
+    const hasSignedImageUrl = inschrijving.foto_url?.startsWith('http');
+    const hasSignedVideoUrl = inschrijving.video_url?.startsWith('http');
+    
+    // If we already have signed URLs, use directly
+    if (hasSignedImageUrl || hasSignedVideoUrl) {
+      setSelectedInschrijving(inschrijving);
+    } else {
+      // Otherwise, generate signed URLs from storage paths
+      setIsLoadingMedia(true);
+      const inschrijvingWithMedia = await getInschrijvingWithMedia(inschrijving);
+      setSelectedInschrijving(inschrijvingWithMedia);
+      setIsLoadingMedia(false);
+    }
     setIsMobileMenuOpen(false); // Close mobile menu when selecting
-  };
+  }, []);
 
   const handleBackToList = () => {
     setSelectedInschrijving(null);
@@ -66,13 +81,21 @@ export default function AdminDashboard() {
   };
 
   const handleUpdate = async () => {
-    // Refresh the list to get updated data
+    // Refresh the list to get updated data (without media URLs)
     await fetchInschrijvingen();
-    // If we have a selected item, refresh it too
+    // If we have a selected item, refresh it with media URLs
     if (selectedInschrijving) {
       const updated = inschrijvingen.find(i => i.id === selectedInschrijving.id);
       if (updated) {
-        setSelectedInschrijving(updated);
+        // Check if we need to regenerate signed URLs
+        const needsSignedUrls = updated.foto_url && !updated.foto_url.startsWith('http') ||
+                               updated.video_url && !updated.video_url.startsWith('http');
+        if (needsSignedUrls) {
+          const updatedWithMedia = await getInschrijvingWithMedia(updated);
+          setSelectedInschrijving(updatedWithMedia);
+        } else {
+          setSelectedInschrijving(updated);
+        }
       }
     }
   };
@@ -205,6 +228,7 @@ export default function AdminDashboard() {
                 inschrijving={selectedInschrijving}
                 onBack={handleBackToList}
                 onUpdate={handleUpdate}
+                isLoadingMedia={isLoadingMedia}
               />
             ) : (
               <div className="hidden lg:block h-full">
