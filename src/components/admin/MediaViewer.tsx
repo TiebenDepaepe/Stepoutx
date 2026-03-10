@@ -59,32 +59,34 @@ export function MediaViewer({
               <ImageIcon className="h-4 w-4 text-purple-accent" />
               Foto
             </h4>
-            <div className="flex gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1">
-                    <Maximize2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Vergroot</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black/90">
-                  <img 
-                    src={imageUrl} 
-                    alt="Inschrijving foto" 
-                    className="w-full h-auto max-h-[80vh] object-contain"
-                  />
-                </DialogContent>
-              </Dialog>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 gap-1"
-                onClick={() => window.open(imageUrl, '_blank')}
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Open</span>
-              </Button>
-            </div>
+            {hasImage && (
+              <div className="flex gap-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 gap-1">
+                      <Maximize2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Vergroot</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black/90">
+                    <img 
+                      src={imageUrl!} 
+                      alt="Inschrijving foto" 
+                      className="w-full h-auto max-h-[80vh] object-contain"
+                    />
+                  </DialogContent>
+                </Dialog>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 gap-1"
+                  onClick={() => window.open(imageUrl!, '_blank')}
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">Open</span>
+                </Button>
+              </div>
+            )}
           </div>
           {hasImage ? (
             <div className="relative group overflow-hidden rounded-xl bg-gray-100">
@@ -138,15 +140,17 @@ export function MediaViewer({
               <Video className="h-4 w-4 text-purple-accent" />
               Video
             </h4>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 gap-1"
-              onClick={() => window.open(videoUrl, '_blank')}
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Open in nieuw tabblad</span>
-            </Button>
+            {hasVideo && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 gap-1"
+                onClick={() => window.open(videoUrl!, '_blank')}
+              >
+                <Download className="h-4 w-4" />
+                <span className="hidden sm:inline">Open in nieuw tabblad</span>
+              </Button>
+            )}
           </div>
           {hasVideo ? (
             <div className="rounded-xl overflow-hidden bg-gray-900">
