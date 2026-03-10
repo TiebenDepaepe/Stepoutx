@@ -49,9 +49,22 @@ interface InschrijvingDetailProps {
   onBack?: () => void;
   onUpdate?: () => void;
   isLoadingMedia?: boolean;
+  imagePath?: string | null;
+  videoPath?: string | null;
+  imageLoadFailed?: boolean;
+  videoLoadFailed?: boolean;
 }
 
-export function InschrijvingDetail({ inschrijving, onBack, onUpdate, isLoadingMedia }: InschrijvingDetailProps) {
+export function InschrijvingDetail({ 
+  inschrijving, 
+  onBack, 
+  onUpdate, 
+  isLoadingMedia,
+  imagePath,
+  videoPath,
+  imageLoadFailed,
+  videoLoadFailed
+}: InschrijvingDetailProps) {
   const [status, setStatus] = useState<Inschrijving['status']>(inschrijving.status || 'nieuw');
   const [notities, setNotities] = useState(inschrijving.notities || '');
   const [isSaving, setIsSaving] = useState(false);
@@ -265,8 +278,8 @@ export function InschrijvingDetail({ inschrijving, onBack, onUpdate, isLoadingMe
           </div>
         </div>
 
-        {/* Media Section */}
-        {(inschrijving.foto_url || inschrijving.video_url || isLoadingMedia) && (
+        {/* Media Section - show if we have any URL or path (for error display) */}
+        {(inschrijving.foto_url || inschrijving.video_url || imagePath || videoPath || isLoadingMedia) && (
           <section>
             <SectionTitle>Media</SectionTitle>
             {isLoadingMedia ? (
@@ -275,7 +288,14 @@ export function InschrijvingDetail({ inschrijving, onBack, onUpdate, isLoadingMe
                 <p className="text-gray-soft text-sm">Media laden...</p>
               </div>
             ) : (
-              <MediaViewer imageUrl={inschrijving.foto_url} videoUrl={inschrijving.video_url} />
+              <MediaViewer 
+                imageUrl={inschrijving.foto_url} 
+                videoUrl={inschrijving.video_url}
+                imagePath={imagePath}
+                videoPath={videoPath}
+                imageLoadFailed={imageLoadFailed}
+                videoLoadFailed={videoLoadFailed}
+              />
             )}
           </section>
         )}

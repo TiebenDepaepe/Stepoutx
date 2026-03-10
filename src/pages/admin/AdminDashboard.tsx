@@ -29,6 +29,10 @@ export default function AdminDashboard() {
   const [isLoadingMedia, setIsLoadingMedia] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedImagePath, setSelectedImagePath] = useState<string | null>(null);
+  const [selectedVideoPath, setSelectedVideoPath] = useState<string | null>(null);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
+  const [videoLoadFailed, setVideoLoadFailed] = useState(false);
 
   // Fetch inschrijvingen on mount
   useEffect(() => {
@@ -62,6 +66,13 @@ export default function AdminDashboard() {
     const hasSignedImageUrl = inschrijving.foto_url?.startsWith('http');
     const hasSignedVideoUrl = inschrijving.video_url?.startsWith('http');
     
+    // Store original paths for error display
+    setSelectedImagePath(inschrijving.foto_url);
+    setSelectedVideoPath(inschrijving.video_url);
+    // Reset load failed states
+    setImageLoadFailed(false);
+    setVideoLoadFailed(false);
+    
     // If we already have signed URLs, use directly
     if (hasSignedImageUrl || hasSignedVideoUrl) {
       setSelectedInschrijving(inschrijving);
@@ -69,6 +80,13 @@ export default function AdminDashboard() {
       // Otherwise, generate signed URLs from storage paths
       setIsLoadingMedia(true);
       const inschrijvingWithMedia = await getInschrijvingWithMedia(inschrijving);
+      // Check if signed URL generation failed (null) but path existed
+      if (inschrijving.foto_url && !inschrijvingWithMedia.foto_url) {
+        setImageLoadFailed(true);
+      }
+      if (inschrijving.video_url && !inschrijvingWithMedia.video_url) {
+        setVideoLoadFailed(true);
+      }
       setSelectedInschrijving(inschrijvingWithMedia);
       setIsLoadingMedia(false);
     }
@@ -77,6 +95,10 @@ export default function AdminDashboard() {
 
   const handleBackToList = () => {
     setSelectedInschrijving(null);
+    setSelectedImagePath(null);
+    setSelectedVideoPath(null);
+    setImageLoadFailed(false);
+    setVideoLoadFailed(false);
     setIsMobileMenuOpen(true);
   };
 
@@ -87,11 +109,24 @@ export default function AdminDashboard() {
     if (selectedInschrijving) {
       const updated = inschrijvingen.find(i => i.id === selectedInschrijving.id);
       if (updated) {
+        // Update stored paths
+        setSelectedImagePath(updated.foto_url);
+        setSelectedVideoPath(updated.video_url);
+        // Reset load failed states
+        setImageLoadFailed(false);
+        setVideoLoadFailed(false);
         // Check if we need to regenerate signed URLs
         const needsSignedUrls = updated.foto_url && !updated.foto_url.startsWith('http') ||
                                updated.video_url && !updated.video_url.startsWith('http');
         if (needsSignedUrls) {
           const updatedWithMedia = await getInschrijvingWithMedia(updated);
+          // Check if signed URL generation failed (null) but path existed
+          if (updated.foto_url && !updatedWithMedia.foto_url) {
+            setImageLoadFailed(true);
+          }
+          if (updated.video_url && !updatedWithMedia.video_url) {
+            setVideoLoadFailed(true);
+          }
           setSelectedInschrijving(updatedWithMedia);
         } else {
           setSelectedInschrijving(updated);
@@ -229,6 +264,10 @@ export default function AdminDashboard() {
                 onBack={handleBackToList}
                 onUpdate={handleUpdate}
                 isLoadingMedia={isLoadingMedia}
+                imagePath={selectedImagePath}
+                videoPath={selectedVideoPath}
+                imageLoadFailed={imageLoadFailed}
+                videoLoadFailed={videoLoadFailed}
               />
             ) : (
               <div className="hidden lg:block h-full">
