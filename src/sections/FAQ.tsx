@@ -91,7 +91,7 @@ const FAQItem = ({ faq, isOpen, onToggle, index, isVisible }: FAQItemProps) => {
 };
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(4); // Open the pricing FAQ by default
+  const [openIndex, setOpenIndex] = useState<number | null>(null); // All FAQs closed by default
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 

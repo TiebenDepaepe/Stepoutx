@@ -26,6 +26,7 @@ interface FormData {
   noodcontactGsm: string;
   foto: File | null;
   video: File | null;
+  agreement: boolean;
 }
 
 interface SubmitState {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle, FileText } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -47,6 +47,8 @@ interface FormData {
   zelfstandigheid: string;
   medisch: boolean; medischUitleg: string; noodcontactNaam: string; noodcontactGsm: string;
   foto: File | null; video: File | null;
+  // Agreement checkbox
+  agreement: boolean;
 }
 
 const initialFormData: FormData = {
@@ -60,12 +62,14 @@ const initialFormData: FormData = {
   zelfstandigheid: '',
   medisch: false, medischUitleg: '', noodcontactNaam: '', noodcontactGsm: '',
   foto: null, video: null,
+  // Agreement checkbox
+  agreement: false,
 };
 
 const responseOptions = [
-  { icon: CheckCircle, title: 'Geselecteerd', description: 'Je krijgt een voorstel met datum en groep, en kan je plek bevestigen met een voorschot.', bgColor: 'bg-green-100', iconColor: 'text-green-600' },
-  { icon: Clock, title: 'Wachtlijst', description: 'Je past bij het concept, maar de groep zit vol. Je wordt gecontacteerd als er een plek vrijkomt.', bgColor: 'bg-purple-100', iconColor: 'text-purple-600' },
-  { icon: XCircle, title: 'Niet geselecteerd', description: 'De reis past op dit moment niet goed bij jou of bij de groep.', bgColor: 'bg-red-100', iconColor: 'text-red-500' },
+  { icon: CheckCircle, title: 'Geselecteerd', description: <>Je krijgt een voorstel met datum en groep, en kan je plek bevestigen met een <strong>250€ voorschot</strong>.</>, bgColor: 'bg-green-100', iconColor: 'text-green-600' },
+  { icon: Clock, title: 'Wachtlijst', description: <>Je past bij het concept, maar de groep zit vol. Je wordt gecontacteerd als er een plek vrijkomt.</>, bgColor: 'bg-purple-100', iconColor: 'text-purple-600' },
+  { icon: XCircle, title: 'Niet geselecteerd', description: <>De reis past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
 ];
 
 export default function ContactAndSignup() {
@@ -243,7 +247,7 @@ export default function ContactAndSignup() {
   }
 
   return (
-    <section ref={sectionRef} id="contact" className="relative bg-white">
+    <section ref={sectionRef} id="contact" className="relative bg-white pb-16 md:pb-24">
       {/* PART 1: Contact Info Section - no border, no shadow, less padding */}
       <div className="pt-16 md:pt-20 pb-4 relative overflow-hidden">
         <div className="absolute top-10 left-[10%] w-32 h-32 bg-lavender/30 rounded-full blur-3xl" />
@@ -270,6 +274,22 @@ export default function ContactAndSignup() {
                 <p className="text-charcoal/70 leading-relaxed">
                   Op basis daarvan stelt <span className="font-medium text-purple-accent">Daria</span> de groepen samen. Daarna krijg je altijd een mail met één van deze drie antwoorden:
                 </p>
+
+                {/* PDF Download Link */}
+                <div className="pt-4">
+                  <p className="text-xs text-charcoal/50 mb-2">Meer info:</p>
+                  <a
+                    href="/downloads/info-voor-ouders.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity group"
+                  >
+                    <FileText className="w-4 h-4 text-red-500" />
+                    <span className="text-sm text-charcoal group-hover:text-purple-accent transition-colors underline underline-offset-2">
+                      info-voor-ouders.pdf
+                    </span>
+                  </a>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -899,26 +919,58 @@ export default function ContactAndSignup() {
                     </div>
                   )}
 
-                  {/* Submit Button */}
-                  <div className="text-center pt-4">
-                    <button 
-                      type="submit" 
-                      disabled={isSubmitting}
-                      className="inline-flex items-center gap-3 px-10 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 min-w-[280px] justify-center"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Bezig met verzenden...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          Verstuur inschrijving
-                        </>
-                      )}
-                    </button>
-                    
+                  {/* Submit Section - Agreement + Button */}
+                  <div data-field="agreement" className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border transition-all ${getFieldError('agreement') ? 'border-red-300 bg-red-50/30' : 'border-charcoal/5'}`}>
+                    {/* Agreement Checkbox */}
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="agreement"
+                        checked={formData.agreement}
+                        onChange={(e) => {
+                          setFormData((prev) => ({ ...prev, agreement: e.target.checked }));
+                          if (formErrors.agreement) {
+                            setFormErrors((prev) => {
+                              const newErrors = { ...prev };
+                              delete newErrors.agreement;
+                              return newErrors;
+                            });
+                          }
+                        }}
+                        className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                      />
+                      <span className="text-sm text-charcoal/80 leading-relaxed">
+                        Ik bevestig dat ik weet dat de reis €450 kost en dat ik bij selectie een voorschot van €250 betaal om mijn plek vast te leggen. *
+                      </span>
+                    </label>
+                    {getFieldError('agreement') && (
+                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('agreement')}
+                      </p>
+                    )}
+
+                    {/* Submit Button */}
+                    <div className="mt-5">
+                      <button 
+                        type="submit" 
+                        disabled={isSubmitting}
+                        className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Bezig met verzenden...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-5 h-5" />
+                            Verstuur inschrijving
+                          </>
+                        )}
+                      </button>
+                    </div>
+
                     {isSubmitting && (
                       <div className="mt-4 space-y-1">
                         {uploadProgress.foto > 0 && uploadProgress.foto < 100 && (
@@ -929,8 +981,6 @@ export default function ContactAndSignup() {
                         )}
                       </div>
                     )}
-                    
-                    <p className="text-sm text-charcoal/50 mt-4">Door te versturen ga je akkoord met onze voorwaarden</p>
                   </div>
                 </form>
               )}

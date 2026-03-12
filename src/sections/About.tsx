@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Users, Calendar, ArrowRight } from 'lucide-react';
+import { MapPin, Users, Calendar, ArrowRight, FileText } from 'lucide-react';
 
 const highlights = [
   { icon: Users, label: '6 deelnemers' },
@@ -124,6 +124,19 @@ export default function About() {
               <p className="font-medium text-charcoal">
                 Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, hierin vinden maandelijkse activiteiten plaats en kan je weer nieuwe mensen leren kennen.
               </p>
+
+              {/* PDF Download Link */}
+              <a
+                href="/downloads/info-voor-ouders.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity group"
+              >
+                <FileText className="w-4 h-4 text-red-500" />
+                <span className="text-sm text-charcoal group-hover:text-purple-accent transition-colors underline underline-offset-2">
+                  info-voor-ouders.pdf
+                </span>
+              </a>
             </div>
 
             {/* CTA Button */}

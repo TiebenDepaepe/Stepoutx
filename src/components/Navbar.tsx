@@ -22,6 +22,7 @@ const navLinks = [
   { name: 'Info', href: '#over-ons' },
   { name: 'Expedities', href: '#reizen' },
   { name: 'Prijs', href: '#prijs' },
+  { name: 'Voor ouders', href: '/downloads/info-voor-ouders.pdf', external: true },
   { name: 'Inschrijven', href: '#contact' },
 ];
 
@@ -90,20 +91,33 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.href);
-                  }}
-                  className={`text-sm font-medium transition-colors relative group ${
-                    link.name === 'Home' ? 'text-purple-accent' : 'text-charcoal hover:text-purple-accent'
-                  }`}
-                >
-                  {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-accent transition-all duration-300 group-hover:w-full" />
-                </a>
+                link.external ? (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium transition-colors relative group text-charcoal hover:text-purple-accent"
+                  >
+                    {link.name}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-accent transition-all duration-300 group-hover:w-full" />
+                  </a>
+                ) : (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(link.href);
+                    }}
+                    className={`text-sm font-medium transition-colors relative group ${
+                      link.name === 'Home' ? 'text-purple-accent' : 'text-charcoal hover:text-purple-accent'
+                    }`}
+                  >
+                    {link.name}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-accent transition-all duration-300 group-hover:w-full" />
+                  </a>
+                )
               ))}
             </div>
 
@@ -160,21 +174,34 @@ export default function Navbar() {
         >
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className={`text-lg font-medium py-2 px-4 rounded-xl transition-colors ${
-                  link.name === 'Home'
-                    ? 'text-purple-accent bg-purple-accent/10'
-                    : 'text-charcoal hover:bg-charcoal/5'
-                }`}
-              >
-                {link.name}
-              </a>
+              link.external ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-lg font-medium py-2 px-4 rounded-xl transition-colors text-charcoal hover:bg-charcoal/5"
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  className={`text-lg font-medium py-2 px-4 rounded-xl transition-colors ${
+                    link.name === 'Home'
+                      ? 'text-purple-accent bg-purple-accent/10'
+                      : 'text-charcoal hover:bg-charcoal/5'
+                  }`}
+                >
+                  {link.name}
+                </a>
+              )
             ))}
           </div>
           <div className="flex items-center gap-3 mt-6 pt-6 border-t border-charcoal/10">

@@ -97,6 +97,9 @@ export const signupFormSchema = z.object({
     .refine((file) => !file || file.size <= 50 * 1024 * 1024, {
       message: 'Video mag maximaal 50MB zijn',
     }),
+  
+  agreement: z.boolean()
+    .refine((val) => val === true, 'Je moet akkoord gaan met de voorwaarden'),
 });
 
 export type SignupFormData = z.infer<typeof signupFormSchema>;
