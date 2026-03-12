@@ -90,18 +90,12 @@ export const signupFormSchema = z.object({
     .regex(/^\+?[\d\s\-\(\)\.]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
   foto: z.instanceof(File, { message: 'Upload een foto van jezelf' })
-    .refine((file) => file.size <= 10 * 1024 * 1024, {
-      message: 'Afbeelding mag maximaal 10MB zijn',
-    })
-    .refine((file) => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type), {
-      message: 'Alleen afbeeldingen (JPG, PNG, WebP, GIF) zijn toegestaan',
+    .refine((file) => file.size <= 50 * 1024 * 1024, {
+      message: 'Afbeelding mag maximaal 50MB zijn',
     }),
   video: z.instanceof(File).optional().nullable()
     .refine((file) => !file || file.size <= 50 * 1024 * 1024, {
       message: 'Video mag maximaal 50MB zijn',
-    })
-    .refine((file) => !file || ['video/mp4', 'video/webm', 'video/quicktime'].includes(file.type), {
-      message: 'Alleen video\'s (MP4, WebM, MOV) zijn toegestaan',
     }),
 });
 
@@ -112,20 +106,12 @@ export const validateFile = (file: File | null, type: 'image' | 'video'): string
   if (!file) return null;
   
   if (type === 'image') {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      return 'Alleen afbeeldingen (JPG, PNG, WebP, GIF) zijn toegestaan';
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      return 'Afbeelding mag maximaal 10MB zijn';
+    if (file.size > 50 * 1024 * 1024) {
+      return 'Afbeelding mag maximaal 50MB zijn';
     }
   }
   
   if (type === 'video') {
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
-    if (!allowedTypes.includes(file.type)) {
-      return 'Alleen video\'s (MP4, WebM, MOV) zijn toegestaan';
-    }
     if (file.size > 50 * 1024 * 1024) {
       return 'Video mag maximaal 50MB zijn';
     }
