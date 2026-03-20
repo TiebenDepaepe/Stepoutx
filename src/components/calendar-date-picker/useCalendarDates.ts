@@ -34,21 +34,21 @@ export interface CalendarDay {
 
 // Parse the available dates from the form
 const rawTripData = [
-  { date: '22 juni - 27 juni', disabled: false, full: false },
-  { date: '29 juni - 4 juli', disabled: false, full: false },
-  { date: '6 juli - 11 juli', disabled: false, full: false },
-  { date: '13 juli - 18 juli', disabled: false, full: false },
-  { date: '20 juli - 25 juli', disabled: false, full: false },
-  { date: '27 juli - 1 augustus', disabled: false, full: false },
-  { date: '3 - 8 augustus', disabled: false, full: false },
-  { date: '10 - 15 augustus', disabled: false, full: false },
-  { date: '17 - 22 augustus', disabled: false, full: false },
-  { date: '24 - 29 augustus', disabled: false, full: false },
-  { date: '31 augustus - 5 september', disabled: false, full: false },
+  { date: '22 juni - 27 juni', disabled: true, full: false },
+  { date: '29 juni - 4 juli', disabled: true, full: false },
+  { date: '6 juli - 11 juli', disabled: true, full: false },
+  { date: '13 juli - 18 juli', disabled: true, full: false },
+  { date: '20 juli - 25 juli', disabled: true, full: false },
+  { date: '27 juli - 1 augustus', disabled: true, full: false },
+  { date: '3 - 8 augustus', disabled: true, full: false },
+  { date: '10 - 15 augustus', disabled: true, full: false },
+  { date: '17 - 22 augustus', disabled: true, full: false },
+  { date: '24 - 29 augustus', disabled: true, full: false },
+  { date: '31 augustus - 5 september', disabled: true, full: false },
   { date: '7 - 12 september', disabled: false, full: false },
-  { date: '14 - 19 september', disabled: false, full: false },
-  { date: '21 - 26 september', disabled: false, full: false },
-  { date: '28 september - 3 oktober', disabled: false, full: false },
+  { date: '14 - 19 september', disabled: true, full: false },
+  { date: '21 - 26 september', disabled: true, full: false },
+  { date: '28 september - 3 oktober', disabled: true, full: false },
 ];
 
 // Helper to parse Dutch month names
