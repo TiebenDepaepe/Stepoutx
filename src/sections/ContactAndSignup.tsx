@@ -879,7 +879,7 @@ export default function ContactAndSignup() {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Upload een korte video <span className="text-charcoal/50">(15–30 sec, optioneel)</span></label>
+                        <label className="block text-sm font-medium text-charcoal mb-2">Upload een korte video (15–30 sec) *</label>
                         <p className="text-xs text-charcoal/50 mb-3">Vertel kort wie je bent en waarom je mee wil.</p>
                         <div className="relative">
                           <input type="file" accept="video/*" onChange={(e) => handleFileChange('video', e.target.files?.[0] || null)} className="hidden" id="video-upload" />

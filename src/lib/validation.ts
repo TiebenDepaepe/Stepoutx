@@ -93,8 +93,8 @@ export const signupFormSchema = z.object({
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Afbeelding mag maximaal 50MB zijn',
     }),
-  video: z.instanceof(File).optional().nullable()
-    .refine((file) => !file || file.size <= 50 * 1024 * 1024, {
+  video: z.instanceof(File, { message: 'Upload een korte video van jezelf' })
+    .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Video mag maximaal 50MB zijn',
     }),
   
