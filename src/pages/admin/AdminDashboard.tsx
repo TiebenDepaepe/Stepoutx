@@ -42,25 +42,19 @@ export default function AdminDashboard() {
   const [nieuwsbriefEmails, setNieuwsbriefEmails] = useState<NieuwsbriefEmail[]>([]);
   const [isLoadingEmails, setIsLoadingEmails] = useState(false);
 
-  // Fetch inschrijvingen and nieuwsbrief emails on mount
-  useEffect(() => {
-    fetchInschrijvingen();
-    fetchNieuwsbriefEmails();
-  }, []);
-
   const fetchInschrijvingen = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     const { data, error } = await getAllInschrijvingen();
-    
+
     if (error) {
       setError('Er is een fout opgetreden bij het ophalen van de inschrijvingen.');
       console.error('Error fetching inschrijvingen:', error);
     } else {
       setInschrijvingen(data || []);
     }
-    
+
     setIsLoading(false);
   };
 
@@ -74,6 +68,12 @@ export default function AdminDashboard() {
     }
     setIsLoadingEmails(false);
   };
+
+  // Fetch inschrijvingen and nieuwsbrief emails on mount
+  useEffect(() => {
+    fetchInschrijvingen();
+    fetchNieuwsbriefEmails();
+  }, []);
 
   const handleRefresh = () => {
     if (activeView === 'inschrijvingen') {
