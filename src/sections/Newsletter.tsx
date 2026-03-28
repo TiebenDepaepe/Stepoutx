@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, Sparkles, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { Sparkles, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { z } from 'zod';
 import { subscribeToNewsletter } from '@/services/nieuwsbriefService';
 
@@ -52,12 +52,32 @@ export default function Newsletter() {
 
   return (
     <section ref={sectionRef} className="py-20 md:py-28 bg-mint relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-16 left-8 md:left-16">
-        <Mail className="w-8 h-8 text-charcoal/10" />
+      {/* Decorative floating elements */}
+      <div className="absolute top-32 right-[15%] animate-float opacity-60">
+        <div className="w-3 h-3 rounded-full bg-charcoal/20" />
       </div>
-      <div className="absolute bottom-16 right-8 md:right-16">
-        <Send className="w-6 h-6 text-charcoal/10" />
+      <div className="absolute top-48 right-[25%] animate-float animation-delay-200 opacity-40">
+        <div className="w-2 h-2 rounded-full bg-charcoal/20" />
+      </div>
+      <div className="absolute top-24 left-[10%] animate-float animation-delay-300 opacity-50">
+        <div className="w-4 h-4 rounded-full bg-charcoal/15" />
+      </div>
+
+      {/* Decorative hand-drawn squiggles */}
+      <div className="absolute top-40 left-[5%] opacity-20">
+        <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
+          <path d="M5 20C15 10 25 30 35 20C45 10 55 30 55 20" stroke="#1D1D1D" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      </div>
+
+      {/* Wave decoration at top */}
+      <div className="absolute top-0 left-0 right-0 rotate-180">
+        <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+          <path
+            d="M0 80V40C120 60 240 70 360 60C480 50 600 20 720 15C840 10 960 30 1080 40C1200 50 1320 50 1380 50H1440V80H0Z"
+            fill="white"
+          />
+        </svg>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
