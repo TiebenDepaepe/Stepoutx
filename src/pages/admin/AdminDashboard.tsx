@@ -3,19 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Inschrijving } from '@/types/inschrijving';
 import { getAllInschrijvingen, getInschrijvingWithMedia, clearSignedUrlCache } from '@/services/inschrijvingenService';
+import { getAllNieuwsbriefEmails } from '@/services/nieuwsbriefService';
+import type { NieuwsbriefEmail } from '@/services/nieuwsbriefService';
 import { InschrijvingList } from '@/components/admin/InschrijvingList';
 import { InschrijvingDetail } from '@/components/admin/InschrijvingDetail';
 import { EmptyState } from '@/components/admin/EmptyState';
+import { EmailList } from '@/components/admin/EmailList';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { 
-  LogOut, 
+  LogOut,
   Menu,
   X,
   Shield,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Users,
+  Mail
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -33,10 +38,14 @@ export default function AdminDashboard() {
   const [selectedVideoPath, setSelectedVideoPath] = useState<string | null>(null);
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
   const [videoLoadFailed, setVideoLoadFailed] = useState(false);
+  const [activeView, setActiveView] = useState<'inschrijvingen' | 'emails'>('inschrijvingen');
+  const [nieuwsbriefEmails, setNieuwsbriefEmails] = useState<NieuwsbriefEmail[]>([]);
+  const [isLoadingEmails, setIsLoadingEmails] = useState(false);
 
-  // Fetch inschrijvingen on mount
+  // Fetch inschrijvingen and nieuwsbrief emails on mount
   useEffect(() => {
     fetchInschrijvingen();
+    fetchNieuwsbriefEmails();
   }, []);
 
   const fetchInschrijvingen = async () => {
@@ -53,6 +62,26 @@ export default function AdminDashboard() {
     }
     
     setIsLoading(false);
+  };
+
+  const fetchNieuwsbriefEmails = async () => {
+    setIsLoadingEmails(true);
+    const { data, error } = await getAllNieuwsbriefEmails();
+    if (error) {
+      console.error('Error fetching nieuwsbrief emails:', error);
+    } else {
+      setNieuwsbriefEmails(data || []);
+    }
+    setIsLoadingEmails(false);
+  };
+
+  const handleRefresh = () => {
+    if (activeView === 'inschrijvingen') {
+      fetchInschrijvingen();
+    } else {
+      fetchNieuwsbriefEmails();
+      fetchInschrijvingen(); // needed for inschrijving emails in the email list
+    }
   };
 
   const handleSignOut = async () => {
@@ -167,6 +196,32 @@ export default function AdminDashboard() {
                 </div>
                 <span className="font-bold text-charcoal text-lg hidden sm:block">StepOut Admin</span>
               </div>
+
+              {/* View Toggle */}
+              <div className="hidden sm:flex items-center gap-1 ml-4 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setActiveView('inschrijvingen')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    activeView === 'inschrijvingen'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-gray-soft hover:text-charcoal'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  Inschrijvingen
+                </button>
+                <button
+                  onClick={() => setActiveView('emails')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    activeView === 'emails'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-gray-soft hover:text-charcoal'
+                  }`}
+                >
+                  <Mail className="w-4 h-4" />
+                  Email Lijsten
+                </button>
+              </div>
             </div>
 
             {/* Right side */}
@@ -174,11 +229,11 @@ export default function AdminDashboard() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={fetchInschrijvingen}
-                disabled={isLoading}
+                onClick={handleRefresh}
+                disabled={isLoading || isLoadingEmails}
                 className="hidden sm:flex items-center gap-2"
               >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 ${isLoading || isLoadingEmails ? 'animate-spin' : ''}`} />
                 Vernieuwen
               </Button>
               
@@ -211,71 +266,81 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="max-w-[1920px] mx-auto">
-        <div className="flex h-[calc(100vh-64px)]">
-          {/* Sidebar - Inschrijving List */}
-          <aside 
-            className={`
-              fixed inset-y-0 left-0 z-40 w-full lg:w-80 lg:static lg:inset-auto
-              transform transition-transform duration-300 ease-in-out
-              ${isMobileMenuOpen || !selectedInschrijving ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-              bg-white lg:bg-transparent lg:border-r border-gray-100
-              pt-16 lg:pt-0
-            `}
-          >
-            <div className="h-full lg:bg-white/80 lg:backdrop-blur-sm">
-              <InschrijvingList
-                inschrijvingen={inschrijvingen}
-                selectedId={selectedInschrijving?.id || null}
-                onSelect={handleSelect}
-                isLoading={isLoading}
-              />
-            </div>
-          </aside>
+        {activeView === 'inschrijvingen' ? (
+          <div className="flex h-[calc(100vh-64px)]">
+            {/* Sidebar - Inschrijving List */}
+            <aside
+              className={`
+                fixed inset-y-0 left-0 z-40 w-full lg:w-80 lg:static lg:inset-auto
+                transform transition-transform duration-300 ease-in-out
+                ${isMobileMenuOpen || !selectedInschrijving ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                bg-white lg:bg-transparent lg:border-r border-gray-100
+                pt-16 lg:pt-0
+              `}
+            >
+              <div className="h-full lg:bg-white/80 lg:backdrop-blur-sm">
+                <InschrijvingList
+                  inschrijvingen={inschrijvingen}
+                  selectedId={selectedInschrijving?.id || null}
+                  onSelect={handleSelect}
+                  isLoading={isLoading}
+                />
+              </div>
+            </aside>
 
-          {/* Main Content Area */}
-          <section 
-            className={`
-              flex-1 overflow-hidden
-              fixed inset-0 lg:static lg:inset-auto
-              z-30 bg-white lg:bg-transparent
-              transform transition-transform duration-300 ease-in-out
-              ${selectedInschrijving ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
-              lg:block
-            `}
-          >
-            {error ? (
-              <div className="h-full flex items-center justify-center p-8">
-                <Alert variant="destructive" className="max-w-md">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={fetchInschrijvingen}
-                    className="mt-4"
-                  >
-                    Opnieuw proberen
-                  </Button>
-                </Alert>
-              </div>
-            ) : selectedInschrijving ? (
-              <InschrijvingDetail
-                inschrijving={selectedInschrijving}
-                onBack={handleBackToList}
-                onUpdate={handleUpdate}
-                isLoadingMedia={isLoadingMedia}
-                imagePath={selectedImagePath}
-                videoPath={selectedVideoPath}
-                imageLoadFailed={imageLoadFailed}
-                videoLoadFailed={videoLoadFailed}
-              />
-            ) : (
-              <div className="hidden lg:block h-full">
-                <EmptyState />
-              </div>
-            )}
-          </section>
-        </div>
+            {/* Main Content Area */}
+            <section
+              className={`
+                flex-1 overflow-hidden
+                fixed inset-0 lg:static lg:inset-auto
+                z-30 bg-white lg:bg-transparent
+                transform transition-transform duration-300 ease-in-out
+                ${selectedInschrijving ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
+                lg:block
+              `}
+            >
+              {error ? (
+                <div className="h-full flex items-center justify-center p-8">
+                  <Alert variant="destructive" className="max-w-md">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchInschrijvingen}
+                      className="mt-4"
+                    >
+                      Opnieuw proberen
+                    </Button>
+                  </Alert>
+                </div>
+              ) : selectedInschrijving ? (
+                <InschrijvingDetail
+                  inschrijving={selectedInschrijving}
+                  onBack={handleBackToList}
+                  onUpdate={handleUpdate}
+                  isLoadingMedia={isLoadingMedia}
+                  imagePath={selectedImagePath}
+                  videoPath={selectedVideoPath}
+                  imageLoadFailed={imageLoadFailed}
+                  videoLoadFailed={videoLoadFailed}
+                />
+              ) : (
+                <div className="hidden lg:block h-full">
+                  <EmptyState />
+                </div>
+              )}
+            </section>
+          </div>
+        ) : (
+          <div className="h-[calc(100vh-64px)]">
+            <EmailList
+              inschrijvingEmails={inschrijvingen.map(i => ({ email: i.email, created_at: i.created_at }))}
+              nieuwsbriefEmails={nieuwsbriefEmails}
+              isLoading={isLoadingEmails || isLoading}
+            />
+          </div>
+        )}
       </main>
     </div>
   );
