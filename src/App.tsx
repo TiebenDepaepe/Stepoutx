@@ -13,6 +13,7 @@ import Gallery from './sections/Gallery';
 import Pricing from './sections/Pricing';
 import FAQ from './sections/FAQ';
 import ContactAndSignup from './sections/ContactAndSignup';
+import Newsletter from './sections/Newsletter';
 
 // Admin pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -32,6 +33,7 @@ function MainWebsite() {
         <Pricing />
         <FAQ />
         <ContactAndSignup />
+        <Newsletter />
       </main>
       <Footer />
     </div>
