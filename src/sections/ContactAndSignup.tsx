@@ -215,6 +215,7 @@ export default function ContactAndSignup() {
     return touchedFields.has(fieldName) ? formErrors[fieldName] || null : null;
   };
 
+  // @ts-ignore - temporarily unused while signups are closed
   const revealForm = () => {
     setShowForm(true);
     setTimeout(() => {
