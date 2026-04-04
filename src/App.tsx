@@ -13,6 +13,7 @@ import Gallery from './sections/Gallery';
 import Pricing from './sections/Pricing';
 import FAQ from './sections/FAQ';
 import ContactAndSignup from './sections/ContactAndSignup';
+import ComingSoon from './sections/ComingSoon';
 import Newsletter from './sections/Newsletter';
 
 // Admin pages
@@ -31,8 +32,9 @@ function MainWebsite() {
         <Trips />
         <Gallery />
         <Pricing />
-        <FAQ />
         <ContactAndSignup />
+        <ComingSoon />
+        <FAQ />
         <Newsletter />
       </main>
       <Footer />

@@ -8,12 +8,13 @@ const includedItems = [
   'Elke dag een voorbereide dagplanning met briefing',
   'Dagelijkse sociale en persoonlijke challenges',
   'Verplaatsingen te voet of al liftend',
-  '3 betaalde activiteiten tijdens de reis',
-  'Eetbudget voor elke dag',
+  'Mix van avontuurlijke activiteiten (verschilt per reis)',
+  'Avond eetbudget voor elke dag',
   'Begeleiding bij het zoeken van slaapplekken',
   'Noodbudget voor een hostel als het niet lukt',
   'Expeditie t-shirt',
   'Toegang tot de StepOut-community na de reis',
+  'Verrassende extra’s',
 ];
 
 const notIncludedItems = [

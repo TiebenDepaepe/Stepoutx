@@ -3,7 +3,7 @@ import { MapPin, Users, Calendar, ArrowRight, FileText } from 'lucide-react';
 
 const highlights = [
   { icon: Users, label: '6 deelnemers' },
-  { icon: Calendar, label: '6 dagen' },
+  { icon: Calendar, label: '4 of 6 dagen' },
 ];
 
 const locations = [
@@ -113,16 +113,16 @@ export default function About() {
             
             <div className="space-y-4 text-charcoal/70 leading-relaxed mb-8">
               <p>
-                Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes dagen</span> op pad met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes jongeren</span> en een begeleider. Voor vertrek is er een kennismaking met de groep.
+                Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">4 of 6 dagen</span> (afhankelijk van de reis) met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">6 jongeren</span> en een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">begeleider</span>. Vooraf leer je elkaar al kennen tijdens een kennismaking.
               </p>
               <p>
-                Elke ochtend krijg je een briefing met de dagplanning. Die bestaat uit verplaatsingen, sociale en persoonlijke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en 3 <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
+                Elke dag krijg je een duidelijke planning met verplaatsingen (waarbij liften een vast onderdeel is), sociale <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
               </p>
               <p>
-                's Avonds zoekt de groep samen een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Lukt dat niet, dan is er altijd een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">back-up</span> met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">noodbudget</span>.
+                's Avonds gaat de groep samen op zoek naar een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Lukt dat niet, dan is er altijd een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">back-up</span>.
               </p>
               <p className="font-medium text-charcoal">
-                Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, hierin vinden maandelijkse activiteiten plaats en kan je weer nieuwe mensen leren kennen.
+                Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, waar je mensen kan blijven zien en nieuwe activiteiten kan doen.
               </p>
 
               {/* PDF Download Link */}

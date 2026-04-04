@@ -51,7 +51,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28 bg-mint relative overflow-hidden">
+    <section id="nieuwsbrief" ref={sectionRef} className="py-20 md:py-28 bg-mint relative overflow-hidden">
       {/* Decorative floating elements */}
       <div className="absolute top-32 right-[15%] animate-float opacity-60">
         <div className="w-3 h-3 rounded-full bg-charcoal/20" />

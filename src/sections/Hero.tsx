@@ -79,28 +79,14 @@ export default function Hero() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-charcoal leading-[1.05] mb-6">
-              ONTDEK, CONNECT
-              <br />
-              <span className="relative inline-block">
-                EN GROEI
-                <svg
-                  className="absolute -bottom-1 left-0 w-full"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 8C50 2 150 2 198 8"
-                    stroke="#7575C8"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
-              Ga mee op avontuur met mensen die je nog niet kent, en kom sterker terug.
+            <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold text-charcoal leading-none mb-6 block">
+              StepOut!
+            </span>
+            <p className="text-lg md:text-xl text-charcoal/70 mb-2 max-w-lg leading-relaxed">
+              Je wordt gematcht met een groep onbekenden en beleeft samen een avontuur dat je niet snel vergeet.
+            </p>
+            <p className="text-base md:text-lg text-charcoal/50 mb-8">
+              voor jongeren van 20 – 26 jaar
             </p>
             <button onClick={scrollToOverOns} className="btn-primary group">
               Meer info

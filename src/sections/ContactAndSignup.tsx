@@ -993,9 +993,10 @@ export default function ContactAndSignup() {
             It's positioned relative to the clipped container (max-h-[450px]), 
             NOT the full form height, so the percentage works correctly.
           */}
+          {/* Original reveal button - uncomment to re-enable signups
           {!showForm && (
             <div className="absolute top-[25%] left-0 right-0 z-30 flex justify-center">
-              <button 
+              <button
                 onClick={revealForm}
                 className="btn-primary text-lg px-8 py-4 group"
               >
@@ -1003,6 +1004,41 @@ export default function ContactAndSignup() {
                 Schrijf je hier in
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
+            </div>
+          )}
+          */}
+
+          {/* Temporary: all journeys full */}
+          {!showForm && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center px-4">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-charcoal/10 p-8 max-w-md w-full text-center space-y-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-mint/60 mx-auto">
+                  <CheckCircle className="w-7 h-7 text-green-600" />
+                </div>
+                <h3 className="text-xl font-display font-bold text-charcoal">
+                  Zomer 2026 is uitverkocht!
+                </h3>
+                <p className="text-sm text-charcoal/70 leading-relaxed">
+                  Onze expedities voor deze zomervakantie zitten vol. Schrijf je in op onze nieuwsbrief om als eerste op de hoogte te zijn van nieuwe reizen.
+                </p>
+                <a
+                  href="#nieuwsbrief"
+                  className="btn-primary inline-flex group text-base px-6 py-3"
+                >
+                  <Mail className="w-5 h-5" />
+                  Schrijf je in voor de nieuwsbrief
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </a>
+                <a
+                  href="https://www.instagram.com/step_out_x?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-charcoal/70 hover:text-purple-accent transition-colors"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  Volg ons op Instagram
+                </a>
+              </div>
             </div>
           )}
         </div>
