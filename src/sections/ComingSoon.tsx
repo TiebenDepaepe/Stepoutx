@@ -40,7 +40,7 @@ export default function ComingSoon() {
               NIEUW
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-              4-daagse reizen
+              4-daagse expedities
             </h2>
             <p className="text-charcoal/50 text-lg">
               vrijdag t.e.m. maandag

@@ -1,4 +1,11 @@
 import { Youtube, Instagram } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+declare global {
+  interface Window {
+    Cookiebot?: { renew: () => void };
+  }
+}
 
 // TikTok icon component
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -31,6 +38,29 @@ export default function Footer() {
             <p className="text-sm text-charcoal/60">
               © {currentYear} Made by Stepout!
             </p>
+            <nav className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 text-sm text-charcoal/70">
+              <Link
+                to="/privacybeleid"
+                className="hover:text-charcoal hover:underline transition-colors"
+              >
+                Privacybeleid
+              </Link>
+              <span aria-hidden="true" className="text-charcoal/30">·</span>
+              <Link
+                to="/cookiebeleid"
+                className="hover:text-charcoal hover:underline transition-colors"
+              >
+                Cookiebeleid
+              </Link>
+              <span aria-hidden="true" className="text-charcoal/30">·</span>
+              <button
+                type="button"
+                onClick={() => window.Cookiebot?.renew()}
+                className="hover:text-charcoal hover:underline transition-colors"
+              >
+                Cookie-instellingen
+              </button>
+            </nav>
           </div>
 
           {/* Social Icons */}

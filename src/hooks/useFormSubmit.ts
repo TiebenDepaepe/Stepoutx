@@ -27,6 +27,7 @@ interface FormData {
   foto: File | null;
   video: File | null;
   agreement: boolean;
+  privacyAgreement: boolean;
 }
 
 interface SubmitState {

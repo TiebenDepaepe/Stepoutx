@@ -97,7 +97,7 @@ export default function Newsletter() {
             Blijf op de hoogte
           </h2>
           <p className="text-charcoal/70 mb-8 max-w-lg mx-auto">
-            Schrijf je in voor onze nieuwsbrief en ontvang als eerste updates over nieuwe reizen en avonturen.
+            Schrijf je in voor onze nieuwsbrief en ontvang als eerste updates over nieuwe expedities en avonturen.
           </p>
 
           {/* Form or Success */}

@@ -2,18 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import { Check, X, Sparkles, ArrowRight, FileText } from 'lucide-react';
 
 const includedItems = [
-  '6 dagen op reis met een groep van 6 jongeren',
-  'Begeleiding door een begeleider, die de hele reis meegaat',
+  '6 dagen op expeditie met een groep van 6 jongeren',
+  'Begeleiding door een begeleider, die de hele expeditie meegaat',
   'Kennismaking met de groep vóór vertrek',
   'Elke dag een voorbereide dagplanning met briefing',
   'Dagelijkse sociale en persoonlijke challenges',
   'Verplaatsingen te voet of al liftend',
-  'Mix van avontuurlijke activiteiten (verschilt per reis)',
+  'Mix van avontuurlijke activiteiten (verschilt per expeditie)',
   'Avond eetbudget voor elke dag',
   'Begeleiding bij het zoeken van slaapplekken',
   'Noodbudget voor een hostel als het niet lukt',
   'Expeditie t-shirt',
-  'Toegang tot de StepOut-community na de reis',
+  'Toegang tot de StepOut-community na de expeditie',
   'Verrassende extra’s',
 ];
 
@@ -151,7 +151,7 @@ export default function Pricing() {
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Beperkte plekken beschikbaar per reis
+                Beperkte plekken beschikbaar per expeditie
               </p>
             </div>
           </div>

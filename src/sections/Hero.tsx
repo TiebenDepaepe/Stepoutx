@@ -79,8 +79,11 @@ export default function Hero() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold text-charcoal leading-none mb-6 block">
+            <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold text-charcoal leading-none mb-1 block">
               StepOut!
+            </span>
+            <span className="text-sm md:text-base text-charcoal/60 mb-6 block">
+              social experience
             </span>
             <p className="text-lg md:text-xl text-charcoal/70 mb-2 max-w-lg leading-relaxed">
               Je wordt gematcht met een groep onbekenden en beleeft samen een avontuur dat je niet snel vergeet.

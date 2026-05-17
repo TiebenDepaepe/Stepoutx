@@ -19,7 +19,7 @@ const responseOptions = [
   {
     icon: XCircle,
     title: 'Niet geselecteerd',
-    description: 'De reis past op dit moment niet goed bij jou of bij de groep.',
+    description: 'De expeditie past op dit moment niet goed bij jou of bij de groep.',
     bgColor: 'bg-red-100',
     iconColor: 'text-red-500',
   },

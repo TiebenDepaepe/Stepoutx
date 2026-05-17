@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const stats = [
-  { value: 5, suffix: '', label: 'Succesvolle reizen gepland' },
+  { value: 5, suffix: '', label: 'Succesvolle expedities gepland' },
   { value: 30, suffix: '', label: 'Super leuke deelnemers' },
   { value: 100, suffix: '+', label: 'Herinneringen voor altijd' },
   { value: 50, suffix: '+', label: 'Activiteiten uitdagingen' },

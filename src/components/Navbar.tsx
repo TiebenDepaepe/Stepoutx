@@ -20,7 +20,7 @@ const TentLogo = ({ className }: { className?: string }) => (
 const navLinks = [
   { name: 'Home', href: '#home' },
   { name: 'Info', href: '#over-ons' },
-  { name: 'Expedities', href: '#reizen' },
+  { name: 'Expedities', href: '#expedities' },
   { name: 'Prijs', href: '#prijs' },
   { name: 'Voor ouders', href: '/downloads/info-voor-ouders.pdf', external: true },
   { name: 'Inschrijven', href: '#contact' },
@@ -31,7 +31,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const isAdminPage = location.pathname.startsWith('/admin');
+  const isOffHomePage = location.pathname !== '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,10 +42,8 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (href: string) => {
-    // If on admin page, navigate to home first, then scroll
-    if (isAdminPage) {
+    if (isOffHomePage) {
       navigate('/');
-      // Use setTimeout to wait for navigation and render
       setTimeout(() => {
         const element = document.querySelector(href);
         if (element) {
@@ -76,7 +74,7 @@ export default function Navbar() {
             <Link
               to="/"
               onClick={(e) => {
-                if (!isAdminPage) {
+                if (!isOffHomePage) {
                   e.preventDefault();
                   scrollToSection('#home');
                 }

@@ -20,6 +20,10 @@ import Newsletter from './sections/Newsletter';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
+// Legal pages
+import CookiePolicy from './pages/CookiePolicy';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+
 // Main website component
 function MainWebsite() {
   return (
@@ -49,7 +53,11 @@ function App() {
         <Routes>
           {/* Main website routes */}
           <Route path="/" element={<MainWebsite />} />
-          
+
+          {/* Legal pages */}
+          <Route path="/cookiebeleid" element={<CookiePolicy />} />
+          <Route path="/privacybeleid" element={<PrivacyPolicy />} />
+
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route 

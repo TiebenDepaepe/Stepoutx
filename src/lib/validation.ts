@@ -71,7 +71,7 @@ export const signupFormSchema = z.object({
     .min(1, 'Selecteer hoeveel sociale interactie je fijn vindt'),
 
   zelfstandigheid: z.string()
-    .min(1, 'Selecteer hoe zelfstandig je je voelt tijdens reizen'),
+    .min(1, 'Selecteer hoe zelfstandig je je voelt op expeditie'),
   
   medisch: z.boolean(),
   
@@ -100,6 +100,9 @@ export const signupFormSchema = z.object({
   
   agreement: z.boolean()
     .refine((val) => val === true, 'Je moet akkoord gaan met de voorwaarden'),
+
+  privacyAgreement: z.boolean()
+    .refine((val) => val === true, 'Je moet akkoord gaan met het privacybeleid'),
 });
 
 export type SignupFormData = z.infer<typeof signupFormSchema>;

@@ -116,7 +116,7 @@ export default function Trips() {
 
   return (
     <section
-      id="reizen"
+      id="expedities"
       ref={sectionRef}
       className="py-16 md:py-20 bg-white relative overflow-hidden"
     >
@@ -127,7 +127,7 @@ export default function Trips() {
             Bekijk onze <span className="text-purple-accent">avonturen</span> op YouTube
           </h2>
           <p className="text-charcoal/60 text-sm">
-            Een kijkje in onze reizen en de herinneringen die we maakten
+            Een kijkje in onze expedities en de herinneringen die we maakten
           </p>
         </div>
 

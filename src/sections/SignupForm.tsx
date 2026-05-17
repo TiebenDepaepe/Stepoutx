@@ -199,7 +199,7 @@ export default function SignupForm() {
             INSCHRIJVEN
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-            Schrijf je in voor een <span className="text-purple-accent">StepOut</span>-reis
+            Schrijf je in voor een <span className="text-purple-accent">StepOut</span>-expeditie
           </h2>
           <p className="text-lg text-charcoal/60 max-w-2xl mx-auto">
             Vul het formulier in en we nemen zo snel mogelijk contact met je op
@@ -356,7 +356,7 @@ export default function SignupForm() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-3">
-                  Wat hoop je uit deze reis te halen? <span className="text-charcoal/50">(kies max. 2)</span>
+                  Wat hoop je uit deze expeditie te halen? <span className="text-charcoal/50">(kies max. 2)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {motivationOptions.map((option) => (
@@ -442,7 +442,7 @@ export default function SignupForm() {
               {/* Excitement - Radio */}
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-3">
-                  Wat vind je het spannendst aan deze reis? *
+                  Wat vind je het spannendst aan deze expeditie? *
                 </label>
                 <div className="space-y-2">
                   {excitementOptions.map((option) => (

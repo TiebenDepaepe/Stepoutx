@@ -49,6 +49,7 @@ interface FormData {
   foto: File | null; video: File | null;
   // Agreement checkbox
   agreement: boolean;
+  privacyAgreement: boolean;
 }
 
 const initialFormData: FormData = {
@@ -64,12 +65,13 @@ const initialFormData: FormData = {
   foto: null, video: null,
   // Agreement checkbox
   agreement: false,
+  privacyAgreement: false,
 };
 
 const responseOptions = [
   { icon: CheckCircle, title: 'Geselecteerd', description: <>Je krijgt een voorstel met datum en groep, en kan je plek bevestigen met een <strong>250€ voorschot</strong>.</>, bgColor: 'bg-green-100', iconColor: 'text-green-600' },
   { icon: Clock, title: 'Wachtlijst', description: <>Je past bij het concept, maar de groep zit vol. Je wordt gecontacteerd als er een plek vrijkomt.</>, bgColor: 'bg-purple-100', iconColor: 'text-purple-600' },
-  { icon: XCircle, title: 'Niet geselecteerd', description: <>De reis past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
+  { icon: XCircle, title: 'Niet geselecteerd', description: <>De expeditie past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
 ];
 
 export default function ContactAndSignup() {
@@ -569,7 +571,7 @@ export default function ContactAndSignup() {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat hoop je uit deze reis te halen? <span className="text-charcoal/50">(kies max. 2)</span></label>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Wat hoop je uit deze expeditie te halen? <span className="text-charcoal/50">(kies max. 2)</span></label>
                         <div data-field="doelen" className="flex flex-wrap gap-2">
                           {motivationOptions.map((option) => (
                             <button key={option} type="button" onClick={() => handleCheckboxChange('doelen', option, 2)} className={`px-4 py-2 rounded-full text-sm transition-all ${formData.doelen.includes(option) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
@@ -630,7 +632,7 @@ export default function ContactAndSignup() {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat vind je het spannendst aan deze reis? *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Wat vind je het spannendst aan deze expeditie? *</label>
                         <div data-field="spannendst" className={`space-y-2 rounded-xl p-1 ${getFieldError('spannendst') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                           {excitementOptions.map((option) => (
                             <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.spannendst === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
@@ -752,7 +754,7 @@ export default function ContactAndSignup() {
 
                       {/* New Question 4: Hoe zelfstandig voel jij je? */}
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe zelfstandig voel jij je tijdens reizen? *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe zelfstandig voel jij je op expeditie? *</label>
                         <div data-field="zelfstandigheid" className={`space-y-2 rounded-xl p-1 ${getFieldError('zelfstandigheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                           {zelfstandigheidOptions.map((option) => (
                             <label key={option.value} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.zelfstandigheid === option.value ? 'ring-2 ring-purple-accent' : ''}`}>
@@ -921,7 +923,7 @@ export default function ContactAndSignup() {
                   )}
 
                   {/* Submit Section - Agreement + Button */}
-                  <div data-field="agreement" className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border transition-all ${getFieldError('agreement') ? 'border-red-300 bg-red-50/30' : 'border-charcoal/5'}`}>
+                  <div data-field="agreement" className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border transition-all ${getFieldError('agreement') || getFieldError('privacyAgreement') ? 'border-red-300 bg-red-50/30' : 'border-charcoal/5'}`}>
                     {/* Agreement Checkbox */}
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
@@ -941,13 +943,51 @@ export default function ContactAndSignup() {
                         className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
                       />
                       <span className="text-sm text-charcoal/80 leading-relaxed">
-                        Ik bevestig dat ik weet dat de reis €450 kost en dat ik bij selectie een voorschot van €250 betaal om mijn plek vast te leggen. *
+                        Ik bevestig dat ik weet dat de expeditie €450 kost en dat ik bij selectie een voorschot van €250 betaal om mijn plek vast te leggen. *
                       </span>
                     </label>
                     {getFieldError('agreement') && (
                       <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         {getFieldError('agreement')}
+                      </p>
+                    )}
+
+                    {/* Privacy Agreement Checkbox */}
+                    <label data-field="privacyAgreement" className="flex items-start gap-3 cursor-pointer mt-4">
+                      <input
+                        type="checkbox"
+                        name="privacyAgreement"
+                        checked={formData.privacyAgreement}
+                        onChange={(e) => {
+                          setFormData((prev) => ({ ...prev, privacyAgreement: e.target.checked }));
+                          if (formErrors.privacyAgreement) {
+                            setFormErrors((prev) => {
+                              const newErrors = { ...prev };
+                              delete newErrors.privacyAgreement;
+                              return newErrors;
+                            });
+                          }
+                        }}
+                        className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                      />
+                      <span className="text-sm text-charcoal/80 leading-relaxed">
+                        Ik heb het{' '}
+                        <a
+                          href="#/privacybeleid"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-accent hover:underline font-medium"
+                        >
+                          privacybeleid
+                        </a>{' '}
+                        gelezen en ga akkoord met de verwerking van mijn persoonsgegevens. *
+                      </span>
+                    </label>
+                    {getFieldError('privacyAgreement') && (
+                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {getFieldError('privacyAgreement')}
                       </p>
                     )}
 
@@ -1020,7 +1060,7 @@ export default function ContactAndSignup() {
                   Zomer 2026 is uitverkocht!
                 </h3>
                 <p className="text-sm text-charcoal/70 leading-relaxed">
-                  Onze expedities voor deze zomervakantie zitten vol. Schrijf je in op onze nieuwsbrief om als eerste op de hoogte te zijn van nieuwe reizen.
+                  Onze expedities voor deze zomervakantie zitten vol. Schrijf je in op onze nieuwsbrief om als eerste op de hoogte te zijn van nieuwe expedities.
                 </p>
                 <a
                   href="#nieuwsbrief"

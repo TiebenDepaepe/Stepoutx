@@ -108,21 +108,21 @@ export default function About() {
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-6 leading-tight">
               Wat houdt een StepOut-
-              <span className="text-purple-accent">reis</span> in?
+              <span className="text-purple-accent">expeditie</span> in?
             </h2>
-            
+
             <div className="space-y-4 text-charcoal/70 leading-relaxed mb-8">
               <p>
-                Je vertrekt <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">4 of 6 dagen</span> (afhankelijk van de reis) met een kleine groep van <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">6 jongeren</span> en een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">begeleider</span>. Vooraf leer je elkaar al kennen tijdens een kennismaking.
+                Je neemt gedurende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">4 of 6 dagen</span> (afhankelijk van het traject) deel aan een unieke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">StepOut-ervaring</span> met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">5 andere jongeren</span> en een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">begeleider</span>. Op basis van persoonlijkheid, interesses en verschillende factoren word je vooraf gematcht in een groep die zo goed mogelijk bij je past. Daarna leer je elkaar kennen tijdens een kennismakingsmoment.
               </p>
               <p>
-                Elke dag krijg je een duidelijke planning met verplaatsingen (waarbij liften een vast onderdeel is), sociale <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel.
+                Samen beleef je sociale <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten, teambuildings en verrassende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel. Wat er precies onderweg gebeurt, ontdek je stap voor stap tijdens het avontuur. Verplaatsen doe je al wandelend en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liftend</span>, wat een vast onderdeel vormt van de unieke StepOut-beleving en zorgt voor onverwachte ontmoetingen en verhalen.
               </p>
               <p>
-                's Avonds gaat de groep samen op zoek naar een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Lukt dat niet, dan is er altijd een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">back-up</span>.
+                's Avonds gaat de groep samen op zoek naar een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Indien nodig is <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">ondersteuning</span> voorzien.
               </p>
               <p className="font-medium text-charcoal">
-                Na de reis word je deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, waar je mensen kan blijven zien en nieuwe activiteiten kan doen.
+                Na afloop stopt het avontuur niet: je wordt deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, waar reünies worden afgesproken, je elkaar kan blijven terugzien en je nieuwe kansen krijgt om nog meer mensen te leren kennen.
               </p>
 
               {/* PDF Download Link */}

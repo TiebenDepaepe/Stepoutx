@@ -39,7 +39,7 @@ const carouselOnlyImages = [
   { src: '/images/bccd2d33-5723-4dd5-8d51-dbfa949b2dcf.jpeg', alt: 'Moment' },
   { src: '/images/DSC04417.jpeg', alt: 'Foto' },
   { src: '/images/ef766023-579f-4d69-97e1-74847ab2f92a.jpeg', alt: 'Herinnering' },
-  { src: '/images/IMG_0633.jpeg', alt: 'Reis' },
+  { src: '/images/IMG_0633.jpeg', alt: 'Expeditie' },
   { src: '/images/IMG_2904.jpeg', alt: 'Avontuur' },
   { src: '/images/IMG_2907.jpeg', alt: 'Vriendschap' },
   { src: '/images/IMG_2913.jpeg', alt: 'Groep' },
@@ -48,7 +48,7 @@ const carouselOnlyImages = [
   { src: '/images/IMG_4519.jpeg', alt: 'Activiteit' },
   { src: '/images/IMG_7553.jpeg', alt: 'Foto' },
   { src: '/images/IMG_7554.jpeg', alt: 'Herinnering' },
-  { src: '/images/IMG_7555.jpeg', alt: 'Reis' },
+  { src: '/images/IMG_7555.jpeg', alt: 'Expeditie' },
   { src: '/images/IMG_8479.jpeg', alt: 'Avontuur' },
   { src: '/images/IMG_8607.jpeg', alt: 'Vriendschap' },
   { src: '/images/IMG_8674.jpeg', alt: 'Groep' },
@@ -57,7 +57,7 @@ const carouselOnlyImages = [
   { src: '/images/IMG_9795.jpeg', alt: 'Activiteit' },
   { src: '/images/PHOTO-2025-07-21-10-27-44.jpeg', alt: 'Foto' },
   { src: '/images/PHOTO-2025-07-21-10-27-50.jpeg', alt: 'Herinnering' },
-  { src: '/images/PHOTO-2025-07-21-10-29-40.jpeg', alt: 'Reis' },
+  { src: '/images/PHOTO-2025-07-21-10-29-40.jpeg', alt: 'Expeditie' },
 ];
 
 // Combine all images for carousel
@@ -222,7 +222,7 @@ export default function Gallery() {
             Momenten van <span className="text-purple-accent">avontuur</span>
           </h2>
           <p className="text-lg text-charcoal/60 max-w-2xl mx-auto">
-            Een kijkje in de herinneringen die onze deelnemers maakten tijdens hun StepOut-reis
+            Een kijkje in de herinneringen die onze deelnemers maakten tijdens hun StepOut-expeditie
           </p>
         </div>
 

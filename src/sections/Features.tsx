@@ -19,7 +19,7 @@ const features = [
     title: 'Sterke groepsdynamiek',
     description: (
       <>
-        Je reist met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">vijf andere jongeren</span> die bewust voor dit avontuur kiezen. Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften, eten en uitdagingen</span> oplossen zorgt voor snelle, echte connecties.
+        Je trekt met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">vijf andere jongeren</span> die bewust voor dit avontuur kiezen. Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften, eten en uitdagingen</span> oplossen zorgt voor snelle, echte connecties.
       </>
     ),
     bgColor: 'bg-lavender',
@@ -43,7 +43,7 @@ const features = [
     title: 'Begeleid door StepOut',
     description: (
       <>
-        Een <span className="font-semibold text-charcoal bg-blue-200/70 rounded px-1">StepOut-leader</span> reist met jullie mee. Die zorgt voor <span className="font-semibold text-charcoal bg-blue-200/70 rounded px-1">veiligheid, structuur</span> en de juiste sfeer in de groep.
+        Een <span className="font-semibold text-charcoal bg-blue-200/70 rounded px-1">StepOut-leader</span> gaat met jullie mee op expeditie. Die zorgt voor <span className="font-semibold text-charcoal bg-blue-200/70 rounded px-1">veiligheid, structuur</span> en de juiste sfeer in de groep.
       </>
     ),
     bgColor: 'bg-sky-soft',
@@ -93,7 +93,7 @@ export default function Features() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-            Hoe ziet een <span className="text-purple-accent">StepOut</span>-reis eruit?
+            Hoe ziet een <span className="text-purple-accent">StepOut</span>-expeditie eruit?
           </h2>
           <p className="text-lg text-charcoal/60 max-w-2xl mx-auto">
             Een unieke ervaring die je uitdaagt, verbindt en laat groeien

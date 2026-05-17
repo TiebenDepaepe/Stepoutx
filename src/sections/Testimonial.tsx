@@ -3,7 +3,7 @@ import { Star, ArrowRight, ArrowLeft, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "Dit was de meest leerrijke en avontuurlijke reis die ik ooit heb gedaan. Je leert je comfortzone achter je te laten en amuseert je tegelijk te pletter.",
+    quote: "Dit was de meest leerrijke en avontuurlijke expeditie die ik ooit heb gedaan. Je leert je comfortzone achter je te laten en amuseert je tegelijk te pletter.",
     author: 'Lawrence Penne',
     location: 'Sint-Niklaas',
     age: '21 jaar',

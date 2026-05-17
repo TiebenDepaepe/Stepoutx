@@ -18,19 +18,19 @@ const faqs = [
       'We streven naar diverse groepen met een mix van persoonlijkheden, achtergronden en ervaringen. Voor vertrek is er een kennismaking zodat je alvast wat mensen leert kennen.',
   },
   {
-    question: 'Wat gebeurt er na de reis?',
+    question: 'Wat gebeurt er na de expeditie?',
     answer:
-      'Na de reis word je lid van de StepOut-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe reizen.',
+      'Na de expeditie word je lid van de StepOut-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe expedities.',
   },
   {
-    question: 'Waarom kost de reis €450?',
+    question: 'Waarom kost de expeditie €450?',
     answer:
-      'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je reist zes dagen in een kleine groep van zes jongeren, met persoonlijke begeleiding door een begeleider. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
+      'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je trekt zes dagen met een kleine groep van zes jongeren op expeditie, met persoonlijke begeleiding door een begeleider. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
   },
   {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',
     answer:
-      'Onze reizen zijn voor jongeren van 18 tot 25 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',
+      'Onze expedities zijn voor jongeren van 18 tot 25 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',
   },
   {
     question: 'Moet ik extravert zijn om mee te doen?',
