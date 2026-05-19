@@ -11,7 +11,6 @@ const includedItems = [
   'Mix van avontuurlijke activiteiten (verschilt per expeditie)',
   'Avond eetbudget voor elke dag',
   'Begeleiding bij het zoeken van slaapplekken',
-  'Noodbudget voor een hostel als het niet lukt',
   'Expeditie t-shirt',
   'Toegang tot de StepOut-community na de expeditie',
   'Verrassende extra’s',
@@ -66,7 +65,7 @@ export default function Pricing() {
               PRIJS
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-              6 dagen micro-expeditie
+              6 dagen expeditie
             </h2>
             <div className="flex items-center justify-center gap-3">
               <span className="text-5xl md:text-6xl font-display font-bold text-purple-accent">€450</span>
