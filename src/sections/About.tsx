@@ -107,22 +107,22 @@ export default function About() {
             }`}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-6 leading-tight">
-              Wat houdt een StepOut-
+              Wat houdt een PlotTwist-
               <span className="text-purple-accent">expeditie</span> in?
             </h2>
 
             <div className="space-y-4 text-charcoal/70 leading-relaxed mb-8">
               <p>
-                Je neemt gedurende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">4 of 6 dagen</span> (afhankelijk van het traject) deel aan een unieke <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">StepOut-ervaring</span> met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">5 andere jongeren</span> en een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">begeleider</span>. Op basis van persoonlijkheid, interesses en verschillende factoren word je vooraf gematcht in een groep die zo goed mogelijk bij je past. Daarna leer je elkaar kennen tijdens een kennismakingsmoment.
+                PlotTwist is een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">avontuurlijke</span> groepsreis van 4 of 6 dagen voor jongeren van 18 tot 26 jaar. Je reist in een groep van 7 personen: jij, 5 andere jongeren en 1 begeleider. Vooraf word je <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">gematcht</span> op basis van persoonlijkheid, interesses en andere factoren, zodat je in een groep terechtkomt die zo goed mogelijk bij je past.
               </p>
               <p>
-                Samen beleef je sociale <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, teamopdrachten, teambuildings en verrassende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals klimmen, kajakken, bijlwerpen of een stadsspel. Wat er precies onderweg gebeurt, ontdek je stap voor stap tijdens het avontuur. Verplaatsen doe je al wandelend en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liftend</span>, wat een vast onderdeel vormt van de unieke StepOut-beleving en zorgt voor onverwachte ontmoetingen en verhalen.
+                Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">wandelen</span> en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften</span> jullie van plek naar plek. Onderweg doen jullie <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, groepsopdrachten en verrassende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> zoals kajakken, klimmen, escaperooms, bijlwerpen, stadsspellen en meer. Welke activiteiten op jouw reis komen, ontdek je pas onderweg via de dagplanning. Zo stap je elke dag een beetje het onbekende in.
               </p>
               <p>
-                's Avonds gaat de groep samen op zoek naar een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek</span>. Indien nodig is <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">ondersteuning</span> voorzien.
+                ’s Avonds zoeken jullie samen een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">slaapplek bij locals</span>. Dat is een vast onderdeel van PlotTwist en zorgt voor spontane ontmoetingen, bijzondere verhalen en momenten die je niet snel vergeet.
               </p>
               <p className="font-medium text-charcoal">
-                Na afloop stopt het avontuur niet: je wordt deel van de <span className="font-semibold text-purple-accent">StepOut-community</span>, waar reünies worden afgesproken, je elkaar kan blijven terugzien en je nieuwe kansen krijgt om nog meer mensen te leren kennen.
+                Na de reis blijf je deel van de <span className="font-semibold text-purple-accent">PlotTwist-community</span>, waar je elkaar opnieuw kan zien, reünies kan afspreken en nieuwe avonturen kan beleven. Want bij PlotTwist stopt het avontuur niet wanneer de reis eindigt.
               </p>
             </div>
 
