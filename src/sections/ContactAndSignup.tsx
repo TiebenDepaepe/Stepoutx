@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle, FileText } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -278,21 +278,7 @@ export default function ContactAndSignup() {
                   Op basis daarvan stelt <span className="font-medium text-purple-accent">Daria</span> de groepen samen. Daarna krijg je altijd een mail met één van deze drie antwoorden:
                 </p>
 
-                {/* PDF Download Link */}
-                <div className="pt-4">
-                  <p className="text-xs text-charcoal/50 mb-2">Meer info:</p>
-                  <a
-                    href="/downloads/info-voor-ouders.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity group"
-                  >
-                    <FileText className="w-4 h-4 text-red-500" />
-                    <span className="text-sm text-charcoal group-hover:text-purple-accent transition-colors underline underline-offset-2">
-                      info-voor-ouders.pdf
-                    </span>
-                  </a>
-                </div>
+                
               </div>
 
               <div className="space-y-3">

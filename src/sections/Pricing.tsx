@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, X, Sparkles, ArrowRight, FileText } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
 
 const includedItems = [
   '6 dagen op expeditie met een groep van 6 jongeren',
@@ -124,21 +124,7 @@ export default function Pricing() {
               </ul>
             </div>
 
-            {/* PDF Download Link */}
-            <div className="pt-6 pb-2 border-t border-charcoal/10 mt-6">
-              <p className="text-xs text-charcoal/50 mb-2">Meer info:</p>
-              <a
-                href="/downloads/info-voor-ouders.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity group"
-              >
-                <FileText className="w-4 h-4 text-red-500" />
-                <span className="text-sm text-charcoal group-hover:text-purple-accent transition-colors underline underline-offset-2">
-                  info-voor-ouders.pdf
-                </span>
-              </a>
-            </div>
+
 
             {/* CTA */}
             <div className="pt-4">
