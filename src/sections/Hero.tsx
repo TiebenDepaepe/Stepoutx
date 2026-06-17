@@ -76,7 +76,7 @@ export default function Hero() {
             <img 
               src="/images/logo.png" 
               alt="Plot Twist Logo" 
-              className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto object-contain mb-6" 
+              className="h-44 sm:h-60 md:h-80 lg:h-96 w-auto object-contain mb-8" 
             />
             <p className="text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
               Een avontuurlijke reis voor jongeren van 18 tot 26 jaar, waar je met onbekenden vertrekt en terugkomt met verhalen, nieuwe connecties en een paar stevige plotwists.

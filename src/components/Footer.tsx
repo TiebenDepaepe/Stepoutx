@@ -29,7 +29,7 @@ export default function Footer() {
               <img 
                 src="/images/logo.png" 
                 alt="Plot Twist Logo" 
-                className="h-11 md:h-14 w-auto object-contain transition-transform group-hover:scale-105" 
+                className="h-13 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
               />
             </a>
             <p className="text-sm text-charcoal/60">
