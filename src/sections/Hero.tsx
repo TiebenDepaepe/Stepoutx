@@ -78,14 +78,8 @@ export default function Hero() {
               alt="Plot Twist Logo" 
               className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto object-contain mb-6" 
             />
-            <span className="text-sm md:text-base text-charcoal/60 mb-6 block">
-              social experience
-            </span>
-            <p className="text-lg md:text-xl text-charcoal/70 mb-2 max-w-lg leading-relaxed">
-              Je wordt gematcht met een groep onbekenden en beleeft samen een avontuur dat je niet snel vergeet.
-            </p>
-            <p className="text-base md:text-lg text-charcoal/50 mb-8">
-              voor jongeren van 20 – 26 jaar
+            <p className="text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
+              Een avontuurlijke reis voor jongeren van 18 tot 26 jaar, waar je met onbekenden vertrekt en terugkomt met verhalen, nieuwe connecties en een paar stevige plotwists.
             </p>
             <button onClick={scrollToOverOns} className="btn-primary group">
               Meer info
