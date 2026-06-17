@@ -38,47 +38,47 @@ export default function Hero() {
       className="min-h-screen bg-mint pt-20 md:pt-24 relative overflow-hidden"
     >
       {/* Decorative floating elements */}
-      <div className="absolute top-[15%] left-[8%] animate-float text-charcoal opacity-10">
+      <div className="absolute top-[15%] left-[8%] animate-float text-gray-400 opacity-30">
         <Compass className="w-6 h-6 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[25%] left-[24%] animate-float animation-delay-200 text-charcoal opacity-10">
+      <div className="absolute top-[25%] left-[24%] animate-float animation-delay-200 text-gray-400 opacity-30">
         <Tent className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[45%] left-[15%] animate-float animation-delay-400 text-charcoal opacity-10">
+      <div className="absolute top-[45%] left-[15%] animate-float animation-delay-400 text-gray-400 opacity-30">
         <Backpack className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[60%] left-[8%] animate-float animation-delay-100 text-charcoal opacity-10">
+      <div className="absolute top-[60%] left-[8%] animate-float animation-delay-100 text-gray-400 opacity-30">
         <MapPin className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[82%] left-[22%] animate-float animation-delay-300 text-charcoal opacity-10">
+      <div className="absolute top-[82%] left-[22%] animate-float animation-delay-300 text-gray-400 opacity-30">
         <Compass className="w-6 h-6 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[12%] right-[28%] animate-float animation-delay-500 text-charcoal opacity-10">
+      <div className="absolute top-[12%] right-[28%] animate-float animation-delay-500 text-gray-400 opacity-30">
         <MapPin className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[22%] right-[12%] animate-float animation-delay-150 text-charcoal opacity-10">
+      <div className="absolute top-[22%] right-[12%] animate-float animation-delay-150 text-gray-400 opacity-30">
         <Tent className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[40%] right-[32%] animate-float animation-delay-350 text-charcoal opacity-10">
+      <div className="absolute top-[40%] right-[32%] animate-float animation-delay-350 text-gray-400 opacity-30">
         <Backpack className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[58%] right-[18%] animate-float animation-delay-250 text-charcoal opacity-10">
+      <div className="absolute top-[58%] right-[18%] animate-float animation-delay-250 text-gray-400 opacity-30">
         <MapPin className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[75%] right-[8%] animate-float animation-delay-450 text-charcoal opacity-10">
+      <div className="absolute top-[75%] right-[8%] animate-float animation-delay-450 text-gray-400 opacity-30">
         <Compass className="w-6 h-6 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[88%] right-[35%] animate-float animation-delay-300 text-charcoal opacity-10">
+      <div className="absolute top-[88%] right-[35%] animate-float animation-delay-300 text-gray-400 opacity-30">
         <Tent className="w-6 h-6 stroke-[1.5]" />
       </div>
-      <div className="absolute top-[35%] left-[45%] animate-float animation-delay-200 text-charcoal opacity-10">
+      <div className="absolute top-[35%] left-[45%] animate-float animation-delay-200 text-gray-400 opacity-30">
         <Backpack className="w-5 h-5 stroke-[1.5]" />
       </div>
       
       {/* Decorative hand-drawn squiggles */}
-      <div className="absolute top-40 left-[5%] opacity-20">
+      <div className="absolute top-40 left-[5%] text-gray-400 opacity-30">
         <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
-          <path d="M5 20C15 10 25 30 35 20C45 10 55 30 55 20" stroke="#1D1D1D" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M5 20C15 10 25 30 35 20C45 10 55 30 55 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </div>
       
