@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Compass, MapPin, Tent, Backpack } from 'lucide-react';
 
 
 
@@ -38,14 +38,17 @@ export default function Hero() {
       className="min-h-screen bg-mint pt-20 md:pt-24 relative overflow-hidden"
     >
       {/* Decorative floating elements */}
-      <div className="absolute top-32 right-[15%] animate-float opacity-60">
-        <div className="w-3 h-3 rounded-full bg-charcoal/20" />
+      <div className="absolute top-28 left-[10%] animate-float text-charcoal/15">
+        <Compass className="w-6 h-6 stroke-[1.5]" />
       </div>
-      <div className="absolute top-48 right-[25%] animate-float animation-delay-200 opacity-40">
-        <div className="w-2 h-2 rounded-full bg-charcoal/20" />
+      <div className="absolute top-[65%] left-[5%] animate-float animation-delay-300 text-charcoal/15">
+        <MapPin className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <div className="absolute top-24 left-[10%] animate-float animation-delay-300 opacity-50">
-        <div className="w-4 h-4 rounded-full bg-charcoal/15" />
+      <div className="absolute top-20 right-[15%] animate-float animation-delay-100 text-charcoal/15">
+        <Tent className="w-6 h-6 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-44 right-[25%] animate-float animation-delay-400 text-charcoal/15">
+        <Backpack className="w-5 h-5 stroke-[1.5]" />
       </div>
       
       {/* Decorative hand-drawn squiggles */}
