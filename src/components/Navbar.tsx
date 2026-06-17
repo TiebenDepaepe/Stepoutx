@@ -78,7 +78,7 @@ export default function Navbar() {
               <img 
                 src="/images/logo.png" 
                 alt="Plot Twist Logo" 
-                className="h-13 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+                className="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105" 
               />
             </Link>
 

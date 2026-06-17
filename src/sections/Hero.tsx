@@ -50,6 +50,28 @@ export default function Hero() {
       <div className="absolute top-44 right-[25%] animate-float animation-delay-400 text-charcoal/15">
         <Backpack className="w-5 h-5 stroke-[1.5]" />
       </div>
+      {/* Additional scattered icons */}
+      <div className="absolute top-[80%] left-[18%] animate-float animation-delay-200 text-charcoal/10">
+        <Backpack className="w-5 h-5 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[35%] left-[32%] animate-float animation-delay-500 text-charcoal/10">
+        <MapPin className="w-5 h-5 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[15%] left-[45%] animate-float animation-delay-150 text-charcoal/12">
+        <Tent className="w-5 h-5 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[85%] right-[20%] animate-float animation-delay-350 text-charcoal/10">
+        <Compass className="w-6 h-6 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[50%] right-[8%] animate-float animation-delay-450 text-charcoal/12">
+        <Backpack className="w-5 h-5 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[28%] right-[38%] animate-float animation-delay-250 text-charcoal/10">
+        <MapPin className="w-5 h-5 stroke-[1.5]" />
+      </div>
+      <div className="absolute top-[72%] right-[45%] animate-float animation-delay-300 text-charcoal/12">
+        <Tent className="w-6 h-6 stroke-[1.5]" />
+      </div>
       
       {/* Decorative hand-drawn squiggles */}
       <div className="absolute top-40 left-[5%] opacity-20">
