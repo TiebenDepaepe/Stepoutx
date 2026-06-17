@@ -74,7 +74,7 @@ export default function Hero() {
             }`}
           >
             <img 
-              src="/images/logo.png" 
+              src="/images/logo-green.png" 
               alt="Plot Twist Logo" 
               className="h-44 sm:h-60 md:h-80 lg:h-96 w-auto object-contain mb-2" 
             />
