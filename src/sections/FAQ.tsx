@@ -42,6 +42,23 @@ const faqs = [
     answer:
       'Je hoeft geen atleet te zijn! De activiteiten zijn toegankelijk voor verschillende niveaus. Het draait meer om de bereidheid om nieuwe dingen te proberen dan om fysieke prestaties.',
   },
+  {
+    question: 'Hoe ziet een dagplanning er uit?',
+    answer: (
+      <div>
+        <p className="mb-4">
+          Geen enkele dag is hetzelfde — de exacte planning ontdek je pas stap voor stap tijdens het avontuur. Maar om je een idee te geven van het ritme, zie je hieronder een voorbeeld van hoe een dagplanning eruit kan zien:
+        </p>
+        <div className="mt-3 max-w-md rounded-2xl overflow-hidden shadow-md border border-charcoal/10">
+          <img 
+            src="/images/dagplanning.jpg" 
+            alt="Voorbeeld dagplanning" 
+            className="w-full h-auto object-contain"
+          />
+        </div>
+      </div>
+    ),
+  },
 ];
 
 interface FAQItemProps {
@@ -81,10 +98,10 @@ const FAQItem = ({ faq, isOpen, onToggle, index, isVisible }: FAQItemProps) => {
       </button>
       <div
         className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-96 pb-5' : 'max-h-0'
+          isOpen ? 'max-h-[1200px] pb-5' : 'max-h-0'
         }`}
       >
-        <p className="text-charcoal/70 leading-relaxed pr-12">{faq.answer}</p>
+        <div className="text-charcoal/70 leading-relaxed pr-12">{faq.answer}</div>
       </div>
     </div>
   );
