@@ -103,9 +103,9 @@ export default function Hero() {
             <img 
               src="/images/logo-green.png" 
               alt="Plot Twist Logo" 
-              className="hidden md:block md:h-80 lg:h-96 w-auto object-contain mb-0" 
+              className="hidden md:block md:h-[24rem] lg:h-[30rem] w-auto object-contain mb-0" 
             />
-            <p className="mt-6 md:-mt-8 text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
+            <p className="mt-6 md:-mt-10 lg:-mt-14 text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
               Een avontuurlijke reis voor jongeren van 18 tot 26 jaar, waar je met onbekenden vertrekt en terugkomt met verhalen, nieuwe connecties en een paar stevige plotwists.
             </p>
             <button onClick={scrollToOverOns} className="btn-primary group">
