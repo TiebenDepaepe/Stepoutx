@@ -11,12 +11,11 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 
 
-const navLinks = [
+const navLinks: { name: string; href: string; external?: boolean }[] = [
   { name: 'Home', href: '#home' },
   { name: 'Info', href: '#over-ons' },
   { name: 'Expedities', href: '#expedities' },
   { name: 'Prijs', href: '#prijs' },
-  { name: 'Voor ouders', href: '/downloads/info-voor-ouders.pdf', external: true },
   { name: 'Inschrijven', href: '#contact' },
 ];
 
