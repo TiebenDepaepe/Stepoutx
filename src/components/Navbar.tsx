@@ -9,13 +9,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Tent logo icon
-const TentLogo = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 5L5 35H15L20 25L25 35H35L20 5Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 28H28" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
+
 
 const navLinks = [
   { name: 'Home', href: '#home' },
@@ -80,10 +74,13 @@ export default function Navbar() {
                 }
                 // If on admin page, let Link handle navigation to home
               }}
-              className="flex items-center gap-2 group"
+              className="flex items-center group"
             >
-              <TentLogo className="w-8 h-8 text-charcoal group-hover:text-purple-accent transition-colors" />
-              <span className="font-display font-bold text-xl text-charcoal">StepOut!</span>
+              <img 
+                src="/images/logo.png" 
+                alt="Plot Twist Logo" 
+                className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105" 
+              />
             </Link>
 
             {/* Desktop Navigation */}

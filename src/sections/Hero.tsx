@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-// Tent logo icon
-const TentLogo = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 5L5 35H15L20 25L25 35H35L20 5Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 28H28" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
+
 
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
@@ -79,9 +73,11 @@ export default function Hero() {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold text-charcoal leading-none mb-1 block">
-              StepOut!
-            </span>
+            <img 
+              src="/images/logo.png" 
+              alt="Plot Twist Logo" 
+              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain mb-4" 
+            />
             <span className="text-sm md:text-base text-charcoal/60 mb-6 block">
               social experience
             </span>
@@ -145,8 +141,7 @@ export default function Hero() {
                 
                 {/* Brand overlay card */}
                 <div className="absolute -bottom-4 left-6 right-6 bg-white rounded-2xl shadow-lg p-4 border border-charcoal/5 flex items-center justify-center gap-3">
-                  <TentLogo className="w-8 h-8 text-charcoal" />
-                  <span className="font-display font-bold text-lg text-charcoal">StepOut!</span>
+                  <img src="/images/logo.png" alt="Plot Twist Logo" className="h-7 w-auto object-contain" />
                 </div>
               </div>
             </div>

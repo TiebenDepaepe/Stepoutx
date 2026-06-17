@@ -14,13 +14,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Tent logo icon
-const TentLogo = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 5L5 35H15L20 25L25 35H35L20 5Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 28H28" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
+
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -31,12 +25,15 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo and Copyright */}
           <div className="flex flex-col items-center md:items-start gap-4">
-            <a href="#home" className="flex items-center gap-2 group">
-              <TentLogo className="w-8 h-8 text-charcoal group-hover:text-purple-accent transition-colors" />
-              <span className="font-display font-bold text-xl text-charcoal">StepOut!</span>
+            <a href="#home" className="flex items-center group">
+              <img 
+                src="/images/logo.png" 
+                alt="Plot Twist Logo" 
+                className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105" 
+              />
             </a>
             <p className="text-sm text-charcoal/60">
-              © {currentYear} Made by Stepout!
+              © {currentYear} Made by Plot Twist
             </p>
             <nav className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 text-sm text-charcoal/70">
               <Link

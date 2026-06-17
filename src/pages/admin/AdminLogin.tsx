@@ -165,9 +165,8 @@ export default function AdminLogin() {
           </CardContent>
         </Card>
 
-        {/* Footer branding */}
         <div className="mt-8 text-center">
-          <p className="text-sm font-semibold text-charcoal">StepOut!</p>
+          <p className="text-sm font-semibold text-charcoal">Plot Twist</p>
           <p className="text-xs text-gray-soft">Youth Adventure Expeditions</p>
         </div>
       </div>

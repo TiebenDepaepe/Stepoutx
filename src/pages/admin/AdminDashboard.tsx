@@ -194,7 +194,7 @@ export default function AdminDashboard() {
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-accent to-purple-accent/70 rounded-xl flex items-center justify-center shadow-lg shadow-purple-accent/20">
                   <Shield className="h-5 w-5 text-white" />
                 </div>
-                <span className="font-bold text-charcoal text-lg hidden sm:block">StepOut Admin</span>
+                <span className="font-bold text-charcoal text-lg hidden sm:block">Plot Twist Admin</span>
               </div>
 
               {/* View Toggle */}
