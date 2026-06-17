@@ -35,7 +35,7 @@ export default function Hero() {
     <section
       id="home"
       ref={sectionRef}
-      className="min-h-screen bg-mint pt-20 md:pt-24 relative overflow-hidden"
+      className="min-h-screen bg-mint pt-16 md:pt-24 relative overflow-hidden"
     >
       {/* Decorative floating elements */}
       <div className="absolute top-[15%] left-[8%] animate-float text-gray-400 opacity-30">
@@ -92,7 +92,7 @@ export default function Hero() {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-12 md:py-16">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div
@@ -103,9 +103,9 @@ export default function Hero() {
             <img 
               src="/images/logo-green.png" 
               alt="Plot Twist Logo" 
-              className="h-44 sm:h-60 md:h-[24rem] lg:h-[30rem] w-auto object-contain mb-0" 
+              className="h-60 sm:h-72 md:h-[24rem] lg:h-[30rem] w-auto object-contain mb-0" 
             />
-            <p className="-mt-4 sm:-mt-6 md:-mt-10 lg:-mt-14 text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
+            <p className="-mt-6 sm:-mt-8 md:-mt-10 lg:-mt-14 text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
               Een avontuurlijke reis voor jongeren van 18 tot 26 jaar, waar je met onbekenden vertrekt en terugkomt met verhalen, nieuwe connecties en een paar stevige plotwists.
             </p>
             <button onClick={scrollToOverOns} className="btn-primary group">
