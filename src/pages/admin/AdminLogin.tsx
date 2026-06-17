@@ -102,7 +102,7 @@ export default function AdminLogin() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@stepout.be"
+                  placeholder="admin@plottwisttravel.be"
                   required
                   disabled={isSubmitting}
                   className="h-12 border-gray-200 focus:border-purple-accent focus:ring-purple-accent/20 bg-white/50"

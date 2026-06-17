@@ -3,9 +3,9 @@ import { Plus, X, Sparkles, Star } from 'lucide-react';
 
 const faqs = [
   {
-    question: 'Voor wie is StepOut?',
+    question: 'Voor wie is PlotTwist?',
     answer:
-      'StepOut is voor jongeren tussen de 18 en 25 jaar die op zoek zijn naar avontuur, persoonlijke groei en nieuwe connecties. Je hoeft niet extrovert of super sportief te zijn - we zoeken mensen die openstaan voor nieuwe ervaringen.',
+      'PlotTwist is voor jongeren tussen de 18 en 25 jaar die op zoek zijn naar avontuur, persoonlijke groei en nieuwe connecties. Je hoeft niet extrovert of super sportief te zijn - we zoeken mensen die openstaan voor nieuwe ervaringen.',
   },
   {
     question: 'Is het veilig om te liften en bij mensen te overnachten?',
@@ -20,7 +20,7 @@ const faqs = [
   {
     question: 'Wat gebeurt er na de expeditie?',
     answer:
-      'Na de expeditie word je lid van de StepOut-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe expedities.',
+      'Na de expeditie word je lid van de PlotTwist-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe expedities.',
   },
   {
     question: 'Waarom kost de expeditie €450?',

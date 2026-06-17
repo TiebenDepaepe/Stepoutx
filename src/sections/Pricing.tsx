@@ -12,7 +12,7 @@ const includedItems = [
   'Avond eetbudget voor elke dag',
   'Begeleiding bij het zoeken van slaapplekken',
   'Expeditie t-shirt',
-  'Toegang tot de StepOut-community na de expeditie',
+  'Toegang tot de PlotTwist-community na de expeditie',
   'Verrassende extra’s',
 ];
 

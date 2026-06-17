@@ -7,19 +7,19 @@ export default function PrivacyPolicy() {
       <Navbar />
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
         <h1 className="font-display text-4xl md:text-5xl font-bold text-charcoal mb-2">
-          Privacybeleid StepOutX
+          Privacybeleid PlotTwist
         </h1>
         <p className="text-sm text-charcoal/60 mb-10">
           <strong>Laatst bijgewerkt:</strong> 17 mei 2026
         </p>
 
-        <article className="prose-stepout space-y-10 text-charcoal/80 leading-relaxed">
+        <article className="prose-plottwist space-y-10 text-charcoal/80 leading-relaxed">
           <section>
             <h2 className="font-display text-2xl font-bold text-charcoal mb-4">
               1. Wie zijn wij?
             </h2>
             <p>
-              StepOutX is een initiatief van Daria Kenis, een geregistreerde
+              PlotTwist is een initiatief van Daria Kenis, een geregistreerde
               zelfstandige natuurlijke persoon naar Belgisch recht.
             </p>
             <ul className="list-disc pl-6 mt-3 space-y-1">
@@ -28,13 +28,13 @@ export default function PrivacyPolicy() {
               <li>
                 E-mail:{' '}
                 <a
-                  href="mailto:daria@stepoutx.com"
+                  href="mailto:daria@plottwisttravel.be"
                   className="text-purple-accent hover:underline"
                 >
-                  daria@stepoutx.com
+                  daria@plottwisttravel.be
                 </a>
               </li>
-              <li>Website: https://stepoutx.com</li>
+              <li>Website: https://plottwisttravel.be</li>
             </ul>
             <p className="mt-3">
               Daria Kenis is de verwerkingsverantwoordelijke in de zin van
@@ -45,10 +45,10 @@ export default function PrivacyPolicy() {
               Voor vragen over dit privacybeleid of over jouw persoonsgegevens
               kan je contact opnemen via{' '}
               <a
-                href="mailto:daria@stepoutx.com"
+                href="mailto:daria@plottwisttravel.be"
                 className="text-purple-accent hover:underline"
               >
-                daria@stepoutx.com
+                daria@plottwisttravel.be
               </a>
               .
             </p>
@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
             </h2>
             <p>
               Wij verwerken uitsluitend persoonsgegevens die noodzakelijk zijn
-              voor de organisatie en uitvoering van een StepOutX-ervaring.
+              voor de organisatie en uitvoering van een PlotTwist-ervaring.
             </p>
             <p className="mt-3">
               <strong>Bij bezoek aan onze website</strong> kunnen via Meta Pixel
@@ -92,7 +92,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-6 mt-2 space-y-1">
               <li>
                 betalingsgegevens (betalingen verlopen via Mollie of
-                overschrijving; StepOutX heeft geen toegang tot kaartgegevens
+                overschrijving; PlotTwist heeft geen toegang tot kaartgegevens
                 of volledige bankinformatie)
               </li>
               <li>
@@ -279,7 +279,7 @@ export default function PrivacyPolicy() {
               </li>
             </ul>
             <p className="mt-3">
-              StepOutX beschikt over een aansprakelijkheidsverzekering voor de
+              PlotTwist beschikt over een aansprakelijkheidsverzekering voor de
               organisatie. Deelnemers worden aangeraden om indien gewenst zelf
               een persoonlijke reis-, ongevallen- of annulatieverzekering af te
               sluiten.
@@ -373,10 +373,10 @@ export default function PrivacyPolicy() {
             <p className="mt-3">
               Verzoeken kunnen worden gestuurd naar:{' '}
               <a
-                href="mailto:daria@stepoutx.com"
+                href="mailto:daria@plottwisttravel.be"
                 className="text-purple-accent hover:underline"
               >
-                daria@stepoutx.com
+                daria@plottwisttravel.be
               </a>
             </p>
             <p className="mt-3">Wij reageren in principe binnen één maand.</p>
@@ -422,7 +422,7 @@ export default function PrivacyPolicy() {
               10. Wijzigingen
             </h2>
             <p>
-              StepOutX kan dit privacybeleid aanpassen wanneer wetgeving of
+              PlotTwist kan dit privacybeleid aanpassen wanneer wetgeving of
               werkwijze verandert. De meest recente versie staat steeds op de
               website.
             </p>
@@ -435,10 +435,10 @@ export default function PrivacyPolicy() {
             <p>Voor vragen over privacy of persoonsgegevens:</p>
             <p className="mt-2">
               <a
-                href="mailto:daria@stepoutx.com"
+                href="mailto:daria@plottwisttravel.be"
                 className="text-purple-accent hover:underline"
               >
-                daria@stepoutx.com
+                daria@plottwisttravel.be
               </a>
             </p>
           </section>

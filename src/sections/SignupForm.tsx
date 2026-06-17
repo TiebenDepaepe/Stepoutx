@@ -199,7 +199,7 @@ export default function SignupForm() {
             INSCHRIJVEN
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-            Schrijf je in voor een <span className="text-purple-accent">StepOut</span>-expeditie
+            Schrijf je in voor een <span className="text-purple-accent">PlotTwist</span>-expeditie
           </h2>
           <p className="text-lg text-charcoal/60 max-w-2xl mx-auto">
             Vul het formulier in en we nemen zo snel mogelijk contact met je op
@@ -341,7 +341,7 @@ export default function SignupForm() {
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
-                  Waarom wil je mee met StepOut? *
+                  Waarom wil je mee met PlotTwist? *
                 </label>
                 <textarea
                   name="motivatie"
@@ -485,7 +485,7 @@ export default function SignupForm() {
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
-                  Waarom zou jij goed in een StepOut-groep passen? *
+                  Waarom zou jij goed in een PlotTwist-groep passen? *
                 </label>
                 <textarea
                   name="waaromPassen"

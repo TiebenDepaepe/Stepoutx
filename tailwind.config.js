@@ -38,7 +38,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom StepOut colors
+        // Custom PlotTwist colors
         mint: {
           DEFAULT: "#E3FFE4",
           light: "#F0FFF0",

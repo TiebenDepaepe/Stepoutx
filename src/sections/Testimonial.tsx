@@ -10,7 +10,7 @@ const testimonials = [
     rating: 5,
   },
   {
-    quote: "Voor mij was StepOut een unieke ervaring. Het gaat niet alleen om uit je comfortzone stappen, maar ook om het beleven van geweldige momenten die je tijdens een gewone vakantie niet snel zou meemaken. Ik heb enorm veel bijgeleerd, ook over mezelf. Ik zou het echt iedereen aanraden!",
+    quote: "Voor mij was PlotTwist een unieke ervaring. Het gaat niet alleen om uit je comfortzone stappen, maar ook om het beleven van geweldige momenten die je tijdens een gewone vakantie niet snel zou meemaken. Ik heb enorm veel bijgeleerd, ook over mezelf. Ik zou het echt iedereen aanraden!",
     author: 'Nicole Aguilera',
     location: 'Wilrijk',
     age: '23 jaar',

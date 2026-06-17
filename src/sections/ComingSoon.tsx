@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Sparkles, Users, Sun, CalendarDays } from 'lucide-react';
 
 const details = [
-  { icon: Users, text: 'Voor jongeren van 20–26 jaar' },
+  { icon: Users, text: 'Voor jongeren van 18–26 jaar' },
   { icon: Sun, text: 'Voor september - november' },
   { icon: CalendarDays, text: 'Inschrijvingen openen op 10 augustus' },
 ];

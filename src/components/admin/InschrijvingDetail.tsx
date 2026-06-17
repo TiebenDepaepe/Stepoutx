@@ -349,7 +349,7 @@ export function InschrijvingDetail({
           <div className="grid grid-cols-1 gap-5">
             <InfoRow icon={Zap} label="Wat vind je het spannendst?" value={inschrijving.spannendst} fullWidth />
             <InfoRow icon={AlertTriangle} label="Wat maakt je ongemakkelijk?" value={inschrijving.ongemakkelijk} fullWidth />
-            <InfoRow icon={CheckCircle} label="Waarom past StepOut bij jou?" value={inschrijving.waarom_passen} fullWidth />
+            <InfoRow icon={CheckCircle} label="Waarom past PlotTwist bij jou?" value={inschrijving.waarom_passen} fullWidth />
             <InfoRow icon={Star} label="Wat spreekt je het meest aan?" value={inschrijving.wat_spreekt_aan} fullWidth />
           </div>
         </section>

@@ -336,7 +336,7 @@ export default function ContactAndSignup() {
                   Inschrijfformulier
                 </h3>
                 <p className="text-charcoal/60">
-                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). StepOut is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen, we vormen diverse groepen, dus ook introverte of rustigere personen zijn helemaal welkom.
+                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). PlotTwist is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen, we vormen diverse groepen, dus ook introverte of rustigere personen zijn helemaal welkom.
                 </p>
                 <p className="text-charcoal/60">
                   Vul alle velden in zodat we je goed kunnen plaatsen
@@ -534,7 +534,7 @@ export default function ContactAndSignup() {
                     </div>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom wil je mee met StepOut? *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom wil je mee met PlotTwist? *</label>
                         <textarea 
                           name="motivatie" 
                           value={formData.motivatie} 
@@ -658,7 +658,7 @@ export default function ContactAndSignup() {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom zou jij goed in een StepOut-groep passen? *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom zou jij goed in een PlotTwist-groep passen? *</label>
                         <textarea 
                           name="waaromPassen" 
                           value={formData.waaromPassen} 

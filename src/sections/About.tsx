@@ -59,7 +59,7 @@ export default function About() {
               <div className="relative aspect-square rounded-[40px] overflow-hidden shadow-xl border-4 border-white mb-6">
                 <img
                   src="/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg"
-                  alt="StepOut groep"
+                  alt="PlotTwist groep"
                   className="w-full h-full object-cover"
                   loading="lazy"
                   decoding="async"

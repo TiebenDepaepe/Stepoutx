@@ -222,7 +222,7 @@ export default function Gallery() {
             Momenten van <span className="text-purple-accent">avontuur</span>
           </h2>
           <p className="text-lg text-charcoal/60 max-w-2xl mx-auto">
-            Een kijkje in de herinneringen die onze deelnemers maakten tijdens hun StepOut-expeditie
+            Een kijkje in de herinneringen die onze deelnemers maakten tijdens hun PlotTwist-expeditie
           </p>
         </div>
 
