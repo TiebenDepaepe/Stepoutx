@@ -5,12 +5,12 @@ const faqs = [
   {
     question: 'Voor wie is PlotTwist?',
     answer:
-      'PlotTwist is voor jongeren tussen de 18 en 25 jaar die op zoek zijn naar avontuur, persoonlijke groei en nieuwe connecties. Je hoeft niet extrovert of super sportief te zijn - we zoeken mensen die openstaan voor nieuwe ervaringen.',
+      'PlotTwist is er voor jongeren van 18 tot 26 jaar die zin hebben in avontuur, nieuwe mensen willen leren kennen en openstaan voor een reis die net iets anders loopt dan een gewone vakantie. Je hoeft niet de meest sociale, sportieve of ervaren reiziger te zijn. Zolang je nieuwsgierig bent, openstaat voor nieuwe ervaringen en durft mee te stappen in het onbekende, pas je bij PlotTwist.',
   },
   {
     question: 'Is het veilig om te liften en bij mensen te overnachten?',
     answer:
-      'Veiligheid is onze hoogste prioriteit. We liften altijd in groepen van minimaal twee personen, en onze ervaren begeleiders kennen de routes en procedures. We hebben ook altijd een back-up plan met noodbudget voor accommodatie.',
+      'Veiligheid is onze hoogste prioriteit. We liften altijd in groepen van minimaal twee personen, en onze ervaren begeleiders kennen de routes en procedures. Moest slaapplek niet lukken wordt er gekeken naar het back-up plan.',
   },
   {
     question: 'Hoe worden de groepen samengesteld?',
@@ -30,7 +30,7 @@ const faqs = [
   {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',
     answer:
-      'Onze expedities zijn voor jongeren van 18 tot 25 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',
+      'Onze expedities zijn voor jongeren van 18 tot 26 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',
   },
   {
     question: 'Moet ik extravert zijn om mee te doen?',

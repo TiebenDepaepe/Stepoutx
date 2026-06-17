@@ -10,8 +10,8 @@ export const signupFormSchema = z.object({
   leeftijd: z.string()
     .refine((val) => {
       const num = parseInt(val, 10);
-      return !isNaN(num) && num >= 18 && num <= 25;
-    }, 'Leeftijd moet tussen 18 en 25 jaar zijn'),
+      return !isNaN(num) && num >= 18 && num <= 26;
+    }, 'Leeftijd moet tussen 18 en 26 jaar zijn'),
   
   woonplaats: z.string()
     .min(2, 'Woonplaats moet minstens 2 karakters bevatten')

@@ -385,13 +385,13 @@ export default function ContactAndSignup() {
                       onBlur={() => handleBlur('leeftijd')}
                       required 
                       min="18" 
-                      max="25" 
+                      max="26" 
                       className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
                         getFieldError('leeftijd') 
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="18-25" 
+                      placeholder="18-26" 
                     />
                     {getFieldError('leeftijd') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">

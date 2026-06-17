@@ -244,9 +244,9 @@ export default function SignupForm() {
                   onChange={handleTextChange}
                   required
                   min="18"
-                  max="25"
+                  max="26"
                   className="w-full px-4 py-3 bg-white rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all"
-                  placeholder="18-25"
+                  placeholder="18-26"
                 />
               </div>
               <div>
