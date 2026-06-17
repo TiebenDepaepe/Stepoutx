@@ -76,7 +76,7 @@ export default function Hero() {
             <img 
               src="/images/logo.png" 
               alt="Plot Twist Logo" 
-              className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain mb-4" 
+              className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto object-contain mb-6" 
             />
             <span className="text-sm md:text-base text-charcoal/60 mb-6 block">
               social experience
