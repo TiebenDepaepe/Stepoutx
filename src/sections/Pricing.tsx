@@ -129,14 +129,14 @@ export default function Pricing() {
             {/* CTA */}
             <div className="pt-4">
               <a 
-                href="#contact" 
+                href="#nieuwsbrief" 
                 className="w-full btn-primary justify-center group"
               >
-                Reserveer je plek
+                Schrijf je in voor de nieuwsbrief
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Beperkte plekken beschikbaar per expeditie
+                Momenteel zit alles vol, 10 augustus openen de nieuwe expedities.
               </p>
             </div>
           </div>

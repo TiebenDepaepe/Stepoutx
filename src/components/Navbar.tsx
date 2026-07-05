@@ -17,7 +17,9 @@ const navLinks: { name: string; href: string; external?: boolean }[] = [
   { name: 'Expedities', href: '#expedities' },
   { name: 'Prijs', href: '#prijs' },
   { name: 'Inschrijven', href: '#contact' },
+  { name: 'Nieuwsbrief', href: '#nieuwsbrief' },
 ];
+
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
