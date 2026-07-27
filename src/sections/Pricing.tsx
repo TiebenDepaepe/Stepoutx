@@ -1,28 +1,38 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight, Info } from 'lucide-react';
 
 const includedItems = [
-  '6 dagen op expeditie met een groep van 6 jongeren',
-  'Begeleiding door een begeleider, die de hele expeditie meegaat',
-  'Kennismaking met de groep vóór vertrek',
-  'Elke dag een voorbereide dagplanning met briefing',
-  'Dagelijkse sociale en persoonlijke challenges',
-  'Verplaatsingen te voet of al liftend',
-  'Mix van avontuurlijke activiteiten (verschilt per expeditie)',
-  'Avond eetbudget voor elke dag',
-  'Begeleiding bij het zoeken van slaapplekken',
-  'Expeditie t-shirt',
-  'Toegang tot de PlotTwist-community na de expeditie',
-  'Verrassende extra’s',
+  '5 overnachtingen als onderdeel van de expeditie',
+  'Een volledig uitgewerkte en vooraf voorbereide route',
+  'Een vaste begeleider gedurende de volledige reis',
+  'Minstens 3 vooraf geboekte activiteiten',
+  'Dagelijkse challenges en groepsopdrachten',
+  'Avondspellen en spelmateriaal',
+  'Avondeten tijdens de expeditie',
+  'Organisatie, reservaties en ondersteuning bij problemen',
+  'Selectie en samenstelling van de groep',
+  'Toegang tot de PlotTwist-community na de reis',
 ];
 
 const notIncludedItems = [
-  'Persoonlijk materiaal',
-  'Extra snacks of eigen uitgaven',
+  {
+    name: 'Ontbijt en lunch',
+    info: 'Je kiest deze zelf tijdens een geplande winkelstop, zodat je kunt eten wat jij lekker vindt en rekening kunt houden met allergieën of voorkeuren. Reken voor de volledige expeditie op ongeveer €35',
+  },
+  {
+    name: 'Persoonlijke snacks en drank',
+  },
+  {
+    name: 'Vervoer naar het startpunt en vanaf het eindpunt',
+  },
+  {
+    name: 'Persoonlijk wandel- en kampeermateriaal',
+  },
 ];
 
 export default function Pricing() {
   const [isVisible, setIsVisible] = useState(false);
+  const [openInfoIndex, setOpenInfoIndex] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -65,11 +75,10 @@ export default function Pricing() {
               PRIJS
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-charcoal mb-4">
-              6 dagen expeditie
+              6 dagen PlotTwist
             </h2>
             <div className="flex items-center justify-center gap-3">
               <span className="text-5xl md:text-6xl font-display font-bold text-purple-accent">€450</span>
-              <span className="text-charcoal/50 text-lg">inclusief eten</span>
             </div>
           </div>
 
@@ -81,7 +90,7 @@ export default function Pricing() {
                 <div className="w-10 h-10 rounded-xl bg-mint flex items-center justify-center">
                   <Check className="w-5 h-5 text-green-600" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-charcoal">Wat zit er in</h3>
+                <h3 className="text-xl font-display font-bold text-charcoal">Inbegrepen</h3>
               </div>
               
               <ul className="space-y-3">
@@ -109,18 +118,42 @@ export default function Pricing() {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
                   <X className="w-5 h-5 text-gray-500" />
                 </div>
-                <h3 className="text-lg font-display font-bold text-charcoal/70">Wat zit er niet in</h3>
+                <h3 className="text-lg font-display font-bold text-charcoal/70">Niet inbegrepen</h3>
               </div>
               
               <ul className="space-y-2">
-                {notIncludedItems.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <X className="w-3 h-3 text-gray-400" />
-                    </div>
-                    <span className="text-charcoal/50 text-sm">{item}</span>
-                  </li>
-                ))}
+                {notIncludedItems.map((item, index) => {
+                  const name = typeof item === 'string' ? item : item.name;
+                  const info = typeof item === 'string' ? undefined : item.info;
+                  const isOpen = openInfoIndex === index;
+
+                  return (
+                    <li key={index} className="flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <X className="w-3 h-3 text-gray-400" />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-charcoal/50 text-sm">{name}</span>
+                          {info && (
+                            <button
+                              onClick={() => setOpenInfoIndex(isOpen ? null : index)}
+                              className="text-gray-400 hover:text-purple-accent transition-colors p-0.5 rounded-full hover:bg-gray-100 focus:outline-none"
+                              aria-label="Meer informatie"
+                            >
+                              <Info className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {info && isOpen && (
+                        <div className="ml-8 mt-1 p-3 bg-gray-50 border border-gray-100 rounded-xl text-xs text-charcoal/70 transition-all duration-300 animate-fadeIn">
+                          {info}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -129,14 +162,14 @@ export default function Pricing() {
             {/* CTA */}
             <div className="pt-4">
               <a 
-                href="#nieuwsbrief" 
+                href="#contact" 
                 className="w-full btn-primary justify-center group"
               >
-                Schrijf je in voor de nieuwsbrief
+                Schrijf je nu in
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Momenteel zit alles vol, 10 augustus openen de nieuwe expedities.
+                Inschrijvingen geopend enkel voor 3 t.e.m. 8 augustus.
               </p>
             </div>
           </div>

@@ -23,9 +23,23 @@ const faqs = [
       'Na de expeditie word je lid van de PlotTwist-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe expedities.',
   },
   {
-    question: 'Waarom kost de expeditie €450?',
-    answer:
-      'Je betaalt niet voor transport of luxe hotels, maar voor de volledige ervaring. Je trekt zes dagen met een kleine groep van zes jongeren op expeditie, met persoonlijke begeleiding door een begeleider. Het programma is op voorhand uitgewerkt, er zitten activiteiten en eatbudget in, en er is altijd een noodplan. Ik geef jullie de meest unieke ervaring: zes dagen samen op pad, uit je comfortzone, met mensen die je nog niet kent, maar waarschijnlijk nooit meer vergeet.',
+    question: 'Waar betaal je eigenlijk voor?',
+    answer: (
+      <div className="space-y-3">
+        <p>
+          Bij PlotTwist betaal je niet gewoon voor vervoer of een plaats om te slapen. Liften en slapen bij locals zijn net een belangrijk onderdeel van het avontuur.
+        </p>
+        <p>
+          Je betaalt voor een volledig voorbereide zesdaagse expeditie. Wij werken de route uit, boeken de activiteiten, stellen de groep samen, voorzien dagelijkse challenges en zorgen dat er gedurende de hele reis begeleiding en ondersteuning aanwezig is.
+        </p>
+        <p>
+          Jij hoeft dus geen reis te plannen of een groep vrienden bij elkaar te zoeken. Je trekt je rugzak aan en stapt in een avontuur waarvan je vooraf nog niet weet hoe het zal verlopen.
+        </p>
+        <p>
+          Dat onverwachte kunnen we niet in een gewone reisplanning zetten. De voorbereiding, begeleiding en organisatie erachter wel.
+        </p>
+      </div>
+    ),
   },
   {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',

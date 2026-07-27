@@ -121,21 +121,21 @@ export default function About() {
               </p>
             </div>
 
-            {/* Closed Registration Alert & Newsletter CTA */}
+            {/* Registration Alert & CTA */}
             <div className="space-y-4 mt-6">
               <p className="text-charcoal font-semibold text-lg">
-                Momenteel zit alles vol, 10 augustus openen de nieuwe expedities.
+                Inschrijvingen geopend voor 3 t.e.m. 8 augustus!
               </p>
               <button 
                 onClick={() => {
-                  const element = document.querySelector('#nieuwsbrief');
+                  const element = document.querySelector('#contact');
                   if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
                   }
                 }} 
                 className="btn-primary group"
               >
-                Schrijf je in voor de nieuwsbrief
+                Schrijf je nu in
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
