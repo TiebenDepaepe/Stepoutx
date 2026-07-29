@@ -5,7 +5,7 @@ export const signupFormSchema = z.object({
   naam: z.string()
     .min(2, 'Naam moet minstens 2 karakters bevatten')
     .max(100, 'Naam is te lang')
-    .regex(/^[a-zA-Z\s\-'\.]+$/, 'Naam mag alleen letters, spaties en koppeltekens bevatten'),
+    .regex(/^[\p{L}\s'.\-]+$/u, 'Naam mag alleen letters, spaties en koppeltekens bevatten'),
   
   leeftijd: z.string()
     .refine((val) => {
@@ -20,7 +20,7 @@ export const signupFormSchema = z.object({
   gsm: z.string()
     .min(8, 'GSM-nummer is te kort')
     .max(20, 'GSM-nummer is te lang')
-    .regex(/^\+?[\d\s\-\(\)\.]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
+    .regex(/^\+?[\d\s().-]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
   email: z.string()
     .email('Ongeldig e-mailadres')
@@ -87,16 +87,18 @@ export const signupFormSchema = z.object({
   noodcontactGsm: z.string()
     .min(8, 'GSM-nummer noodcontact is te kort')
     .max(20, 'GSM-nummer noodcontact is te lang')
-    .regex(/^\+?[\d\s\-\(\)\.]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
+    .regex(/^\+?[\d\s().-]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
   foto: z.instanceof(File, { message: 'Upload een foto van jezelf' })
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Afbeelding mag maximaal 50MB zijn',
     }),
-  video: z.instanceof(File, { message: 'Upload een korte video van jezelf' })
+  video: z.instanceof(File)
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Video mag maximaal 50MB zijn',
-    }),
+    })
+    .nullable()
+    .optional(),
   
   agreement: z.boolean()
     .refine((val) => val === true, 'Je moet akkoord gaan met de voorwaarden'),

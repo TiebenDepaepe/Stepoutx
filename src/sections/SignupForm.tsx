@@ -592,7 +592,7 @@ export default function SignupForm() {
               {/* Photo upload */}
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-3">
-                  Upload een foto <span className="text-charcoal/50">(optioneel)</span>
+                  Upload een foto *
                 </label>
                 <div className="relative">
                   <input
