@@ -450,6 +450,42 @@ dist/
 
 ---
 
+## Supabase CLI
+
+The Supabase CLI is set up so **any collaborator can run it through their AI coding assistant**. The shared permission rules in `.claude/settings.json` (committed to git) allow `supabase ...` commands to run without prompting in Claude Code; destructive commands (`db reset`, `projects delete`, `branches delete`, `functions delete`, `storage rm`) still require explicit confirmation.
+
+**Project ref**: `lrdjjzlodcazirutcruj` (matches `VITE_SUPABASE_URL`)
+
+### One-time setup per developer
+1. Install the CLI if `supabase` is not on PATH:
+   - macOS: `brew install supabase/tap/supabase`
+   - Any OS, no install: prefix every command with `npx`, e.g. `npx supabase projects list`
+2. Authenticate with a **personal** access token (never commit tokens):
+   - `supabase login` (opens a browser), **or**
+   - create a token at https://supabase.com/dashboard/account/tokens and set `SUPABASE_ACCESS_TOKEN` in your shell profile
+3. Link the repo to the hosted project:
+   ```bash
+   supabase link --project-ref lrdjjzlodcazirutcruj
+   ```
+
+### Notes for AI agents
+- If the CLI is missing, prefer `npx supabase` over installing software on the user's machine.
+- If a command fails with an authentication error, ask the user to run `supabase login` themselves — never ask for, echo, or store their access token.
+- `supabase/.temp/` is per-machine state and must never be committed.
+- Schema changes go through migration files (`supabase/migrations/`), committed to git, so they are reviewable and reproducible.
+
+### Common commands
+```bash
+supabase projects list           # verify authentication works
+supabase link --project-ref lrdjjzlodcazirutcruj   # link this repo (once per machine)
+supabase db pull                 # pull remote schema into supabase/migrations/
+supabase db push                 # apply local migrations to the hosted project
+supabase db dump -f schema.sql   # dump the remote schema
+supabase migration list          # compare local vs remote migrations
+```
+
+---
+
 ## Common Tasks
 
 ### Adding a New Section

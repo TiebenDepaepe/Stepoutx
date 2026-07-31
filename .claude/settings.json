@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(supabase:*)",
+      "Bash(npx supabase:*)"
+    ],
+    "ask": [
+      "Bash(supabase db reset:*)",
+      "Bash(supabase projects delete:*)",
+      "Bash(supabase branches delete:*)",
+      "Bash(supabase functions delete:*)",
+      "Bash(supabase storage rm:*)"
+    ]
+  }
+}
