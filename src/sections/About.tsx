@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MapPin, Users, Calendar, ArrowRight } from 'lucide-react';
 
 const highlights = [
-  { icon: Users, label: '6 deelnemers' },
+  { icon: Users, label: '7 deelnemers' },
   { icon: Calendar, label: '4 of 6 dagen' },
 ];
 

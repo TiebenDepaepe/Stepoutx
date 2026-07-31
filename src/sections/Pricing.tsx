@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { Check, X, Sparkles, ArrowRight, Info } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
 
 const includedItems = [
   {
-    text: 'Een zorgvuldig gematchte groep van zes deelnemers',
+    text: 'Een zorgvuldig gematchte groep van 7 deelnemers',
     subtext: 'Bij PlotTwist is het matchen van de groep een prioriteit. We kijken echt naar wie jij bent, je persoonlijkheid en wat je zoekt in de reis om zo een passende groep samen te stellen.'
   },
   { text: 'Een volledig uitgewerkte planning voor elke dag' },
@@ -95,18 +95,6 @@ export default function Pricing() {
               </ul>
             </div>
 
-            {/* Divider and Disclaimer Box */}
-            <div className="border-t border-charcoal/10 pt-6 mb-8">
-              <div className="p-4 bg-lavender/30 border border-purple-accent/10 rounded-2xl flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-accent/10 flex items-center justify-center shrink-0">
-                  <Info className="h-4 w-4 text-purple-accent" />
-                </div>
-                <p className="text-xs text-charcoal/80 leading-relaxed font-bold">
-                  De overnachtingen zelf zijn niet vooraf geboekt of inbegrepen. Samen met de groep ga je iedere avond op zoek naar een slaapplek bij locals.
-                </p>
-              </div>
-            </div>
-
             {/* Niet inbegrepen Section */}
             <div className="border-t border-charcoal/10 pt-6 mb-8">
               <div className="flex items-center gap-3 mb-6">
@@ -117,6 +105,17 @@ export default function Pricing() {
               </div>
               
               <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <X className="w-3 h-3 text-red-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-charcoal/70 text-sm leading-relaxed">De overnachtingen zelf zijn niet vooraf geboekt of inbegrepen</p>
+                    <p className="text-xs text-charcoal/50 mt-1 italic">
+                      (Samen met de groep ga je iedere avond op zoek naar een slaapplek bij locals.)
+                    </p>
+                  </div>
+                </li>
                 <li className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <X className="w-3 h-3 text-red-500" />
