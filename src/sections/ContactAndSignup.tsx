@@ -441,7 +441,7 @@ export default function ContactAndSignup() {
       <div id="signup-form" className="relative">
         {/* Clipped container: this is the positioning context for the reveal button */}
         <div 
-          className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-[8000px]' : 'max-h-[450px]'} overflow-hidden`}
+          className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-none' : 'max-h-[450px] overflow-hidden'}`}
         >
           {/* Gradient overlay when hidden - creates the fade-out effect at the bottom */}
           {!showForm && (
