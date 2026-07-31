@@ -40,38 +40,83 @@ export const signupFormSchema = z.object({
     .max(2000, 'Motivatie is te lang (max 2000 karakters)'),
   
   doelen: z.array(z.string())
-    .max(2, 'Je kan maximaal 2 doelen selecteren')
-    .optional(),
+    .min(1, 'Selecteer minstens één doel')
+    .max(2, 'Je kan maximaal 2 doelen selecteren'),
+  
+  kmWandelen: z.string()
+    .min(1, 'Selecteer hoeveel kilometer je kan wandelen'),
+  
+  meerdereDagenWandelen: z.string()
+    .min(1, 'Selecteer je voorkeur voor meerdere dagen wandelen'),
+  
+  bereidTrainen: z.string()
+    .min(1, 'Selecteer of je bereid bent te trainen'),
+  
+  fysiekeUitdaging: z.string()
+    .min(1, 'Selecteer de gewenste hoeveelheid fysieke uitdaging'),
+  
+  sportiviteit: z.string()
+    .min(1, 'Selecteer hoe sportief je bent'),
+  
+  lichamelijkeKlachten: z.string()
+    .min(1, 'Vul in of je klachten of beperkingen hebt'),
   
   persoonlijkheid: z.array(z.string())
-    .max(3, 'Je kan maximaal 3 eigenschappen selecteren')
-    .optional(),
+    .min(1, 'Selecteer minstens één eigenschap')
+    .max(3, 'Je kan maximaal 3 eigenschappen selecteren'),
   
   groepsrol: z.string()
     .min(1, 'Selecteer een groepsrol'),
   
+  socialeInteractie: z.string()
+    .min(1, 'Selecteer hoeveel sociale interactie je fijn vindt'),
+  
   spannendst: z.string()
     .min(1, 'Selecteer wat je het spannendst vindt'),
   
+  reactieRegenMoeheid: z.string()
+    .min(1, 'Selecteer hoe je reageert in deze situatie'),
+  
+  omgangTragerWandelen: z.string()
+    .min(1, 'Selecteer hoe je omgaat met tragere wandelaars'),
+  
+  eigenMoeheid: z.string()
+    .min(1, 'Selecteer wat je doet bij eigen moeheid'),
+  
   ongemakkelijk: z.string()
-    .min(10, 'Dit veld moet minstens 10 karakters bevatten')
+    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
     .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
   
-  waaromPassen: z.string()
-    .min(10, 'Dit veld moet minstens 10 karakters bevatten')
-    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
-
+  omgangGroepsbeslissing: z.string()
+    .min(1, 'Selecteer hoe je omgaat met groepsbeslissingen'),
+  
+  omgangIrritatiesConflicten: z.string()
+    .min(1, 'Selecteer hoe je omgaat met irritaties of conflicten'),
+  
+  zelfstandigheid: z.string()
+    .min(1, 'Selecteer hoe zelfstandig je bent'),
+  
   watSpreektAan: z.string()
     .min(1, 'Selecteer wat jou het meest aanspreekt'),
-
-  sportiviteit: z.string()
-    .min(1, 'Selecteer hoe sportief je bent'),
-
-  socialeInteractie: z.string()
-    .min(1, 'Selecteer hoeveel sociale interactie je fijn vindt'),
-
-  zelfstandigheid: z.string()
-    .min(1, 'Selecteer hoe zelfstandig je je voelt op expeditie'),
+  
+  waaromPassen: z.string()
+    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
+    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
+  
+  ergernissenAnderen: z.string()
+    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
+    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
+  
+  typePersoonBotsen: z.string()
+    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
+    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
+  
+  behoefteGroepMoeilijk: z.string()
+    .min(1, 'Selecteer wat je van de groep nodig hebt'),
+  
+  redenStoppen: z.string()
+    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
+    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
   
   medisch: z.boolean(),
   

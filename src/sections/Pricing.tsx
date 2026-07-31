@@ -169,7 +169,7 @@ export default function Pricing() {
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Inschrijvingen geopend enkel voor 3 t.e.m. 8 augustus.
+                Inschrijvingen geopend enkel voor 10 t.e.m. 15 augustus.
               </p>
             </div>
           </div>

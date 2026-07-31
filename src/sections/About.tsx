@@ -124,7 +124,7 @@ export default function About() {
             {/* Registration Alert & CTA */}
             <div className="space-y-4 mt-6">
               <p className="text-charcoal font-semibold text-lg">
-                Inschrijvingen geopend voor 3 t.e.m. 8 augustus!
+                Inschrijvingen geopend voor 10 t.e.m. 15 augustus!
               </p>
               <button 
                 onClick={() => {

@@ -332,35 +332,49 @@ export function InschrijvingDetail({
           </div>
         </section>
 
-        {/* Personality */}
+        {/* Wandel- & Fysieke Profiel */}
         <section>
-          <SectionTitle>Persoonlijkheid</SectionTitle>
+          <SectionTitle>Wandel- & Fysieke Profiel</SectionTitle>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <InfoRow icon={Activity} label="Sportiviteit" value={inschrijving.sportiviteit} />
+            <InfoRow icon={Activity} label="Fysieke Uitdaging" value={inschrijving.fysieke_uitdaging} />
+            <InfoRow icon={Activity} label="Kilometers per dag" value={inschrijving.km_wandelen} />
+            <InfoRow icon={Activity} label="Meerdere dagen wandelen" value={inschrijving.meerdere_dagen_wandelen} />
+            <InfoRow icon={Activity} label="Bereid te trainen" value={inschrijving.bereid_trainen} />
+            <InfoRow icon={Heart} label="Lichamelijke klachten / beperkingen" value={inschrijving.lichamelijke_klachten} fullWidth />
+          </div>
+        </section>
+
+        {/* Groepsdynamiek & Sociaal */}
+        <section>
+          <SectionTitle>Groepsdynamiek & Sociaal</SectionTitle>
           <div className="grid grid-cols-1 gap-5">
-            <InfoRow icon={Smile} label="Persoonlijkheid" fullWidth>
+            <InfoRow icon={Smile} label="Persoonlijkheid (hoe vrienden omschrijven)" fullWidth>
               <TagList items={inschrijving.persoonlijkheid} />
             </InfoRow>
-            <InfoRow icon={Users} label="Groepsrol" value={inschrijving.groepsrol} fullWidth />
+            <InfoRow icon={Users} label="Groepsrol in nieuwe groep" value={inschrijving.groepsrol} fullWidth />
+            <InfoRow icon={MessageCircle} label="Sociale Interactie" value={inschrijving.sociale_interactie} fullWidth />
+            <InfoRow icon={Users} label="Omgang met tragere wandelaars" value={inschrijving.omgang_trager_wandelen} fullWidth />
+            <InfoRow icon={Users} label="Reactie bij eigen moeheid" value={inschrijving.eigen_moeheid} fullWidth />
+            <InfoRow icon={Users} label="Omgang met ongewenste groepsbeslissingen" value={inschrijving.omgang_groepsbeslissing} fullWidth />
+            <InfoRow icon={Users} label="Omgang met irritaties of conflicten" value={inschrijving.omgang_irritaties_conflicten} fullWidth />
+            <InfoRow icon={UserCheck} label="Zelfstandigheid" value={inschrijving.zelfstandigheid} fullWidth />
+            <InfoRow icon={Users} label="Behoefte van groep bij moeilijkheden" value={inschrijving.behoefte_groep_moeilijk} fullWidth />
           </div>
         </section>
 
-        {/* Questions */}
+        {/* Persoonlijke Reacties & Verwachtingen */}
         <section>
-          <SectionTitle>Vragen</SectionTitle>
+          <SectionTitle>Persoonlijke Reacties & Verwachtingen</SectionTitle>
           <div className="grid grid-cols-1 gap-5">
             <InfoRow icon={Zap} label="Wat vind je het spannendst?" value={inschrijving.spannendst} fullWidth />
-            <InfoRow icon={AlertTriangle} label="Wat maakt je ongemakkelijk?" value={inschrijving.ongemakkelijk} fullWidth />
-            <InfoRow icon={CheckCircle} label="Waarom past PlotTwist bij jou?" value={inschrijving.waarom_passen} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Reactie bij regen, moeheid & geen slaapplek" value={inschrijving.reactie_regen_moeheid} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Hoe ga je om met ongemakkelijke/spannende situaties?" value={inschrijving.ongemakkelijk} fullWidth />
             <InfoRow icon={Star} label="Wat spreekt je het meest aan?" value={inschrijving.wat_spreekt_aan} fullWidth />
-          </div>
-        </section>
-
-        {/* Self Ratings */}
-        <section>
-          <SectionTitle>Zelfbeoordeling</SectionTitle>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <InfoRow icon={Activity} label="Sportiviteit" value={inschrijving.sportiviteit} />
-            <InfoRow icon={MessageCircle} label="Sociale Interactie" value={inschrijving.sociale_interactie} />
-            <InfoRow icon={UserCheck} label="Zelfstandigheid" value={inschrijving.zelfstandigheid} />
+            <InfoRow icon={CheckCircle} label="Waarom pas je goed in de groep?" value={inschrijving.waarom_passen} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Waar zouden anderen zich aan kunnen ergeren bij jou?" value={inschrijving.ergernissen_anderen} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Met welk type persoon bots je soms?" value={inschrijving.type_persoon_botsen} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Reden om eventueel te willen stoppen" value={inschrijving.reden_stoppen} fullWidth />
           </div>
         </section>
 

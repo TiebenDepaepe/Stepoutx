@@ -20,6 +20,23 @@ interface FormData {
   sportiviteit: string;
   socialeInteractie: string;
   zelfstandigheid: string;
+  
+  // New questions for Part 4
+  kmWandelen: string;
+  meerdereDagenWandelen: string;
+  bereidTrainen: string;
+  fysiekeUitdaging: string;
+  lichamelijkeKlachten: string;
+  reactieRegenMoeheid: string;
+  omgangTragerWandelen: string;
+  eigenMoeheid: string;
+  omgangGroepsbeslissing: string;
+  omgangIrritatiesConflicten: string;
+  ergernissenAnderen: string;
+  typePersoonBotsen: string;
+  behoefteGroepMoeilijk: string;
+  redenStoppen: string;
+
   medisch: boolean;
   medischUitleg: string;
   noodcontactNaam: string;
@@ -134,6 +151,21 @@ export function useFormSubmit() {
           sportiviteit: data.sportiviteit,
           sociale_interactie: data.socialeInteractie,
           zelfstandigheid: data.zelfstandigheid,
+          // New questions for Part 4
+          km_wandelen: data.kmWandelen,
+          meerdere_dagen_wandelen: data.meerdereDagenWandelen,
+          bereid_trainen: data.bereidTrainen,
+          fysieke_uitdaging: data.fysiekeUitdaging,
+          lichamelijke_klachten: data.lichamelijkeKlachten,
+          reactie_regen_moeheid: data.reactieRegenMoeheid,
+          omgang_trager_wandelen: data.omgangTragerWandelen,
+          eigen_moeheid: data.eigenMoeheid,
+          omgang_groepsbeslissing: data.omgangGroepsbeslissing,
+          omgang_irritaties_conflicten: data.omgangIrritatiesConflicten,
+          ergernissen_anderen: data.ergernissenAnderen,
+          type_persoon_botsen: data.typePersoonBotsen,
+          behoefte_groep_moeilijk: data.behoefteGroepMoeilijk,
+          reden_stoppen: data.redenStoppen,
           medisch: data.medisch,
           medisch_uitleg: data.medisch ? data.medischUitleg : null,
           noodcontact_naam: data.noodcontactNaam,

@@ -29,6 +29,22 @@ export interface Inschrijving {
   sportiviteit: string;
   sociale_interactie: string;
   zelfstandigheid: string;
+
+  // New questions for Part 4
+  km_wandelen?: string | null;
+  meerdere_dagen_wandelen?: string | null;
+  bereid_trainen?: string | null;
+  fysieke_uitdaging?: string | null;
+  lichamelijke_klachten?: string | null;
+  reactie_regen_moeheid?: string | null;
+  omgang_trager_wandelen?: string | null;
+  eigen_moeheid?: string | null;
+  omgang_groepsbeslissing?: string | null;
+  omgang_irritaties_conflicten?: string | null;
+  ergernissen_anderen?: string | null;
+  type_persoon_botsen?: string | null;
+  behoefte_groep_moeilijk?: string | null;
+  reden_stoppen?: string | null;
   
   // Medical
   medisch: boolean;
