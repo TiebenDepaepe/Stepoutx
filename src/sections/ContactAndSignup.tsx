@@ -732,9 +732,9 @@ export default function ContactAndSignup() {
                         )}
                       </div>
 
-                      {/* Q3: Hoe sta je tegenover meerdere dagen na elkaar 10 tot 15 km wandelen met een volle rugzak? */}
+                      {/* Q3: Hoe sta je tegenover meerdere dagen na elkaar 15 km wandelen met een volle rugzak? */}
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe sta je tegenover meerdere dagen na elkaar 10 tot 15 km wandelen met een volle rugzak? *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe sta je tegenover meerdere dagen na elkaar 15 km wandelen met een volle rugzak? *</label>
                         <div data-field="meerdereDagenWandelen" className={`space-y-2 rounded-xl p-1 ${getFieldError('meerdereDagenWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                           {meerdereDagenWandelenOptions.map((option) => (
                             <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.meerdereDagenWandelen === option ? 'ring-2 ring-purple-accent' : ''}`}>
