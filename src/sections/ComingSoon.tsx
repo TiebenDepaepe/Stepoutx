@@ -75,9 +75,6 @@ export default function ComingSoon() {
                 Blijf op de hoogte
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
-              <p className="text-center text-xs text-charcoal/50 mt-3">
-                Schrijf je in voor de nieuwsbrief
-              </p>
             </div>
           </div>
         </div>
