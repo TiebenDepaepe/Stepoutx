@@ -37,7 +37,6 @@ const carouselOnlyImages = [
   { src: '/images/a5d3a136-d9a2-4804-969d-06bb51eda3b9.jpeg', alt: 'Groep' },
   { src: '/images/b0686d8a-dcba-43d6-adfd-13b99406a083.jpeg', alt: 'Activiteit' },
   { src: '/images/bccd2d33-5723-4dd5-8d51-dbfa949b2dcf.jpeg', alt: 'Moment' },
-  { src: '/images/DSC04417.jpeg', alt: 'Foto' },
   { src: '/images/ef766023-579f-4d69-97e1-74847ab2f92a.jpeg', alt: 'Herinnering' },
   { src: '/images/IMG_0633.jpeg', alt: 'Expeditie' },
   { src: '/images/IMG_2904.jpeg', alt: 'Avontuur' },
