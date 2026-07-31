@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Check, Sparkles, ArrowRight, Info } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight, Info } from 'lucide-react';
 
 const includedItems = [
   {
@@ -105,6 +105,38 @@ export default function Pricing() {
                   De overnachtingen zelf zijn niet vooraf geboekt of inbegrepen. Samen met de groep ga je iedere avond op zoek naar een slaapplek bij locals.
                 </p>
               </div>
+            </div>
+
+            {/* Niet inbegrepen Section */}
+            <div className="border-t border-charcoal/10 pt-6 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
+                  <X className="w-5 h-5 text-gray-500" />
+                </div>
+                <h3 className="text-xl font-display font-bold text-charcoal/70">Wat is niet inbegrepen?</h3>
+              </div>
+              
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <X className="w-3 h-3 text-red-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-charcoal/70 text-sm leading-relaxed">Ontbijt en lunch tijdens de expeditie</p>
+                    <p className="text-xs text-charcoal/50 mt-1 italic">
+                      (Hou hiervoor ongeveer €30 budget over voor de volledige reis.)
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <X className="w-3 h-3 text-red-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-charcoal/70 text-sm leading-relaxed">Persoonlijke uitgaven</p>
+                  </div>
+                </li>
+              </ul>
             </div>
 
             {/* CTA */}
