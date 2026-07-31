@@ -468,8 +468,9 @@ export default function ContactAndSignup() {
                 </p>
               </div>
 
-              {/* Part 1 - Basic Info (partially visible with more fields) */}
-              <div className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 transition-opacity duration-500 ${showForm ? 'opacity-100' : 'opacity-60'}`}>
+              <form onSubmit={handleSubmit} className="space-y-8 mt-8">
+                {/* Part 1 - Basic Info (partially visible with more fields) */}
+                <div className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 transition-opacity duration-500 ${showForm ? 'opacity-100' : 'opacity-60'}`}>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
                     <User className="w-5 h-5 text-purple-accent" />
@@ -621,7 +622,7 @@ export default function ContactAndSignup() {
 
               {/* Rest of form - only visible when revealed */}
               {showForm && (
-                <form onSubmit={handleSubmit} className="space-y-8 mt-8">
+                <div className="space-y-8 mt-8">
                   {/* Part 2 - Availability */}
                   <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                     <div className="flex items-center gap-3 mb-6">
@@ -1454,8 +1455,9 @@ export default function ContactAndSignup() {
                       </div>
                     )}
                   </div>
-                </form>
+                </div>
               )}
+            </form>
             </div>
           </div>
 
