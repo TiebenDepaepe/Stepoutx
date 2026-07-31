@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
@@ -194,7 +193,6 @@ const responseOptions = [
 ];
 
 export default function ContactAndSignup() {
-  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const revealForm = () => setShowForm(true);
@@ -347,9 +345,6 @@ export default function ContactAndSignup() {
     
     if (result.success) {
       setSubmitted(true);
-      setTimeout(() => {
-        navigate('/admin');
-      }, 2000);
     }
   };
 
