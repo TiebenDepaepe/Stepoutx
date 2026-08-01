@@ -58,7 +58,7 @@ export function CalendarDatePicker({
         <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/10 px-3 py-2 rounded-xl text-charcoal/80">
           <span className="font-semibold text-purple-accent">Open datums:</span>
           <div>• 10 - 15 augustus <span className="text-amber-600 font-bold">(last minute plek)</span></div>
-          <div>• 17 - 22 augustus</div>
+          <div>• 17 - 22 augustus <span className="text-amber-600 font-bold">(last minute plek)</span></div>
           <div>• 24 - 29 augustus <span className="text-purple-accent font-bold">(1 plek)</span></div>
           <div>• 31 augustus - 5 september</div>
           <div>• 7 - 12 september</div>

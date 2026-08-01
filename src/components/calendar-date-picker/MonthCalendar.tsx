@@ -240,7 +240,7 @@ export function MonthCalendar({
                         }
                       }}
                     >
-                      {range.trip.id === '10 - 15 augustus' && range.isVisible && (
+                      {(range.trip.id === '10 - 15 augustus' || range.trip.id === '17 - 22 augustus') && range.isVisible && (
                         <span className="text-[7.5px] md:text-[9px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
                           Last Minute
                         </span>
