@@ -456,11 +456,13 @@ export default function ContactAndSignup() {
                   Inschrijfformulier
                 </h3>
                 <p className="text-charcoal/60">
-                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). PlotTwist is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen, we vormen diverse groepen, dus ook introverte of rustigere personen zijn helemaal welkom.
+                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). PlotTwist is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen.
                 </p>
-                <p className="text-charcoal/60">
-                  Vul alle velden in zodat we je goed kunnen plaatsen
-                </p>
+                <div className="mt-3">
+                  <span className="inline-block px-4 py-2 bg-yellow-100 text-yellow-900 font-bold text-sm rounded-lg border border-yellow-300/50 shadow-sm">
+                    duidt zoveel mogelijk datums aan, zo heb je meer kans op een match!
+                  </span>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8 mt-8">
