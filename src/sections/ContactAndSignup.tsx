@@ -455,9 +455,14 @@ export default function ContactAndSignup() {
                 <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
                   Inschrijfformulier
                 </h3>
-                <p className="text-charcoal/60">
-                  <span className="font-bold">belangrijke note:</span> je schrijft je ALLEEN in (vriend of vriendinnen samen is niet toegelaten). PlotTwist is bedoeld om nieuwe mensen te leren kennen. Wees eerlijk bij het invullen.
-                </p>
+                <div className="text-charcoal/60 space-y-3">
+                  <p>
+                    <span className="font-bold text-charcoal">Belangrijk:</span> je schrijft je altijd alleen in. Samen inschrijven met een vriend of vriendin is niet mogelijk, omdat PlotTwist net bedoeld is om nieuwe mensen te leren kennen.
+                  </p>
+                  <p>
+                    Vul de vragen daarom eerlijk in. We besteden veel tijd en aandacht aan het samenstellen van een groep die goed bij elkaar past. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen.
+                  </p>
+                </div>
                 <div className="mt-3">
                   <span className="inline-block px-4 py-2 bg-yellow-100 text-yellow-900 font-bold text-sm rounded-lg border border-yellow-300/50 shadow-sm">
                     duidt zoveel mogelijk datums aan, zo heb je meer kans op een match!
