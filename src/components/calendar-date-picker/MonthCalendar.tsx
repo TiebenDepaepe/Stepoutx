@@ -240,12 +240,32 @@ export function MonthCalendar({
                         }
                       }}
                     >
-                      {(range.trip.id === '17 - 22 augustus' || range.trip.id === '7 - 12 september') && range.isVisible && (
+                      {/* Urgency badges (1 plek over / last minute) */}
+                      {range.trip.id === '10 - 15 augustus' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30 animate-pulse">
+                          1 Plek L.M.
+                        </span>
+                      )}
+                      {range.trip.id === '17 - 22 augustus' && range.isVisible && (
                         <span className="text-[7.5px] md:text-[9px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30 animate-pulse">
                           1 Plek Over
                         </span>
                       )}
-                      {(range.trip.id === '10 - 15 augustus' || range.trip.id === '24 - 29 augustus' || range.trip.id === '31 augustus - 5 september' || range.trip.id === '14 - 19 september' || range.trip.id === '21 - 26 september') && range.isVisible && (
+                      
+                      {/* Medium Availability badges (2 / 3 plekken) */}
+                      {range.trip.id === '24 - 29 augustus' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-purple-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          3 Plekken
+                        </span>
+                      )}
+                      {range.trip.id === '7 - 12 september' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-purple-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          2 Plekken
+                        </span>
+                      )}
+
+                      {/* High Availability badges (7 plekken) */}
+                      {(range.trip.id === '31 augustus - 5 september' || range.trip.id === '14 - 19 september' || range.trip.id === '21 - 26 september') && range.isVisible && (
                         <span className="text-[7.5px] md:text-[9px] bg-emerald-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
                           7 Plekken
                         </span>
