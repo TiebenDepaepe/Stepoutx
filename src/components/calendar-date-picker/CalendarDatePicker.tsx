@@ -37,20 +37,33 @@ export function CalendarDatePicker({
       </p>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-4 mb-5 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-mint/60 border border-mint" />
-          <span className="text-charcoal/70">Beschikbaar</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-mint/60 ring-2 ring-blue-500" />
-          <span className="text-charcoal/70">Geselecteerd</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300 flex items-center justify-center">
-            <span className="text-[8px] text-gray-400">×</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-xs">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-mint/60 border border-mint" />
+            <span className="text-charcoal/70">Beschikbaar</span>
           </div>
-          <span className="text-charcoal/70">Vol</span>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-mint/60 ring-2 ring-blue-500" />
+            <span className="text-charcoal/70">Geselecteerd</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-gray-200 border border-gray-300 flex items-center justify-center">
+              <span className="text-[8px] text-gray-400">×</span>
+            </div>
+            <span className="text-charcoal/70">Vol</span>
+          </div>
+        </div>
+        
+        <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/10 px-3 py-2 rounded-xl text-charcoal/80">
+          <span className="font-semibold text-purple-accent">Open datums:</span>
+          <div>• 10 - 15 augustus <span className="text-amber-600 font-bold">(last minute plek)</span></div>
+          <div>• 17 - 22 augustus</div>
+          <div>• 24 - 29 augustus <span className="text-purple-accent font-bold">(1 plek)</span></div>
+          <div>• 31 augustus - 5 september</div>
+          <div>• 7 - 12 september</div>
+          <div>• 14 - 19 september</div>
+          <div>• 21 - 26 september</div>
         </div>
       </div>
 

@@ -239,7 +239,18 @@ export function MonthCalendar({
                           }
                         }
                       }}
-                    />
+                    >
+                      {range.trip.id === '10 - 15 augustus' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          Last Minute
+                        </span>
+                      )}
+                      {range.trip.id === '24 - 29 augustus' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-purple-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          1 Plek
+                        </span>
+                      )}
+                    </div>
                   );
                 })}
 
