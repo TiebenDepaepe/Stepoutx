@@ -123,7 +123,6 @@ export function useCalendarDates(selectedYear: number = 2026) {
     { month: 6, name: 'Juli', year: selectedYear },
     { month: 7, name: 'Augustus', year: selectedYear },
     { month: 8, name: 'September', year: selectedYear },
-    { month: 9, name: 'Oktober', year: selectedYear },
   ], [selectedYear]);
 
   const getDaysForMonth = (month: number, year: number): CalendarDay[] => {
