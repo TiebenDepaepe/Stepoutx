@@ -241,7 +241,11 @@ export function MonthCalendar({
                       }}
                     >
                       {/* Urgency badges (1 plek over / last minute) */}
-                      
+                      {isDisabled && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          Vol
+                        </span>
+                      )}
                       {/* Medium Availability badges (2 / 3 plekken) */}
 
                       {/* High Availability badges (4, 5, 6 plekken) */}
