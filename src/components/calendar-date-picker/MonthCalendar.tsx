@@ -244,10 +244,20 @@ export function MonthCalendar({
                       
                       {/* Medium Availability badges (2 / 3 plekken) */}
 
-                      {/* High Availability badges (7 plekken) */}
-                      {(range.trip.id === '31 augustus - 5 september' || range.trip.id === '14 - 19 september' || range.trip.id === '21 - 26 september') && range.isVisible && (
+                      {/* High Availability badges (4, 5, 6 plekken) */}
+                      {range.trip.id === '31 augustus - 5 september' && range.isVisible && (
                         <span className="text-[7.5px] md:text-[9px] bg-emerald-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
-                          7 Plekken
+                          4 Plekken
+                        </span>
+                      )}
+                      {range.trip.id === '14 - 19 september' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-emerald-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          5 Plekken
+                        </span>
+                      )}
+                      {range.trip.id === '21 - 26 september' && range.isVisible && (
+                        <span className="text-[7.5px] md:text-[9px] bg-emerald-600 text-white px-1 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          6 Plekken
                         </span>
                       )}
                     </div>

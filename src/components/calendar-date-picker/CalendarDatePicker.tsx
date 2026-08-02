@@ -57,9 +57,9 @@ export function CalendarDatePicker({
         
         <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/10 px-3 py-2 rounded-xl text-charcoal/80">
           <span className="font-semibold text-purple-accent">Open datums:</span>
-          <div>• 31 augustus - 5 september <span className="text-emerald-600 font-bold">(7 plekken)</span></div>
-          <div>• 14 - 19 september <span className="text-emerald-600 font-bold">(7 plekken)</span></div>
-          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(7 plekken)</span></div>
+          <div>• 31 augustus - 5 september <span className="text-emerald-600 font-bold">(4 plekken)</span></div>
+          <div>• 14 - 19 september <span className="text-emerald-600 font-bold">(5 plekken)</span></div>
+          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(6 plekken)</span></div>
         </div>
       </div>
 
