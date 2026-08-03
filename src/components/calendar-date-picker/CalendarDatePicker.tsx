@@ -60,10 +60,10 @@ export function CalendarDatePicker({
           <div>• 10 - 15 augustus <span className="text-red-600 font-bold">(vol)</span></div>
           <div>• 17 - 22 augustus <span className="text-red-600 font-bold">(vol)</span></div>
           <div>• 24 - 29 augustus <span className="text-red-600 font-bold">(vol)</span></div>
-          <div>• 31 augustus - 5 september <span className="text-emerald-600 font-bold">(4 plekken)</span></div>
+          <div>• 31 augustus - 5 september <span className="text-emerald-600 font-bold">(enkel nog plaats voor jongens)</span></div>
           <div>• 7 - 12 september <span className="text-red-600 font-bold">(vol)</span></div>
-          <div>• 14 - 19 september <span className="text-emerald-600 font-bold">(5 plekken)</span></div>
-          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(6 plekken)</span></div>
+          <div>• 14 - 19 september <span className="text-red-600 font-bold">(vol)</span></div>
+          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(16 plekken)</span></div>
         </div>
       </div>
 
