@@ -44,7 +44,7 @@ const rawTripData = [
   { date: '10 - 15 augustus', disabled: true, full: true },
   { date: '17 - 22 augustus', disabled: true, full: true },
   { date: '24 - 29 augustus', disabled: true, full: true },
-  { date: '31 augustus - 5 september', disabled: false, full: false },
+  { date: '31 augustus - 5 september', disabled: true, full: true },
   { date: '7 - 12 september', disabled: true, full: true },
   { date: '14 - 19 september', disabled: true, full: true },
   { date: '21 - 26 september', disabled: false, full: false },
