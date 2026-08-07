@@ -3,12 +3,10 @@ import { Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Vide
 
 // Available dates for selection
 const availableDates = [
-  '6-12 april 2025',
-  '20-26 april 2025',
-  '4-10 mei 2025',
-  '18-24 mei 2025',
-  '1-7 juni 2025',
-  '15-21 juni 2025',
+  '31 augustus - 5 september',
+  '7 - 12 september',
+  '14 - 19 september',
+  '21 - 26 september',
 ];
 
 // Motivation options
