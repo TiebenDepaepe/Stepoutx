@@ -469,6 +469,7 @@ The Supabase CLI is set up so **any collaborator can run it through their AI cod
    ```
 
 ### Notes for AI agents
+- **A `supabase-db` skill exists at `.claude/skills/supabase-db/SKILL.md`.** Invoke it for any database task — querying `inschrijvingen`, schema changes, migrations, RLS, storage. It carries the full CLI workflow, the login/link steps for collaborators, and the gotchas (notably: `db query` needs `--linked`, or it tries a local Postgres that does not exist here).
 - If the CLI is missing, prefer `npx supabase` over installing software on the user's machine.
 - If a command fails with an authentication error, ask the user to run `supabase login` themselves — never ask for, echo, or store their access token.
 - `supabase/.temp/` is per-machine state and must never be committed.
