@@ -136,11 +136,11 @@ export const signupFormSchema = z.object({
   
   foto: z.instanceof(File, { message: 'Upload een foto van jezelf' })
     .refine((file) => file.size <= 50 * 1024 * 1024, {
-      message: 'Afbeelding mag maximaal 50MB zijn',
+      message: 'Foto is te groot, maximaal 50MB toegelaten. Kies een kleinere foto.',
     }),
   video: z.instanceof(File)
     .refine((file) => file.size <= 50 * 1024 * 1024, {
-      message: 'Video mag maximaal 50MB zijn',
+      message: 'Video is te groot, maximaal 50MB toegelaten. Tip: film in 1080p in plaats van 4K, of maak je video iets korter.',
     })
     .nullable()
     .optional(),
@@ -155,21 +155,20 @@ export const signupFormSchema = z.object({
 export type SignupFormData = z.infer<typeof signupFormSchema>;
 
 // Custom validation for file types and sizes
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+const formatMB = (bytes: number): string => (bytes / (1024 * 1024)).toFixed(0);
+
 export const validateFile = (file: File | null, type: 'image' | 'video'): string | null => {
   if (!file) return null;
-  
-  if (type === 'image') {
-    if (file.size > 50 * 1024 * 1024) {
-      return 'Afbeelding mag maximaal 50MB zijn';
+
+  if (file.size > MAX_FILE_SIZE) {
+    if (type === 'image') {
+      return `Deze foto is ${formatMB(file.size)}MB, maximaal 50MB toegelaten. Kies een kleinere foto.`;
     }
+    return `Deze video is ${formatMB(file.size)}MB, maximaal 50MB toegelaten. Tip: film in 1080p in plaats van 4K, of maak je video iets korter.`;
   }
-  
-  if (type === 'video') {
-    if (file.size > 50 * 1024 * 1024) {
-      return 'Video mag maximaal 50MB zijn';
-    }
-  }
-  
+
   return null;
 };
 
