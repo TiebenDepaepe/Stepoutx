@@ -56,11 +56,11 @@ export function CalendarDatePicker({
         </div>
         
         <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/10 px-3 py-2 rounded-xl text-charcoal/80">
-          <span className="font-semibold text-purple-accent">Open datums:</span>
-          <div>• 31 augustus - 5 september</div>
-          <div>• 7 - 12 september</div>
-          <div>• 14 - 19 september</div>
-          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(16 plekken)</span></div>
+          <span className="font-semibold text-purple-accent">Beschikbaarheid datums:</span>
+          <div className="text-charcoal/50">• 31 augustus - 5 september <span className="text-red-500 font-semibold">(Vol)</span></div>
+          <div className="text-charcoal/50">• 7 - 12 september <span className="text-red-500 font-semibold">(Vol)</span></div>
+          <div className="text-charcoal/50">• 14 - 19 september <span className="text-red-500 font-semibold">(Vol)</span></div>
+          <div>• 21 - 26 september <span className="text-emerald-600 font-bold">(16 plekken open)</span></div>
         </div>
       </div>
 
