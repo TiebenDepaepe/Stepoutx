@@ -4,6 +4,12 @@ import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
 
+/** Bestandsgrootte tonen, zodat "te groot" niet als een raadsel aanvoelt. */
+const formatFileSize = (bytes: number): string =>
+  bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
 // Form data and options
 const motivationOptions = [
   'nieuwe vrienden maken',
@@ -199,9 +205,21 @@ export default function ContactAndSignup() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  
+
+  /**
+   * De meeste bezoekers komen via een link in Instagram binnen en blijven dan in
+   * de in-app browser hangen. Die kan op heel wat toestellen de bestandskiezer
+   * niet openen: je tikt op "upload een foto" en er gebeurt simpelweg niets.
+   * Daar kunnen wij in code niets aan verhelpen, dus zeggen we het gewoon.
+   */
+  const [isInAppBrowser] = useState(() =>
+    /Instagram|FBAN|FBAV|FB_IAB|Messenger|TikTok|Snapchat|Pinterest|Line\//i.test(
+      typeof navigator === 'undefined' ? '' : navigator.userAgent
+    )
+  );
+
   // Form submission hook
-  const { submitForm, isSubmitting, isError, error, uploadProgress } = useFormSubmit();
+  const { submitForm, isSubmitting, isError, error, uploadProgress, uploadWarnings } = useFormSubmit();
   
   // Form validation errors
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -289,7 +307,10 @@ export default function ContactAndSignup() {
         setFormData((prev) => ({ ...prev, [field]: file }));
       }
     } else {
-      // File was cleared
+      // File was cleared. Ook de input leegmaken: anders vuurt het opnieuw
+      // kiezen van net datzelfde bestand geen change-event af.
+      const input = document.getElementById(`${field}-upload`) as HTMLInputElement | null;
+      if (input) input.value = '';
       setFormData((prev) => ({ ...prev, [field]: null }));
       setFormErrors((prev) => {
         const newErrors = { ...prev };
@@ -363,6 +384,20 @@ export default function ContactAndSignup() {
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-charcoal mb-4">Bedankt voor je inschrijving!</h2>
             <p className="text-charcoal/70 text-lg">We nemen zo snel mogelijk contact met je op. Hou je mailbox in de gaten!</p>
+            {uploadWarnings.length > 0 && (
+              <div className="mt-6 rounded-2xl bg-white/70 border border-amber-300 p-4 text-left">
+                <p className="text-sm font-medium text-amber-900 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  Je inschrijving is opgeslagen, alleen je bestand niet
+                </p>
+                {uploadWarnings.map((warning) => (
+                  <p key={warning} className="mt-1.5 text-xs text-amber-900/80 leading-relaxed">{warning}</p>
+                ))}
+                <p className="mt-2 text-xs text-amber-900/80 leading-relaxed">
+                  Geen zorgen: we hebben al je antwoorden. Stuur je foto of video gerust door via Instagram, dan hangen we ze bij je inschrijving.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -1292,10 +1327,30 @@ export default function ContactAndSignup() {
                       <h4 className="text-lg font-display font-bold text-charcoal">Deel 6 – Foto & Video</h4>
                     </div>
                     <div className="space-y-6">
+                      {isInAppBrowser && (
+                        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4">
+                          <p className="text-sm font-medium text-amber-900 flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                            Je bekijkt deze pagina in de browser van een app (bv. Instagram)
+                          </p>
+                          <p className="mt-1.5 text-xs text-amber-900/80 leading-relaxed">
+                            Daarin lukt het kiezen van een foto of video vaak niet: je tikt op het vak hieronder en er gebeurt niets.
+                            Tik rechtsboven op de drie puntjes en kies “Openen in browser” (Safari of Chrome), dan werkt het wel.
+                            Lukt dat ook niet? Verstuur je inschrijving gerust zonder foto – die telt evengoed mee.
+                          </p>
+                        </div>
+                      )}
                       <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Upload een foto *</label>
+                        <label className="block text-sm font-medium text-charcoal mb-1">
+                          Upload een foto <span className="text-charcoal/50">(optioneel, maar we zien je graag)</span>
+                        </label>
+                        <p className="text-xs text-charcoal/50 mb-3">
+                          Lukt uploaden niet op je telefoon? Verstuur je inschrijving dan gewoon zonder foto en stuur ze daarna door via Instagram.
+                        </p>
                         <div className="relative">
-                          <input type="file" accept="image/*" onChange={(e) => handleFileChange('foto', e.target.files?.[0] || null)} className="hidden" id="foto-upload" />
+                          {/* sr-only en niet `hidden`: een input met display:none krijgt in
+                              sommige in-app browsers geen klik door vanuit het label. */}
+                          <input type="file" accept="image/*" onChange={(e) => handleFileChange('foto', e.target.files?.[0] || null)} className="sr-only" id="foto-upload" data-field="foto" />
                           <label 
                             htmlFor="foto-upload" 
                             className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
@@ -1304,10 +1359,17 @@ export default function ContactAndSignup() {
                                 : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
                             }`}
                           >
-                            <Upload className={`w-5 h-5 ${getFieldError('foto') ? 'text-red-400' : 'text-charcoal/50'}`} />
-                            <span className={`${getFieldError('foto') ? 'text-red-600' : 'text-charcoal/70'}`}>{formData.foto ? formData.foto.name : 'Klik om een foto te uploaden'}</span>
+                            <Upload className={`w-5 h-5 flex-shrink-0 ${getFieldError('foto') ? 'text-red-400' : 'text-charcoal/50'}`} />
+                            <span className={`min-w-0 break-words ${getFieldError('foto') ? 'text-red-600' : 'text-charcoal/70'}`}>
+                              {formData.foto ? `${formData.foto.name} (${formatFileSize(formData.foto.size)})` : 'Klik om een foto te uploaden'}
+                            </span>
                           </label>
                         </div>
+                        {formData.foto && (
+                          <button type="button" onClick={() => handleFileChange('foto', null)} className="mt-1.5 text-xs text-charcoal/50 underline hover:text-charcoal">
+                            Foto verwijderen
+                          </button>
+                        )}
                         {getFieldError('foto') && (
                           <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />
@@ -1319,7 +1381,7 @@ export default function ContactAndSignup() {
                         <label className="block text-sm font-medium text-charcoal mb-2">Upload een korte video (15–30 sec) <span className="text-charcoal/50">(optioneel)</span></label>
                         <p className="text-xs text-charcoal/50 mb-3">Vertel kort wie je bent en waarom je mee wil. Max 50MB: film in 1080p (niet in 4K), dan zit je ruim onder de limiet.</p>
                         <div className="relative">
-                          <input type="file" accept="video/*" onChange={(e) => handleFileChange('video', e.target.files?.[0] || null)} className="hidden" id="video-upload" />
+                          <input type="file" accept="video/*" onChange={(e) => handleFileChange('video', e.target.files?.[0] || null)} className="sr-only" id="video-upload" data-field="video" />
                           <label 
                             htmlFor="video-upload" 
                             className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
@@ -1328,10 +1390,17 @@ export default function ContactAndSignup() {
                                 : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
                             }`}
                           >
-                            <Video className={`w-5 h-5 ${getFieldError('video') ? 'text-red-400' : 'text-charcoal/50'}`} />
-                            <span className={`${getFieldError('video') ? 'text-red-600' : 'text-charcoal/70'}`}>{formData.video ? formData.video.name : 'Klik om een video te uploaden'}</span>
+                            <Video className={`w-5 h-5 flex-shrink-0 ${getFieldError('video') ? 'text-red-400' : 'text-charcoal/50'}`} />
+                            <span className={`min-w-0 break-words ${getFieldError('video') ? 'text-red-600' : 'text-charcoal/70'}`}>
+                              {formData.video ? `${formData.video.name} (${formatFileSize(formData.video.size)})` : 'Klik om een video te uploaden'}
+                            </span>
                           </label>
                         </div>
+                        {formData.video && (
+                          <button type="button" onClick={() => handleFileChange('video', null)} className="mt-1.5 text-xs text-charcoal/50 underline hover:text-charcoal">
+                            Video verwijderen
+                          </button>
+                        )}
                         {getFieldError('video') && (
                           <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />

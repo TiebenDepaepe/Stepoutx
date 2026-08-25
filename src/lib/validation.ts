@@ -134,10 +134,16 @@ export const signupFormSchema = z.object({
     .max(20, 'GSM-nummer noodcontact is te lang')
     .regex(/^\+?[\d\s().-]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
-  foto: z.instanceof(File, { message: 'Upload een foto van jezelf' })
+  // Een foto vragen we nadrukkelijk, maar we blokkeren de inschrijving er niet
+  // mee. Uploaden loopt op telefoons vaak mis (in-app browser van Instagram,
+  // foto's die nog in iCloud staan, 4K-bestanden) en dan is iemand het hele
+  // ingevulde formulier kwijt aan iets waar hij of zij niets aan kan doen.
+  foto: z.instanceof(File)
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Foto is te groot, maximaal 50MB toegelaten. Kies een kleinere foto.',
-    }),
+    })
+    .nullable()
+    .optional(),
   video: z.instanceof(File)
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Video is te groot, maximaal 50MB toegelaten. Tip: film in 1080p in plaats van 4K, of maak je video iets korter.',

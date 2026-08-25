@@ -56,17 +56,28 @@ interface SubmitState {
     foto: number;
     video: number;
   };
+  /** Dutch sentences about uploads that failed while the registration itself was saved. */
+  uploadWarnings: string[];
 }
 
 interface SubmitResult {
   success: boolean;
   error?: string;
+  warnings?: string[];
 }
 
 type UploadKind = 'foto' | 'video';
 
 /** An upload error whose message is already a finished Dutch sentence. */
-export class UploadFailure extends Error {}
+export class UploadFailure extends Error {
+  /** De onvertaalde oorzaak, voor de notitie die de admin te zien krijgt. */
+  readonly technical: string;
+
+  constructor(message: string, technical = '') {
+    super(message);
+    this.technical = technical;
+  }
+}
 
 /**
  * A File from an <input> is a pointer to a file on the device, not a copy of
@@ -80,7 +91,8 @@ export class UploadFailure extends Error {}
 export const assertFileReadable = async (file: File, kind: UploadKind): Promise<void> => {
   if (file.size === 0) {
     throw new UploadFailure(
-      `Je ${kind} is leeg (0 bytes). Waarschijnlijk is het bestand niet volledig op je toestel opgeslagen. Kies je ${kind} opnieuw en probeer het nog eens.`
+      `Je ${kind} is leeg (0 bytes). Waarschijnlijk is het bestand niet volledig op je toestel opgeslagen. Kies je ${kind} opnieuw en probeer het nog eens.`,
+      'file.size === 0'
     );
   }
 
@@ -98,7 +110,8 @@ export const assertFileReadable = async (file: File, kind: UploadKind): Promise<
     // this console line is the only trace of why an upload never started.
     console.error(`File no longer readable (${kind}):`, readError);
     throw new UploadFailure(
-      `We konden je ${kind} niet meer lezen. Dat gebeurt soms als je tussendoor van app wisselde, of als het bestand nog in iCloud of Google Foto's staat. Selecteer je ${kind} hierboven opnieuw en verstuur daarna meteen – al je andere antwoorden blijven gewoon staan.`
+      `We konden je ${kind} niet meer lezen. Dat gebeurt soms als je tussendoor van app wisselde, of als het bestand nog in iCloud of Google Foto's staat. Selecteer je ${kind} hierboven opnieuw en verstuur daarna meteen – al je andere antwoorden blijven gewoon staan.`,
+      `unreadable: ${readError instanceof Error ? readError.message : String(readError)}`
     );
   }
 };
@@ -140,6 +153,7 @@ export function useFormSubmit() {
     isError: false,
     error: null,
     uploadProgress: { foto: 0, video: 0 },
+    uploadWarnings: [],
   });
 
   const uploadFile = async (
@@ -168,7 +182,7 @@ export function useFormSubmit() {
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
-        throw new UploadFailure(uploadErrorMessage(uploadError.message, kind));
+        throw new UploadFailure(uploadErrorMessage(uploadError.message, kind), uploadError.message);
       }
 
       // Return the file path (not public URL - bucket is private)
@@ -177,10 +191,9 @@ export function useFormSubmit() {
       // Already translated above - do not run it through the mapper twice.
       if (error instanceof UploadFailure) throw error;
 
+      const raw = error instanceof Error ? error.message : String(error);
       console.error(`Upload error for ${folder}:`, error);
-      throw new UploadFailure(
-        uploadErrorMessage(error instanceof Error ? error.message : '', kind)
-      );
+      throw new UploadFailure(uploadErrorMessage(raw, kind), raw);
     }
   };
 
@@ -191,69 +204,128 @@ export function useFormSubmit() {
       isError: false,
       error: null,
       uploadProgress: { foto: 0, video: 0 },
+      uploadWarnings: [],
     });
 
     try {
       // 1. Upload files first (if any)
       let fotoPath: string | null = null;
       let videoPath: string | null = null;
+      const warnings: string[] = [];
+      const diagnostics: string[] = [];
+
+      /**
+       * Een mislukte upload mag nooit een volledig ingevuld formulier kosten. Op
+       * telefoons gaat uploaden regelmatig mis (in-app browser, iCloud, groot
+       * bestand); we slaan de inschrijving dan gewoon op zonder het bestand en
+       * vertellen achteraf wat er ontbreekt.
+       */
+      const tryUpload = async (
+        file: File,
+        folder: 'photos' | 'videos',
+        kind: UploadKind
+      ): Promise<string | null> => {
+        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 30 } }));
+        try {
+          const path = await uploadFile(file, folder);
+          setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 100 } }));
+          return path;
+        } catch (uploadError) {
+          console.error(`Upload skipped for ${kind}:`, uploadError);
+          setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 0 } }));
+          warnings.push(
+            uploadError instanceof Error
+              ? uploadError.message
+              : `Het uploaden van je ${kind} is mislukt.`
+          );
+          diagnostics.push(
+            `${kind} (${file.name}, ${Math.round(file.size / 1024)} KB): ${
+              uploadError instanceof UploadFailure && uploadError.technical
+                ? uploadError.technical
+                : uploadError instanceof Error
+                  ? uploadError.message
+                  : String(uploadError)
+            }`
+          );
+          return null;
+        }
+      };
 
       if (data.foto) {
-        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, foto: 30 } }));
-        fotoPath = await uploadFile(data.foto, 'photos');
-        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, foto: 100 } }));
+        fotoPath = await tryUpload(data.foto, 'photos', 'foto');
       }
 
       if (data.video) {
-        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, video: 30 } }));
-        videoPath = await uploadFile(data.video, 'videos');
-        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, video: 100 } }));
+        videoPath = await tryUpload(data.video, 'videos', 'video');
       }
 
+      /**
+       * Mislukte uploads verdwenen tot nu toe spoorloos: de bezoeker zag een
+       * foutmelding en wij zagen niets. Deze notitie belandt in het admin-veld
+       * bij de inschrijving, zodat de volgende keer meteen duidelijk is wat er
+       * misging en op welk toestel.
+       */
+      const notities = diagnostics.length
+        ? [
+            'Automatisch genoteerd: uploaden mislukt tijdens het inschrijven.',
+            ...diagnostics,
+            `Browser: ${typeof navigator === 'undefined' ? 'onbekend' : navigator.userAgent.slice(0, 300)}`,
+          ].join('\n')
+        : null;
+
       // 2. Insert form data to database
-      const { error: insertError } = await supabase
-        .from('inschrijvingen')
-        .insert({
-          naam: data.naam,
-          leeftijd: parseInt(data.leeftijd),
-          woonplaats: data.woonplaats,
-          gsm: data.gsm,
-          email: data.email,
-          instagram: data.instagram || null,
-          beschikbaarheid: data.beschikbaarheid,
-          motivatie: data.motivatie,
-          doelen: data.doelen,
-          persoonlijkheid: data.persoonlijkheid,
-          groepsrol: data.groepsrol,
-          spannendst: data.spannendst,
-          ongemakkelijk: data.ongemakkelijk,
-          waarom_passen: data.waaromPassen,
-          wat_spreekt_aan: data.watSpreektAan,
-          sportiviteit: data.sportiviteit,
-          sociale_interactie: data.socialeInteractie,
-          zelfstandigheid: data.zelfstandigheid,
-          // New questions for Part 4
-          km_wandelen: data.kmWandelen,
-          meerdere_dagen_wandelen: data.meerdereDagenWandelen,
-          bereid_trainen: data.bereidTrainen,
-          fysieke_uitdaging: data.fysiekeUitdaging,
-          lichamelijke_klachten: data.lichamelijkeKlachten,
-          reactie_regen_moeheid: data.reactieRegenMoeheid,
-          omgang_trager_wandelen: data.omgangTragerWandelen,
-          eigen_moeheid: data.eigenMoeheid,
-          omgang_groepsbeslissing: data.omgangGroepsbeslissing,
-          omgang_irritaties_conflicten: data.omgangIrritatiesConflicten,
-          ergernissen_anderen: data.ergernissenAnderen,
-          type_persoon_botsen: data.typePersoonBotsen,
-          behoefte_groep_moeilijk: data.behoefteGroepMoeilijk,
-          reden_stoppen: data.redenStoppen,
-          medisch: data.medisch,
-          medisch_uitleg: data.medisch ? data.medischUitleg : null,
-          noodcontact_naam: data.noodcontactNaam,
-          noodcontact_gsm: data.noodcontactGsm,
-          foto_url: fotoPath,
-          video_url: videoPath,
-        });
+      const payload = {
+        naam: data.naam,
+        leeftijd: parseInt(data.leeftijd),
+        woonplaats: data.woonplaats,
+        gsm: data.gsm,
+        email: data.email,
+        instagram: data.instagram || null,
+        beschikbaarheid: data.beschikbaarheid,
+        motivatie: data.motivatie,
+        doelen: data.doelen,
+        persoonlijkheid: data.persoonlijkheid,
+        groepsrol: data.groepsrol,
+        spannendst: data.spannendst,
+        ongemakkelijk: data.ongemakkelijk,
+        waarom_passen: data.waaromPassen,
+        wat_spreekt_aan: data.watSpreektAan,
+        sportiviteit: data.sportiviteit,
+        sociale_interactie: data.socialeInteractie,
+        zelfstandigheid: data.zelfstandigheid,
+        // New questions for Part 4
+        km_wandelen: data.kmWandelen,
+        meerdere_dagen_wandelen: data.meerdereDagenWandelen,
+        bereid_trainen: data.bereidTrainen,
+        fysieke_uitdaging: data.fysiekeUitdaging,
+        lichamelijke_klachten: data.lichamelijkeKlachten,
+        reactie_regen_moeheid: data.reactieRegenMoeheid,
+        omgang_trager_wandelen: data.omgangTragerWandelen,
+        eigen_moeheid: data.eigenMoeheid,
+        omgang_groepsbeslissing: data.omgangGroepsbeslissing,
+        omgang_irritaties_conflicten: data.omgangIrritatiesConflicten,
+        ergernissen_anderen: data.ergernissenAnderen,
+        type_persoon_botsen: data.typePersoonBotsen,
+        behoefte_groep_moeilijk: data.behoefteGroepMoeilijk,
+        reden_stoppen: data.redenStoppen,
+        medisch: data.medisch,
+        medisch_uitleg: data.medisch ? data.medischUitleg : null,
+        noodcontact_naam: data.noodcontactNaam,
+        noodcontact_gsm: data.noodcontactGsm,
+        foto_url: fotoPath,
+        video_url: videoPath,
+        ...(notities ? { notities } : {}),
+      };
+
+      let { error: insertError } = await supabase.from('inschrijvingen').insert(payload);
+
+      // Mocht die notitie-kolom niet beschrijfbaar zijn voor bezoekers, dan is
+      // de inschrijving belangrijker dan de notitie: nog eens zonder proberen.
+      if (insertError && notities) {
+        console.error('Insert with diagnostics note failed, retrying without:', insertError);
+        const { notities: _dropped, ...withoutNote } = payload;
+        ({ error: insertError } = await supabase.from('inschrijvingen').insert(withoutNote));
+      }
 
       if (insertError) {
         console.error('Insert error:', insertError);
@@ -269,9 +341,10 @@ export function useFormSubmit() {
         isError: false,
         error: null,
         uploadProgress: { foto: 100, video: 100 },
+        uploadWarnings: warnings,
       });
 
-      return { success: true };
+      return { success: true, warnings };
     } catch (error) {
       let errorMessage = 'Er ging iets mis bij het verzenden. Probeer het later opnieuw.';
       
@@ -285,6 +358,7 @@ export function useFormSubmit() {
         isError: true,
         error: errorMessage,
         uploadProgress: { foto: 0, video: 0 },
+        uploadWarnings: [],
       });
       
       return { success: false, error: errorMessage };
@@ -298,6 +372,7 @@ export function useFormSubmit() {
       isError: false,
       error: null,
       uploadProgress: { foto: 0, video: 0 },
+      uploadWarnings: [],
     });
   };
 
