@@ -645,14 +645,14 @@ export default function SignupForm() {
           {/* Submit Button */}
           <div className="text-center pt-4">
             <button
-              type="submit"
-              className="btn-primary text-lg px-10 py-4 group"
+              disabled
+              className="btn-primary text-lg px-10 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none"
             >
               <Send className="w-5 h-5 mr-2" />
-              Verstuur inschrijving
+              Binnenkort nieuwe inschrijvingen
             </button>
             <p className="text-sm text-charcoal/50 mt-4">
-              Door te versturen ga je akkoord met onze voorwaarden
+              Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
             </p>
           </div>
         </form>

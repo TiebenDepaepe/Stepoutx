@@ -37,7 +37,7 @@ const rawTripData = [
   { date: '31 augustus - 5 september', disabled: true, full: true },
   { date: '7 - 12 september', disabled: true, full: true },
   { date: '14 - 19 september', disabled: true, full: true },
-  { date: '21 - 26 september', disabled: false, full: false },
+  { date: '21 - 26 september', disabled: true, full: true },
 ];
 
 // Helper to parse Dutch month names

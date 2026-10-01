@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -198,10 +198,11 @@ const responseOptions = [
   { icon: XCircle, title: 'Niet geselecteerd', description: <>De expeditie past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
 ];
 
+const IS_REGISTRATION_OPEN = false;
+
 export default function ContactAndSignup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [showForm, setShowForm] = useState(true);
-  const revealForm = () => setShowForm(true);
+  const [showForm] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -469,41 +470,75 @@ export default function ContactAndSignup() {
         The reveal button MUST be positioned INSIDE this container to appear at the correct % height.
       */}
       <div id="signup-form" className="relative">
-        {/* Clipped container: this is the positioning context for the reveal button */}
-        <div 
-          className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-none' : 'max-h-[450px] overflow-hidden'}`}
-        >
-          {/* Gradient overlay when hidden - creates the fade-out effect at the bottom */}
-          {!showForm && (
-            <div className="absolute inset-0 z-20 backdrop-blur-[1px]">
-              <div className="h-full w-full bg-gradient-to-b from-white via-white via-[20%] to-transparent" />
-            </div>
-          )}
-
-          {/* Form content - less top padding */}
-          <div className="pt-2 pb-4 relative">
+        {!IS_REGISTRATION_OPEN ? (
+          <div className="pt-4 pb-12 relative">
             <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
             
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              {/* Form Header - partially visible */}
-              <div className={`text-center mb-6 transition-all duration-500 ${showForm ? 'opacity-100' : 'opacity-70'}`}>
-                <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
-                  Inschrijfformulier
-                </h3>
-                <div className="text-charcoal/60 space-y-3">
-                  <p>
-                    <span className="font-bold text-charcoal">Belangrijk:</span> je schrijft je altijd alleen in. Samen inschrijven met een vriend of vriendin is niet mogelijk, omdat PlotTwist net bedoeld is om nieuwe mensen te leren kennen.
-                  </p>
-                  <p>
-                    Vul de vragen daarom eerlijk in. We besteden veel tijd en aandacht aan het samenstellen van een groep die goed bij elkaar past. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen.
-                  </p>
+              <div className="bg-white rounded-3xl p-8 md:p-12 shadow-soft border border-charcoal/10 text-center my-6">
+                <div className="w-16 h-16 bg-lavender/60 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Clock className="w-8 h-8 text-purple-accent" />
                 </div>
-                <div className="mt-3">
-                  <span className="inline-block px-4 py-2 bg-yellow-100 text-yellow-900 font-bold text-sm rounded-lg border border-yellow-300/50 shadow-sm">
-                    duidt zoveel mogelijk datums aan, zo heb je meer kans op een match!
-                  </span>
+                <span className="inline-block px-4 py-1.5 bg-purple-100 text-purple-800 font-bold text-xs uppercase tracking-wider rounded-full mb-4">
+                  Inschrijvingen
+                </span>
+                <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-3">
+                  Binnenkort nieuwe inschrijvingen
+                </h3>
+                <p className="text-charcoal/70 text-base md:text-lg leading-relaxed mb-8 max-w-lg mx-auto">
+                  De inschrijvingen zijn op dit moment gesloten. Binnenkort komen er nieuwe edities en inschrijvingen beschikbaar!
+                </p>
+                
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <button
+                    disabled
+                    className="btn-primary text-base px-8 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none w-full sm:w-auto"
+                  >
+                    <Clock className="w-5 h-5 mr-2" />
+                    Binnenkort nieuwe inschrijvingen
+                  </button>
+                  <a
+                    href="#nieuwsbrief"
+                    className="px-6 py-4 rounded-xl border border-purple-accent/30 text-purple-accent font-medium hover:bg-lavender/30 transition-colors text-base inline-flex items-center justify-center w-full sm:w-auto"
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Hou me op de hoogte
+                  </a>
                 </div>
               </div>
+            </div>
+          </div>
+        ) : (
+          /* Clipped container: this is the positioning context for the reveal button */
+          <div 
+            className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-none' : 'max-h-[450px] overflow-hidden'}`}
+          >
+            {/* Gradient overlay when hidden - creates the fade-out effect at the bottom */}
+            {!showForm && (
+              <div className="absolute inset-0 z-20 backdrop-blur-[1px]">
+                <div className="h-full w-full bg-gradient-to-b from-white via-white via-[20%] to-transparent" />
+              </div>
+            )}
+
+            {/* Form content - less top padding */}
+            <div className="pt-2 pb-4 relative">
+              <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
+              
+              <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                {/* Form Header - partially visible */}
+                <div className={`text-center mb-6 transition-all duration-500 ${showForm ? 'opacity-100' : 'opacity-70'}`}>
+                  <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
+                    Inschrijfformulier
+                  </h3>
+                  <div className="text-charcoal/60 space-y-3">
+                    <p>
+                      <span className="font-bold text-charcoal">Belangrijk:</span> je schrijft je altijd alleen in. Samen inschrijven met een vriend of vriendin is niet mogelijk, omdat PlotTwist net bedoeld is om nieuwe mensen te leren kennen.
+                    </p>
+                    <p>
+                      Vul de vragen daarom eerlijk in. We besteden veel tijd en aandacht aan het samenstellen van een groep die goed bij elkaar past. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen.
+                    </p>
+                  </div>
+                </div>
 
               <form onSubmit={handleSubmit} className="space-y-8 mt-8">
                 {/* Part 1 - Basic Info (partially visible with more fields) */}
@@ -1541,16 +1576,16 @@ export default function ContactAndSignup() {
           {!showForm && (
             <div className="absolute top-[25%] left-0 right-0 z-30 flex justify-center">
               <button
-                onClick={revealForm}
-                className="btn-primary text-lg px-8 py-4 group"
+                disabled
+                className="btn-primary text-lg px-8 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none"
               >
-                <Mail className="w-5 h-5" />
-                Schrijf je hier in
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <Clock className="w-5 h-5 mr-2" />
+                Binnenkort nieuwe inschrijvingen
               </button>
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, Clock, XCircle } from 'lucide-react';
 
 const responseOptions = [
   {
@@ -108,14 +108,13 @@ export default function CTA() {
 
             {/* CTA Button at bottom */}
             <div className="text-center">
-              <a 
-                href="mailto:info@plottwisttravel.be" 
-                className="btn-primary inline-flex group text-lg px-8 py-4 whitespace-nowrap"
+              <button 
+                disabled
+                className="btn-primary inline-flex text-lg px-8 py-4 whitespace-nowrap bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none"
               >
-                <Mail className="w-5 h-5 mr-2" />
-                Schrijf je hier in
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </a>
+                <Clock className="w-5 h-5 mr-2" />
+                Binnenkort nieuwe inschrijvingen
+              </button>
             </div>
           </div>
         </div>

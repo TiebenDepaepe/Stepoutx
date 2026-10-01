@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Check, X, Sparkles } from 'lucide-react';
 
 const includedItems = [
   {
@@ -140,15 +140,14 @@ export default function Pricing() {
 
             {/* CTA */}
             <div className="pt-4">
-              <a 
-                href="#contact" 
-                className="w-full btn-primary justify-center group"
+              <button 
+                disabled
+                className="w-full btn-primary justify-center bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 hover:bg-gray-400 shadow-none pointer-events-none"
               >
-                Schrijf je nu in
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </a>
+                Binnenkort nieuwe inschrijvingen
+              </button>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Inschrijvingen geopend enkel voor 1 t.e.m. 10 augustus.
+                Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
               </p>
             </div>
           </div>

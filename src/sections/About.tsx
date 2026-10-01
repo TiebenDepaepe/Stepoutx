@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Users, Calendar, ArrowRight } from 'lucide-react';
+import { MapPin, Users, Calendar } from 'lucide-react';
 
 const highlights = [
   { icon: Users, label: '7 deelnemers' },
@@ -123,20 +123,14 @@ export default function About() {
 
             {/* Registration Alert & CTA */}
             <div className="space-y-4 mt-6">
-              <p className="text-charcoal font-semibold text-lg">
-                Inschrijvingen geopend voor 1 t.e.m. 10 augustus!
+              <p className="text-gray-600 font-semibold text-lg">
+                Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
               </p>
               <button 
-                onClick={() => {
-                  const element = document.querySelector('#contact');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }} 
-                className="btn-primary group"
+                disabled
+                className="btn-primary bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 hover:bg-gray-400 shadow-none pointer-events-none"
               >
-                Schrijf je nu in
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                Binnenkort nieuwe inschrijvingen
               </button>
             </div>
           </div>
