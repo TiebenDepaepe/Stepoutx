@@ -63,11 +63,10 @@ export default function PrivacyPolicy() {
               voor de organisatie en uitvoering van een PlotTwist-ervaring.
             </p>
             <p className="mt-3">
-              <strong>Bij bezoek aan onze website</strong> kunnen via Meta Pixel
-              en analytische cookies gegevens worden verzameld over je bezoek
-              (IP-adres, browsertype, apparaat, bezochte pagina's, klikgedrag).
-              Dit gebeurt enkel nadat je daarvoor toestemming hebt gegeven via
-              onze cookiebanner.
+              <strong>Bij bezoek aan onze website</strong> verzamelen we geen
+              gegevens over je surfgedrag: we gebruiken geen analytische
+              cookies, geen marketingcookies en geen tracking pixels. Meer
+              info vind je in ons cookiebeleid.
             </p>
             <p className="mt-3">
               Bij inschrijving via onze website kunnen wij volgende gegevens
@@ -217,15 +216,6 @@ export default function PrivacyPolicy() {
                   Rechtsgrond: toestemming (art. 6.1.a AVG)
                 </dd>
               </div>
-              <div>
-                <dt className="font-semibold text-charcoal">
-                  Analyse van websitegebruik en advertenties via cookies en
-                  Meta Pixel
-                </dt>
-                <dd className="text-charcoal/70">
-                  Rechtsgrond: toestemming (art. 6.1.a AVG)
-                </dd>
-              </div>
             </dl>
             <p className="mt-4">
               Gezondheidsgegevens zijn bijzondere persoonsgegevens onder
@@ -259,15 +249,11 @@ export default function PrivacyPolicy() {
               </li>
               <li>
                 <strong>Meta Platforms Ireland Ltd.</strong> —
-                WhatsApp-communicatie, Instagram en Meta Pixel
+                WhatsApp-communicatie en Instagram
               </li>
               <li>
                 <strong>TikTok Technology Limited</strong> — publicatie van
                 content op TikTok
-              </li>
-              <li>
-                <strong>Cybot A/S</strong> (Denemarken, Cookiebot) — beheer van
-                cookietoestemming op onze website
               </li>
               <li>
                 <strong>geselecteerde begeleiders</strong> — uitsluitend
@@ -398,22 +384,14 @@ export default function PrivacyPolicy() {
               9. Cookies
             </h2>
             <p>
-              Onze website gebruikt noodzakelijke, analytische en
-              marketingcookies.
+              Onze website gebruikt enkel wat strikt nodig is om de site te
+              laten werken. We plaatsen geen analytische cookies, geen
+              marketingcookies en geen tracking pixels zoals Meta Pixel.
             </p>
             <p className="mt-3">
-              Wij gebruiken Meta Pixel om inzicht te krijgen in websitegebruik
-              en om relevante advertenties te tonen aan geïnteresseerde
-              bezoekers.
-            </p>
-            <p className="mt-3">
-              Niet-noodzakelijke cookies worden enkel geplaatst nadat je
-              toestemming hebt gegeven via onze cookiebanner. Het beheer van
-              deze toestemming gebeurt via Cookiebot (Cybot A/S).
-            </p>
-            <p className="mt-3">
-              Je kan je voorkeuren op elk moment wijzigen via de cookieknop op
-              onze website.
+              Omdat we niets bewaren waarvoor toestemming nodig is, tonen we
+              enkel een korte informatieve melding. In ons cookiebeleid lees je
+              precies wat er in je browser bewaard wordt en hoe je dat wist.
             </p>
           </section>
 

@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 // Main website sections
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CookieNotice from './components/CookieNotice';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Testimonial from './sections/Testimonial';
@@ -73,6 +74,7 @@ function App() {
           {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <CookieNotice />
       </HashRouter>
     </AuthProvider>
   );
