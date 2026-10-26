@@ -1,22 +1,26 @@
+import { useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const storedItems = [
-  {
-    name: 'plottwist-cookie-notice',
-    purpose: 'Onthoudt dat je de cookiemelding hebt gesloten, zodat ze niet bij elk bezoek terugkomt.',
-    type: 'Lokale opslag (localStorage), functioneel',
-    duration: 'Tot je je browsergegevens wist',
-  },
-  {
-    name: 'plottwist-auth-token',
-    purpose: 'Houdt beheerders ingelogd op het afgeschermde admin-gedeelte. Gewone bezoekers krijgen dit nooit.',
-    type: 'Lokale opslag (localStorage), strikt noodzakelijk',
-    duration: 'Tot je uitlogt',
-  },
-];
-
 export default function CookiePolicy() {
+  const declarationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!declarationRef.current) return;
+
+    const script = document.createElement('script');
+    script.id = 'CookieDeclaration';
+    script.src =
+      'https://consent.cookiebot.com/357ca657-41b0-411e-af58-6b4295bcab24/cd.js';
+    script.type = 'text/javascript';
+    script.async = true;
+    declarationRef.current.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
@@ -24,57 +28,13 @@ export default function CookiePolicy() {
         <h1 className="font-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
           Cookiebeleid
         </h1>
-        <p className="text-charcoal/70 mb-4 leading-relaxed">
-          Deze website gebruikt <strong>geen tracking-, analyse- of
-          marketingcookies</strong>. We volgen je dus niet en tonen geen
-          gepersonaliseerde advertenties. Daarom vragen we ook geen toestemming:
-          wat we bewaren, is enkel nodig om de site te laten werken.
+        <p className="text-charcoal/70 mb-10 leading-relaxed">
+          Op deze pagina vind je een overzicht van alle cookies die op deze
+          website worden gebruikt, samen met hun doel en bewaartermijn. Je kan
+          jouw toestemming op elk moment intrekken of aanpassen via de knop{' '}
+          <strong>Cookie-instellingen</strong> onderaan de pagina.
         </p>
-        <p className="text-charcoal/50 text-sm mb-10">Laatst bijgewerkt: 14 oktober 2026</p>
-
-        <h2 className="font-display text-2xl font-bold text-charcoal mb-4">
-          Wat we in je browser bewaren
-        </h2>
-        <div className="space-y-4 mb-10">
-          {storedItems.map((item) => (
-            <div key={item.name} className="card-pastel bg-mint-light">
-              <p className="font-mono text-sm text-charcoal mb-2">{item.name}</p>
-              <p className="text-charcoal/80 mb-2">{item.purpose}</p>
-              <p className="text-sm text-charcoal/60">
-                {item.type} · Bewaartermijn: {item.duration}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <h2 className="font-display text-2xl font-bold text-charcoal mb-4">
-          Diensten van derden
-        </h2>
-        <ul className="list-disc pl-5 space-y-3 text-charcoal/70 leading-relaxed mb-10">
-          <li>
-            <strong>Google Fonts</strong>: de lettertypes van deze site worden
-            geladen via Google. Daarbij ontvangt Google je IP-adres. Google Fonts
-            plaatst geen cookies.
-          </li>
-          <li>
-            <strong>Supabase</strong>: bewaart inschrijvingen en de video's op
-            deze site. Voor gewone bezoekers plaatst Supabase geen cookies.
-          </li>
-          <li>
-            <strong>Sociale media</strong>: de knoppen naar YouTube, TikTok en
-            Instagram zijn gewone links. Pas als je erop klikt, kom je op hun
-            website, waar hun eigen cookiebeleid geldt.
-          </li>
-        </ul>
-
-        <h2 className="font-display text-2xl font-bold text-charcoal mb-4">
-          Zelf wissen
-        </h2>
-        <p className="text-charcoal/70 leading-relaxed">
-          Je kan alles wat deze site bewaart op elk moment verwijderen via de
-          instellingen van je browser, onder "sitegegevens" of "cookies en
-          websitegegevens".
-        </p>
+        <div ref={declarationRef} />
       </main>
       <Footer />
     </div>

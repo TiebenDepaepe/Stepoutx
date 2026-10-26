@@ -1,6 +1,12 @@
 import { Youtube, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+declare global {
+  interface Window {
+    Cookiebot?: { renew: () => void };
+  }
+}
+
 // TikTok icon component
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -43,6 +49,14 @@ export default function Footer() {
               >
                 Cookiebeleid
               </Link>
+              <span aria-hidden="true" className="text-charcoal/30">·</span>
+              <button
+                type="button"
+                onClick={() => window.Cookiebot?.renew()}
+                className="hover:text-charcoal hover:underline transition-colors"
+              >
+                Cookie-instellingen
+              </button>
             </nav>
           </div>
 
