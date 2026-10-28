@@ -14,8 +14,31 @@ const faqs = [
   },
   {
     question: 'Hoe worden de groepen samengesteld?',
-    answer:
-      'We streven naar diverse groepen met een mix van persoonlijkheden, achtergronden en ervaringen. Voor vertrek is er een kennismaking zodat je alvast wat mensen leert kennen.',
+    answer: (
+      <div className="space-y-3">
+        <p>
+          Dit is zeer belangrijk voor ons! Bij PlotTwist draait alles om de mensen met wie je op avontuur vertrekt. Daarom besteden we veel aandacht aan het samenstellen van de groepen.
+        </p>
+        <p>
+          Vooraf vult iedereen een vragenlijst in waarin we peilen naar je persoonlijkheid, interesses, verwachtingen en hoe je in een groep staat. Op basis daarvan stellen we de groepen zorgvuldig samen.
+        </p>
+        <p>
+          We kijken daarbij niet alleen naar gelijkenissen, maar ook naar verschillen. We willen geen groep waarin iedereen exact hetzelfde is, maar juist een leuke mix van persoonlijkheden die elkaar aanvullen. Denk aan spontane avonturiers, rustige denkers, grappenmakers en mensen die elkaar uit hun comfortzone halen.
+        </p>
+        <p>
+          We houden ook rekening met leeftijd, interesses en de groepsdynamiek. Ons doel is dat iedereen zich op zijn gemak kan voelen, zichzelf kan zijn en aansluiting vindt bij de anderen.
+        </p>
+        <p>
+          <strong className="font-semibold text-charcoal">
+            We kunnen natuurlijk nooit garanderen dat iedereen meteen beste vrienden wordt.
+          </strong>{' '}
+          Maar we doen er alles aan om groepen samen te stellen waarin de kans op een sterke klik zo groot mogelijk is.
+        </p>
+        <p>
+          En misschien is dat net het mooiste aan PlotTwist: je vertrekt met zeven onbekenden en komt terug met mensen die je anders misschien nooit had leren kennen!
+        </p>
+      </div>
+    ),
   },
   {
     question: 'Wat gebeurt er na de expeditie?',
@@ -23,28 +46,73 @@ const faqs = [
       'Na de expeditie word je lid van de PlotTwist-community! Je krijgt toegang tot onze online groep waar je in contact blijft met mede-deelnemers, uitnodigingen voor reunies ontvangt, en als eerste hoort over nieuwe expedities.',
   },
   {
-    question: 'Waar betaal je eigenlijk voor?',
+    question: 'Waar betaal je precies voor?',
     answer: (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <p>
-          Bij PlotTwist betaal je niet gewoon voor vervoer of een plaats om te slapen. Liften en slapen bij locals zijn net een belangrijk onderdeel van het avontuur.
+          Bij PlotTwist betaal je niet zomaar voor een reis, maar voor een volledig georganiseerd avontuur waarbij jij zelf niets hoeft te plannen!
         </p>
-        <p>
-          Je betaalt voor een volledig voorbereide zesdaagse expeditie. Wij werken de route uit, boeken de activiteiten, stellen de groep samen, voorzien dagelijkse challenges en zorgen dat er gedurende de hele reis begeleiding en ondersteuning aanwezig is.
-        </p>
-        <p>
-          Jij hoeft dus geen reis te plannen of een groep vrienden bij elkaar te zoeken. Je trekt je rugzak aan en stapt in een avontuur waarvan je vooraf nog niet weet hoe het zal verlopen.
-        </p>
-        <p>
-          Dat onverwachte kunnen we niet in een gewone reisplanning zetten. De voorbereiding, begeleiding en organisatie erachter wel.
-        </p>
+
+        <div>
+          <p className="font-semibold text-charcoal mb-2">Wat zit er allemaal inbegrepen in de prijs?</p>
+          <ul className="space-y-2 list-disc pl-5">
+            <li>
+              <strong className="font-semibold text-charcoal">Een volledig uitgewerkte expeditie:</strong>{' '}
+              Wij stippelen de route uit, zoeken geschikte locaties en bereiden alles achter de schermen voor.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Minstens 3 betaalde activiteiten:</strong>{' '}
+              Denk aan kajakken, klimmen, een hoogteparcours of andere avontuurlijke activiteiten.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Een zorgvuldig samengestelde groep:</strong>{' '}
+              We nemen de tijd om 7 onbekenden te matchen op basis van persoonlijkheid, interesses en groepsdynamiek.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Een vaste begeleider:</strong>{' '}
+              Tijdens de volledige expeditie reist er een PlotTwist-leader met jullie mee.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Avondeten:</strong>{' '}
+              Elke avond voorzien wij het eten voor de groep.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Challenges en avondspellen:</strong>{' '}
+              Dagelijkse uitdagingen, verrassingen en spelletjes die jullie avontuur extra bijzonder maken.
+            </li>
+            <li>
+              <strong className="font-semibold text-charcoal">Organisatie en ondersteuning:</strong>{' '}
+              Wij regelen de voorbereiding, reserveringen, materialen en ondersteuning tijdens de reis.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <p className="font-semibold text-charcoal mb-1">Wat is niet inbegrepen?</p>
+          <p>
+            Ontbijt, lunch en persoonlijke uitgaven betaal je zelf. Ook het vervoer gebeurt op avontuurlijke wijze: jullie liften en wandelen, en zoeken samen met de groep een slaapplek bij locals.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <p className="font-semibold text-charcoal">Waarom kost het dan €450?</p>
+          <p>
+            Omdat er achter die zes dagen veel meer zit dan wat je onderweg ziet. Van het samenstellen van de groepen en het uitstippelen van de routes tot de activiteiten, begeleiding en volledige voorbereiding.
+          </p>
+          <p>
+            Je betaalt dus niet voor luxe hotels of georganiseerd busvervoer. Je betaalt voor een avontuurlijke ervaring die wij van begin tot einde voorbereiden, maar waarin jullie zelf het avontuur beleven.
+          </p>
+          <p className="font-medium text-charcoal pt-1">
+            Wij zorgen voor de voorbereiding, de activiteiten en de begeleiding. Jullie zorgen voor de verhalen!
+          </p>
+        </div>
       </div>
     ),
   },
   {
     question: 'Vanaf welke leeftijd kan ik deelnemen?',
     answer:
-      'Onze expedities zijn voor jongeren van 18 tot 26 jaar. Ben je net 17 maar al volwassen genoeg? Neem contact met ons op, we kijken graag mee.',
+      'Onze expedities zijn voor jongeren van 18 tot 26 jaar.',
   },
   {
     question: 'Moet ik extravert zijn om mee te doen?',
@@ -61,7 +129,7 @@ const faqs = [
     answer: (
       <div>
         <p className="mb-4">
-          Geen enkele dag is hetzelfde — de exacte planning ontdek je pas stap voor stap tijdens het avontuur. Maar om je een idee te geven van het ritme, zie je hieronder een voorbeeld van hoe een dagplanning eruit kan zien:
+          Geen enkele dag is hetzelfde, de exacte planning ontdek je pas stap voor stap tijdens het avontuur. Maar om je een idee te geven van het ritme, zie je hieronder een voorbeeld van hoe een dagplanning eruit kan zien:
         </p>
         <div className="mt-3 max-w-md rounded-2xl overflow-hidden shadow-md border border-charcoal/10">
           <img 
@@ -112,7 +180,7 @@ const FAQItem = ({ faq, isOpen, onToggle, index, isVisible }: FAQItemProps) => {
       </button>
       <div
         className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-[1200px] pb-5' : 'max-h-0'
+          isOpen ? 'max-h-[2000px] pb-5' : 'max-h-0'
         }`}
       >
         <div className="text-charcoal/70 leading-relaxed pr-12">{faq.answer}</div>
