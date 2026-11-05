@@ -3,60 +3,57 @@ import { Camera, X, ChevronLeft, ChevronRight, Maximize2, ArrowRight, Images, Lo
 
 // Helper to get thumbnail path from full image path
 const getThumbPath = (src: string): string => {
-  // Extract filename and extension
   const filename = src.split('/').pop() || '';
   const lastDotIndex = filename.lastIndexOf('.');
   const name = filename.substring(0, lastDotIndex);
-  const ext = filename.substring(lastDotIndex); // .jpeg, .jpg, or .webp
+  const ext = filename.substring(lastDotIndex).toLowerCase();
   
-  // Use .jpg for jpeg/jpg, keep original extension for webp
   const thumbExt = ext === '.webp' ? '.webp' : '.jpg';
   return `/images/thumbs/${name}_thumb${thumbExt}`;
 };
 
 // Main page images (visible in grid)
+// Behouden: foto 1, 2, 4, 20 en 35 + selectie uit nieuw album
 const mainImages = [
-  { src: '/images/width-768.jpeg', alt: 'Vriendschap op de weg' },
-  { src: '/images/width-1024.jpeg', alt: 'Groep op de camping' },
-  { src: '/images/width-1200.jpeg', alt: 'Klimmen' },
-  { src: '/images/width-1536.jpeg', alt: 'Kajakken' },
-  { src: '/images/width-1536.webp', alt: 'Geiten voeren' },
-  { src: '/images/width-1600.webp', alt: 'Raften op het water' },
-  { src: '/images/width-1800.jpeg', alt: 'Molen bezoek' },
-  { src: '/images/width-2048.webp', alt: 'Emma en Daria' },
-  { src: '/images/width-2400.jpeg', alt: 'Geiten selfie' },
-  { src: '/images/width-15364.webp', alt: 'Hert ontmoeting' },
+  { src: '/images/width-768.jpeg', alt: 'Vriendschap op de weg' }, // Foto 1
+  { src: '/images/width-1024.jpeg', alt: 'Groep op de camping' }, // Foto 2
+  { src: '/images/width-1536.jpeg', alt: 'Kajakken' }, // Foto 4
+  { src: '/images/IMG_2904.jpeg', alt: 'Avontuur' }, // Foto 20
+  { src: '/images/PHOTO-2025-07-21-10-27-44.jpeg', alt: 'Herinneringen' }, // Foto 35
+  { src: '/images/IMG_2970.jpeg', alt: 'Avontuur onderweg' },
+  { src: '/images/IMG_3067.jpeg', alt: 'Samen op pad' },
+  { src: '/images/IMG_3479.jpeg', alt: 'Natuur en vrijheid' },
+  { src: '/images/IMG_6626.jpeg', alt: 'Groepservaring' },
+  { src: '/images/IMG_7611.jpeg', alt: 'Onvergetelijke momenten' },
 ];
 
-// Additional carousel-only images
+// Additional carousel-only images (rest van plottwist fotos album)
 const carouselOnlyImages = [
-  { src: '/images/width-20488.webp', alt: 'Groep raften' },
-  { src: '/images/1f4a6734-e58b-4ba3-a568-e9f82b5d9aed.jpeg', alt: 'Avontuur' },
-  { src: '/images/2773dbc8-25f8-4f32-997b-a383fb13eba8.jpeg', alt: 'Vriendschap' },
-  { src: '/images/4136f488-2458-45b0-a2c2-33cbab5a34f4.jpeg', alt: 'Natuur' },
-  { src: '/images/a5d3a136-d9a2-4804-969d-06bb51eda3b9.jpeg', alt: 'Groep' },
-  { src: '/images/b0686d8a-dcba-43d6-adfd-13b99406a083.jpeg', alt: 'Activiteit' },
-  { src: '/images/bccd2d33-5723-4dd5-8d51-dbfa949b2dcf.jpeg', alt: 'Moment' },
-  { src: '/images/ef766023-579f-4d69-97e1-74847ab2f92a.jpeg', alt: 'Herinnering' },
-  { src: '/images/IMG_0633.jpeg', alt: 'Expeditie' },
-  { src: '/images/IMG_2904.jpeg', alt: 'Avontuur' },
-  { src: '/images/IMG_2907.jpeg', alt: 'Vriendschap' },
-  { src: '/images/IMG_2913.jpeg', alt: 'Groep' },
-  { src: '/images/IMG_2939.jpeg', alt: 'Moment' },
-  { src: '/images/IMG_2979.jpeg', alt: 'Natuur' },
-  { src: '/images/IMG_4519.jpeg', alt: 'Activiteit' },
-  { src: '/images/IMG_7553.jpeg', alt: 'Foto' },
-  { src: '/images/IMG_7554.jpeg', alt: 'Herinnering' },
-  { src: '/images/IMG_7555.jpeg', alt: 'Expeditie' },
-  { src: '/images/IMG_8479.jpeg', alt: 'Avontuur' },
-  { src: '/images/IMG_8607.jpeg', alt: 'Vriendschap' },
-  { src: '/images/IMG_8674.jpeg', alt: 'Groep' },
-  { src: '/images/IMG_8696.jpeg', alt: 'Moment' },
-  { src: '/images/IMG_9615.jpeg', alt: 'Natuur' },
-  { src: '/images/IMG_9795.jpeg', alt: 'Activiteit' },
-  { src: '/images/PHOTO-2025-07-21-10-27-44.jpeg', alt: 'Foto' },
-  { src: '/images/PHOTO-2025-07-21-10-27-50.jpeg', alt: 'Herinnering' },
-  { src: '/images/PHOTO-2025-07-21-10-29-40.jpeg', alt: 'Expeditie' },
+  { src: '/images/1e792dea-bbc2-4b74-ae6f-d5aa4f9e0c39.jpg', alt: 'PlotTwist avontuur' },
+  { src: '/images/611c453e-dd20-4cc2-ad3d-d91c5bd3fc90.jpg', alt: 'Samen onderweg' },
+  { src: '/images/7305758c-7b26-4543-b4f9-49f2bc98310d.jpg', alt: 'Herinneringen' },
+  { src: '/images/74e78b7a-120e-4111-9b8d-f978ca459199.jpg', alt: 'Expeditie moment' },
+  { src: '/images/96ec755f-ff12-4734-9275-433d654fc571.jpg', alt: 'Vriendschap' },
+  { src: '/images/BD6ED8AC-2A28-4AD7-8BED-BF1AA62E95E2.jpg', alt: 'Gezelligheid' },
+  { src: '/images/CAD7BFAE-8E51-467F-A2A6-842ABC70969B.jpg', alt: 'Groepsavontuur' },
+  { src: '/images/FE5C653D-836B-493A-B8A3-061BF3C314F3.jpg', alt: 'Verrassingen' },
+  { src: '/images/IMG_3098.jpeg', alt: 'Op expeditie' },
+  { src: '/images/IMG_3351.jpeg', alt: 'Sfeer' },
+  { src: '/images/IMG_3376.jpeg', alt: 'Avontuur' },
+  { src: '/images/IMG_3713.jpeg', alt: 'Onderweg' },
+  { src: '/images/IMG_3796.jpeg', alt: 'Natuur' },
+  { src: '/images/IMG_3903.jpeg', alt: 'Mooie momenten' },
+  { src: '/images/IMG_4021.JPG', alt: 'Herinnering' },
+  { src: '/images/IMG_4128.jpeg', alt: 'PlotTwist moment' },
+  { src: '/images/IMG_4670.jpeg', alt: 'Vrijheid' },
+  { src: '/images/IMG_4734.jpeg', alt: 'Glimlach' },
+  { src: '/images/IMG_5058.jpeg', alt: 'Samen sterk' },
+  { src: '/images/IMG_7124.jpeg', alt: 'Uitdaging' },
+  { src: '/images/IMG_7388.jpeg', alt: 'PlotTwist gevoel' },
+  { src: '/images/IMG_8024.JPG', alt: 'Avontuur' },
+  { src: '/images/IMG_8868.jpeg', alt: 'Samen lachen' },
+  { src: '/images/IMG_9381.jpeg', alt: 'Vriendschap voor het leven' },
+  { src: '/images/b1735513-a889-405f-b74e-a6a0fea9cd6b.jpg', alt: 'Nieuwe herinneringen' },
 ];
 
 // Combine all images for carousel
@@ -96,6 +93,10 @@ const ThumbnailButton = memo(({ index, currentIndex, imageSrc, imageAlt, onClick
           isLoading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={() => setIsLoading(false)}
+        onError={(e) => {
+          (e.currentTarget as HTMLImageElement).src = imageSrc;
+          setIsLoading(false);
+        }}
         loading="lazy"
         decoding="async"
       />
