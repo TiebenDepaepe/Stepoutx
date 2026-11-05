@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { AlertCircle, Info } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useCalendarDates } from './useCalendarDates';
 import { MonthCalendar } from './MonthCalendar';
 
@@ -31,11 +31,6 @@ export function CalendarDatePicker({
 
   return (
     <div className="w-full">
-      {/* Alert banner for Italy trips */}
-      <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-2.5 text-amber-900 text-xs sm:text-sm font-medium">
-        <Info className="w-4 h-4 text-amber-600 flex-shrink-0" />
-        <span><strong>Let op:</strong> Italië reizen vertrekken 1 dag vroeger.</span>
-      </div>
 
       {/* Subtitle */}
       <p className="text-sm text-charcoal/60 mb-4">
