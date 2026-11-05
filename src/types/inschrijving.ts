@@ -9,6 +9,7 @@ export interface Inschrijving {
   gsm: string;
   email: string;
   instagram: string | null;
+  expeditie_voorkeur?: string | null;
   
   // Availability & Motivation
   beschikbaarheid: string[];

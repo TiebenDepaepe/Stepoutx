@@ -32,6 +32,9 @@ export const signupFormSchema = z.object({
     .optional()
     .or(z.literal('')),
   
+  expeditieVoorkeur: z.string()
+    .min(1, 'Selecteer welke expeditie jouw voorkeur heeft'),
+  
   beschikbaarheid: z.array(z.string())
     .min(1, 'Selecteer minstens één beschikbare datum'),
   

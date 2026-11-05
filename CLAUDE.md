@@ -163,6 +163,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 | gsm | text | Phone number |
 | email | text | Email address |
 | instagram | text | Instagram handle (optional) |
+| expeditie_voorkeur | text | Preferred expedition ('Nederland / Duitsland' or 'Italië (+€145)') |
 | beschikbaarheid | text[] | Available date ranges |
 | motivatie | text | Motivation letter |
 | doelen | text[] | Selected goals (max 2) |

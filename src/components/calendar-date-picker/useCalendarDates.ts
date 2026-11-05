@@ -17,7 +17,8 @@ export interface TripWeek {
   label: string;
   disabled: boolean;
   full: boolean;
-  month: number; // 5 = June, 6 = July, 7 = August
+  badge?: string;
+  month: number;
   year: number;
 }
 
@@ -34,10 +35,9 @@ export interface CalendarDay {
 
 // Parse the available dates from the form
 const rawTripData = [
-  { date: '31 augustus - 5 september', disabled: true, full: true },
-  { date: '7 - 12 september', disabled: true, full: true },
-  { date: '14 - 19 september', disabled: true, full: true },
-  { date: '21 - 26 september', disabled: true, full: true },
+  { date: '1 - 6 februari', disabled: false, full: false, badge: 'Winterexpeditie' },
+  { date: '29 maart - 3 april', disabled: false, full: false },
+  { date: '5 - 10 april', disabled: false, full: false },
 ];
 
 // Helper to parse Dutch month names
@@ -97,21 +97,21 @@ function parseTripWeek(trip: typeof rawTripData[0], year: number): TripWeek {
     label: trip.date,
     disabled: trip.disabled,
     full: trip.full,
+    badge: (trip as any).badge,
     month: startDate.getMonth(),
     year: startDate.getFullYear(),
   };
 }
 
-export function useCalendarDates(selectedYear: number = 2026) {
+export function useCalendarDates(selectedYear: number = 2027) {
   const tripWeeks = useMemo(() => {
     return rawTripData.map(trip => parseTripWeek(trip, selectedYear));
   }, [selectedYear]);
 
   const months = useMemo(() => [
-    { month: 5, name: 'Juni', year: selectedYear },
-    { month: 6, name: 'Juli', year: selectedYear },
-    { month: 7, name: 'Augustus', year: selectedYear },
-    { month: 8, name: 'September', year: selectedYear },
+    { month: 1, name: 'Februari', year: selectedYear },
+    { month: 2, name: 'Maart', year: selectedYear },
+    { month: 3, name: 'April', year: selectedYear },
   ], [selectedYear]);
 
   const getDaysForMonth = (month: number, year: number): CalendarDay[] => {

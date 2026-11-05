@@ -39,7 +39,8 @@ import {
   StickyNote,
   Save,
   CheckCircle2,
-  ArrowLeft
+  ArrowLeft,
+  Compass
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
@@ -313,12 +314,20 @@ export function InschrijvingDetail({
           </div>
         </section>
 
-        {/* Availability */}
+        {/* Availability & Destination Preference */}
         <section>
-          <SectionTitle>Beschikbaarheid</SectionTitle>
-          <InfoRow icon={Calendar} label="Beschikbare data" fullWidth>
-            <TagList items={inschrijving.beschikbaarheid} color="blue" />
-          </InfoRow>
+          <SectionTitle>Beschikbaarheid & Bestemming</SectionTitle>
+          <div className="space-y-4">
+            <InfoRow 
+              icon={Compass} 
+              label="Voorkeur Expeditie" 
+              value={inschrijving.expeditie_voorkeur || 'Geen voorkeur opgegeven'} 
+              fullWidth 
+            />
+            <InfoRow icon={Calendar} label="Beschikbare data" fullWidth>
+              <TagList items={inschrijving.beschikbaarheid} color="blue" />
+            </InfoRow>
+          </div>
         </section>
 
         {/* Motivation & Goals */}

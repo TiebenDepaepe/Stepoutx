@@ -8,6 +8,7 @@ interface FormData {
   gsm: string;
   email: string;
   instagram: string;
+  expeditieVoorkeur: string;
   beschikbaarheid: string[];
   motivatie: string;
   doelen: string[];
@@ -281,6 +282,7 @@ export function useFormSubmit() {
         gsm: data.gsm,
         email: data.email,
         instagram: data.instagram || null,
+        expeditie_voorkeur: data.expeditieVoorkeur,
         beschikbaarheid: data.beschikbaarheid,
         motivatie: data.motivatie,
         doelen: data.doelen,

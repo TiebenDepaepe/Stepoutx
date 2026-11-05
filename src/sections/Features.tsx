@@ -19,7 +19,7 @@ const features = [
     title: 'Sterke groepsdynamiek',
     description: (
       <>
-        Je trekt met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">vijf andere jongeren</span> die bewust voor dit avontuur kiezen. Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften, eten en uitdagingen</span> oplossen zorgt voor snelle, echte connecties.
+        Je trekt met <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">zes andere jongeren</span> die bewust voor dit avontuur kiezen. Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften, eten en uitdagingen</span> oplossen zorgt voor snelle, echte connecties.
       </>
     ),
     bgColor: 'bg-lavender',

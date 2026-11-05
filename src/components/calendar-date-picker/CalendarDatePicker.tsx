@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { useCalendarDates } from './useCalendarDates';
 import { MonthCalendar } from './MonthCalendar';
 
@@ -14,7 +14,7 @@ export function CalendarDatePicker({
   onChange,
   error 
 }: CalendarDatePickerProps) {
-  const { months, getDaysForMonth, weekDays } = useCalendarDates(2026);
+  const { months, getDaysForMonth, weekDays } = useCalendarDates(2027);
   const [hoveredTripId, setHoveredTripId] = useState<string | null>(null);
 
   const handleSelectTrip = useCallback((tripId: string) => {
@@ -31,6 +31,12 @@ export function CalendarDatePicker({
 
   return (
     <div className="w-full">
+      {/* Alert banner for Italy trips */}
+      <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-2.5 text-amber-900 text-xs sm:text-sm font-medium">
+        <Info className="w-4 h-4 text-amber-600 flex-shrink-0" />
+        <span><strong>Let op:</strong> Italië reizen vertrekken 1 dag vroeger.</span>
+      </div>
+
       {/* Subtitle */}
       <p className="text-sm text-charcoal/60 mb-4">
         Klik op alle weken waarin je beschikbaar bent.
@@ -55,12 +61,11 @@ export function CalendarDatePicker({
           </div>
         </div>
         
-        <div className="flex flex-col gap-1 text-[11px] bg-gray-100 border border-gray-200 px-3 py-2 rounded-xl text-charcoal/80">
-          <span className="font-semibold text-gray-600">Beschikbaarheid datums (Gesloten):</span>
-          <div className="text-charcoal/50">• 31 augustus - 5 september <span className="text-red-500 font-semibold">(Vol)</span></div>
-          <div className="text-charcoal/50">• 7 - 12 september <span className="text-red-500 font-semibold">(Vol)</span></div>
-          <div className="text-charcoal/50">• 14 - 19 september <span className="text-red-500 font-semibold">(Vol)</span></div>
-          <div className="text-charcoal/50">• 21 - 26 september <span className="text-red-500 font-semibold">(Vol)</span></div>
+        <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/15 px-3.5 py-2 rounded-xl text-charcoal/80">
+          <span className="font-semibold text-purple-accent">Beschikbare datums:</span>
+          <div>• 1 - 6 februari <span className="text-blue-600 font-semibold">(Winterexpeditie)</span></div>
+          <div>• 29 maart - 3 april <span className="text-emerald-600 font-bold">(Open)</span></div>
+          <div>• 5 - 10 april <span className="text-emerald-600 font-bold">(Open)</span></div>
         </div>
       </div>
 

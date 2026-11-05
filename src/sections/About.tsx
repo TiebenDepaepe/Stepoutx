@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Users, Calendar } from 'lucide-react';
+import { MapPin, Users, Calendar, ArrowRight } from 'lucide-react';
 
 const highlights = [
-  { icon: Users, label: '7 deelnemers' },
-  { icon: Calendar, label: '4 of 6 dagen' },
+  { icon: Users, label: '8 personen' },
+  { icon: Calendar, label: '6 dagen' },
 ];
 
 const locations = [
   { name: 'Nederland', color: 'bg-blush' },
-  { name: 'Luxemburg', color: 'bg-sky-soft' },
-  { name: 'Duitsland', color: 'bg-mint' },
+  { name: 'Duitsland', color: 'bg-sky-soft' },
+  { name: 'Italië', color: 'bg-mint' },
 ];
 
 export default function About() {
@@ -108,7 +108,7 @@ export default function About() {
 
             <div className="space-y-4 text-charcoal/70 leading-relaxed mb-8">
               <p>
-                PlotTwist is een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">avontuurlijke</span> groepsreis van 4 of 6 dagen voor jongeren van 18 tot 26 jaar. Je reist in een groep van 7 personen: jij, 5 andere jongeren en 1 begeleider. Vooraf word je <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">gematcht</span> op basis van persoonlijkheid, interesses en andere factoren, zodat je in een groep terechtkomt die zo goed mogelijk bij je past.
+                PlotTwist is een <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">avontuurlijke</span> groepsreis van 6 dagen voor jongeren van 18 tot 26 jaar. Je reist in een groep van 8 personen: jij, 6 andere jongeren en 1 begeleider. Vooraf word je <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">gematcht</span> op basis van persoonlijkheid, interesses en andere factoren, zodat je in een groep terechtkomt die zo goed mogelijk bij je past.
               </p>
               <p>
                 Samen <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">wandelen</span> en <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">liften</span> jullie van plek naar plek. Onderweg doen jullie <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">challenges</span>, groepsopdrachten en verrassende <span className="font-semibold text-charcoal bg-purple-200/70 rounded px-1">activiteiten</span> (bv kajakken, klimmen, escaperoom,..). Welke activiteiten op jouw reis komen, ontdek je pas onderweg. Zo stap je elke dag het onbekende in.
@@ -123,14 +123,20 @@ export default function About() {
 
             {/* Registration Alert & CTA */}
             <div className="space-y-4 mt-6">
-              <p className="text-gray-600 font-semibold text-lg">
-                Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
+              <p className="text-charcoal font-semibold text-lg">
+                Inschrijvingen geopend!
               </p>
               <button 
-                disabled
-                className="btn-primary bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 hover:bg-gray-400 shadow-none pointer-events-none"
+                onClick={() => {
+                  const element = document.querySelector('#contact');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }} 
+                className="btn-primary group"
               >
-                Binnenkort nieuwe inschrijvingen
+                Schrijf je nu in
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>

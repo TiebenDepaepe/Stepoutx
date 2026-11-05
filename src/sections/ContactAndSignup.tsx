@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle, Info, ChevronDown, ArrowRight } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -131,6 +131,7 @@ const behoefteGroepMoeilijkOptions = [
 
 interface FormData {
   naam: string; leeftijd: string; woonplaats: string; gsm: string; email: string; instagram: string;
+  expeditieVoorkeur: string;
   beschikbaarheid: string[]; motivatie: string; doelen: string[];
   persoonlijkheid: string[]; groepsrol: string; spannendst: string; ongemakkelijk: string; waaromPassen: string;
   
@@ -163,6 +164,7 @@ interface FormData {
 
 const initialFormData: FormData = {
   naam: '', leeftijd: '', woonplaats: '', gsm: '', email: '', instagram: '',
+  expeditieVoorkeur: '',
   beschikbaarheid: [], motivatie: '', doelen: [],
   persoonlijkheid: [], groepsrol: '', spannendst: '', ongemakkelijk: '', waaromPassen: '',
   
@@ -198,11 +200,13 @@ const responseOptions = [
   { icon: XCircle, title: 'Niet geselecteerd', description: <>De expeditie past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
 ];
 
-const IS_REGISTRATION_OPEN = false;
+const IS_REGISTRATION_OPEN = true;
 
 export default function ContactAndSignup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [showForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+  const revealForm = () => setShowForm(true);
+  const [showTripGuide, setShowTripGuide] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -687,6 +691,95 @@ export default function ContactAndSignup() {
                         <AlertCircle className="w-3 h-3" />
                         {getFieldError('instagram')}
                       </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Question: Welke expeditie heeft jouw voorkeur? */}
+                <div className="mt-8 pt-6 border-t border-charcoal/10 space-y-4" data-field="expeditieVoorkeur">
+                  <div>
+                    <label className="block text-sm font-semibold text-charcoal">
+                      Welke expeditie heeft jouw voorkeur? *
+                    </label>
+                    <p className="text-xs text-charcoal/60 mt-1">
+                      We houden zoveel mogelijk rekening met jouw voorkeur, maar kunnen niet garanderen dat je op deze bestemming terechtkomt.
+                    </p>
+                  </div>
+
+                  <div className={`space-y-3 rounded-2xl p-1 ${getFieldError('expeditieVoorkeur') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {[
+                      { id: 'Nederland / Duitsland', label: 'Nederland / Duitsland' },
+                      { id: 'Italië (+€145)', label: 'Italië (+€145)' },
+                    ].map((option) => (
+                      <label
+                        key={option.id}
+                        className={`flex items-center gap-3 p-4 bg-gray-50 rounded-2xl cursor-pointer transition-all hover:bg-purple-accent/5 border ${
+                          formData.expeditieVoorkeur === option.id 
+                            ? 'border-purple-accent bg-purple-50/40 ring-2 ring-purple-accent/20' 
+                            : 'border-charcoal/10'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="expeditieVoorkeur"
+                          value={option.id}
+                          checked={formData.expeditieVoorkeur === option.id}
+                          onChange={(e) => handleRadioChange('expeditieVoorkeur', e.target.value)}
+                          required
+                          className="w-5 h-5 text-purple-accent focus:ring-purple-accent"
+                        />
+                        <span className="font-medium text-charcoal">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {getFieldError('expeditieVoorkeur') && (
+                    <p className="text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {getFieldError('expeditieVoorkeur')}
+                    </p>
+                  )}
+
+                  {/* Info box when Italië (+€145) is selected */}
+                  {formData.expeditieVoorkeur === 'Italië (+€145)' && (
+                    <div className="p-4 bg-purple-50/90 border border-purple-200/80 rounded-2xl text-charcoal/90 text-sm space-y-2 animate-fadeIn">
+                      <div className="flex items-center gap-2 font-semibold text-purple-accent">
+                        <Info className="w-4 h-4 text-purple-accent flex-shrink-0" />
+                        <span>Extra vervoerskosten: €145</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-charcoal/80 leading-relaxed">
+                        Voor de reis naar Italië regelen wij een nachtbus. De rit duurt ongeveer 18 uur. Deze extra vervoerskost komt bovenop de standaardprijs van je expeditie. Meer praktische informatie ontvang je later.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Collapsible guidance: Welke reis past het best bij jou? */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowTripGuide(!showTripGuide)}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-purple-accent hover:text-purple-accent/80 transition-colors py-2 px-3 rounded-xl hover:bg-lavender/30 group"
+                    >
+                      <span>Welke reis past het best bij jou?</span>
+                      <ChevronDown 
+                        className={`w-4 h-4 transition-transform duration-300 ${
+                          showTripGuide ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </button>
+
+                    {showTripGuide && (
+                      <div className="mt-3 p-4 md:p-5 bg-lavender/25 border border-purple-accent/15 rounded-2xl text-xs sm:text-sm text-charcoal/85 space-y-3 leading-relaxed animate-fadeIn">
+                        <p>
+                          Voor je eerste PlotTwist raden we Nederland/Duitsland aan. Het avontuur is toegankelijker en er is meer ruimte om een sterke band op te bouwen met je groep en de locals.
+                        </p>
+                        <p>
+                          Italië is minstens even bijzonder, maar ook fysiek uitdagender. Verwacht meer wandelen, een grotere taalbarrière en nog meer avontuur!
+                        </p>
+                        <p className="font-semibold text-charcoal">
+                          Beide reizen zijn uniek, maar voor een eerste PlotTwist blijft Nederland/Duitsland onze aanrader.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1576,11 +1669,12 @@ export default function ContactAndSignup() {
           {!showForm && (
             <div className="absolute top-[25%] left-0 right-0 z-30 flex justify-center">
               <button
-                disabled
-                className="btn-primary text-lg px-8 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none"
+                onClick={revealForm}
+                className="btn-primary text-lg px-8 py-4 group"
               >
-                <Clock className="w-5 h-5 mr-2" />
-                Binnenkort nieuwe inschrijvingen
+                <Mail className="w-5 h-5 mr-2" />
+                Schrijf je hier in
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           )}

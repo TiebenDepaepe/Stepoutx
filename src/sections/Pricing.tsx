@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { Check, X, Sparkles } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight } from 'lucide-react';
 
 const includedItems = [
   {
-    text: 'Een zorgvuldig gematchte groep van 7 deelnemers',
+    text: 'Een zorgvuldig gematchte groep van 8 personen',
     subtext: 'Bij PlotTwist is het matchen van de groep een prioriteit. We kijken echt naar wie jij bent, je persoonlijkheid en wat je zoekt in de reis om zo een passende groep samen te stellen.'
   },
   { text: 'Een volledig uitgewerkte planning voor elke dag' },
@@ -140,14 +140,15 @@ export default function Pricing() {
 
             {/* CTA */}
             <div className="pt-4">
-              <button 
-                disabled
-                className="w-full btn-primary justify-center bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 hover:bg-gray-400 shadow-none pointer-events-none"
+              <a 
+                href="#contact" 
+                className="w-full btn-primary justify-center group"
               >
-                Binnenkort nieuwe inschrijvingen
-              </button>
+                Schrijf je nu in
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </a>
               <p className="text-center text-xs text-charcoal/50 mt-3">
-                Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
+                Inschrijvingen geopend voor februari en april!
               </p>
             </div>
           </div>

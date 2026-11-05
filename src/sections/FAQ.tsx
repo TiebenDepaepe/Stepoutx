@@ -66,7 +66,7 @@ const faqs = [
             </li>
             <li>
               <strong className="font-semibold text-charcoal">Een zorgvuldig samengestelde groep:</strong>{' '}
-              We nemen de tijd om 7 onbekenden te matchen op basis van persoonlijkheid, interesses en groepsdynamiek.
+              We nemen de tijd om een groep van 8 personen zorgvuldig te matchen op basis van persoonlijkheid, interesses en groepsdynamiek.
             </li>
             <li>
               <strong className="font-semibold text-charcoal">Een vaste begeleider:</strong>{' '}

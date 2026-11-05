@@ -5,14 +5,14 @@ const trips = [
   {
     id: 1,
     title: 'Expeditie Nederland',
-    shortDesc: '6 onbekenden, liften, bij vreemden slapen. Pure avontuur.',
+    shortDesc: 'Liften, bij locals slapen en puur avontuur.',
     image: '/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg',
     videoUrl: 'https://youtu.be/LI2TVbdg-0I?si=CfmQLiVZFYQKg-_K',
   },
   {
     id: 2,
     title: 'Backpacken met onbekenden',
-    shortDesc: '7 onbekenden, grenzen verleggen, nieuwe vriendschappen.',
+    shortDesc: 'Met 8 personen grenzen verleggen en nieuwe vriendschappen sluiten.',
     image: '/images/MVsfi8VMFgYmg2E46x4oNhPzNs.jpg',
     videoUrl: 'https://youtu.be/pROTltVDn7o?si=HKNbi3d7B0VYDWf9',
   },

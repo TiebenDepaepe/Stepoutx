@@ -3,10 +3,9 @@ import { Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Vide
 
 // Available dates for selection
 const availableDates = [
-  '31 augustus - 5 september',
-  '7 - 12 september',
-  '14 - 19 september',
-  '21 - 26 september',
+  '1 - 6 februari',
+  '29 maart - 3 april',
+  '5 - 10 april',
 ];
 
 // Motivation options
@@ -645,14 +644,14 @@ export default function SignupForm() {
           {/* Submit Button */}
           <div className="text-center pt-4">
             <button
-              disabled
-              className="btn-primary text-lg px-10 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none"
+              type="submit"
+              className="btn-primary text-lg px-10 py-4 group"
             >
               <Send className="w-5 h-5 mr-2" />
-              Binnenkort nieuwe inschrijvingen
+              Verstuur inschrijving
             </button>
             <p className="text-sm text-charcoal/50 mt-4">
-              Inschrijvingen zijn momenteel gesloten. Binnenkort nieuwe inschrijvingen!
+              Door te versturen ga je akkoord met onze voorwaarden
             </p>
           </div>
         </form>

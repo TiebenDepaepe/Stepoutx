@@ -246,9 +246,12 @@ export function MonthCalendar({
                           Vol
                         </span>
                       )}
-                      {/* Medium Availability badges (2 / 3 plekken) */}
-
-                      {/* High Availability badges */}
+                      {/* Custom badge (e.g. Winterexpeditie) */}
+                      {range.trip.badge && range.isVisible && !isDisabled && (
+                        <span className="text-[7.5px] md:text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider pointer-events-none shadow-sm whitespace-nowrap z-30">
+                          {range.trip.badge}
+                        </span>
+                      )}
                     </div>
                   );
                 })}
