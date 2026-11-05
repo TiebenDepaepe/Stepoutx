@@ -63,7 +63,7 @@ export function CalendarDatePicker({
         
         <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/15 px-3.5 py-2 rounded-xl text-charcoal/80">
           <span className="font-semibold text-purple-accent">Beschikbare datums:</span>
-          <div>• 1 - 6 februari <span className="text-blue-600 font-semibold">(Winterexpeditie)</span></div>
+          <div>• 1 - 6 februari <span className="text-emerald-600 font-bold">(Open)</span></div>
           <div>• 29 maart - 3 april <span className="text-emerald-600 font-bold">(Open)</span></div>
           <div>• 5 - 10 april <span className="text-emerald-600 font-bold">(Open)</span></div>
         </div>

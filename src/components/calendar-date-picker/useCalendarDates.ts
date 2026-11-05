@@ -35,7 +35,7 @@ export interface CalendarDay {
 
 // Parse the available dates from the form
 const rawTripData = [
-  { date: '1 - 6 februari', disabled: false, full: false, badge: 'Winterexpeditie' },
+  { date: '1 - 6 februari', disabled: false, full: false },
   { date: '29 maart - 3 april', disabled: false, full: false },
   { date: '5 - 10 april', disabled: false, full: false },
 ];
