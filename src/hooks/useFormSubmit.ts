@@ -2,49 +2,77 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface FormData {
+  // Deel 1: Even kennismaken
   naam: string;
-  leeftijd: string;
+  geboortedatum: string;
   woonplaats: string;
   gsm: string;
   email: string;
   instagram: string;
+  huidigeBezigheid: string;
+  studieUitleg: string;
+  werkUitleg: string;
+  bezigheidAndersUitleg: string;
+
+  // Deel 2: Jouw expeditie
   expeditieVoorkeur: string;
   beschikbaarheid: string[];
+
+  // Deel 3: Wie ben jij?
+  persoonlijkheid: string[];
+  nieuweGroep: string;
+  nieuweGroepExtra: string;
+  rolVriendengroep: string;
+  rolVriendengroepExtra: string;
+  sociaalMeerdaagse: string;
+  sociaalMeerdaagseExtra: string;
+  vrijeTijdInteresses: string[];
+  vrijeTijdAnders: string;
+
+  // Deel 4: Wat verwacht je van PlotTwist?
   motivatie: string;
   doelen: string[];
-  persoonlijkheid: string[];
-  groepsrol: string;
-  spannendst: string;
-  ongemakkelijk: string;
-  waaromPassen: string;
-  watSpreektAan: string;
-  sportiviteit: string;
-  socialeInteractie: string;
-  zelfstandigheid: string;
-  
-  // New questions for Part 4
+
+  // Deel 5: Wandelen en fysieke haalbaarheid
   kmWandelen: string;
   meerdereDagenWandelen: string;
-  fysiekeUitdaging: string;
-  reactieRegenMoeheid: string;
-  omgangTragerWandelen: string;
-  eigenMoeheid: string;
-  omgangGroepsbeslissing: string;
-  omgangIrritatiesConflicten: string;
+
+  // Deel 6: De laatste persoonlijke vragen
   ergernissenAnderen: string;
   typePersoonBotsen: string;
-  behoefteGroepMoeilijk: string;
-  redenStoppen: string;
+  extraInfoGroep: string;
 
+  // Deel 7: Praktisch en veiligheid
   medisch: boolean;
   medischUitleg: string;
   noodcontactNaam: string;
   noodcontactGsm: string;
+
+  // Deel 8: Foto en video
   foto: File | null;
   video: File | null;
+
+  // Deel 9: Nog een laatste vraag
+  vriendenIngeschreven: boolean;
+  vriendenNamen: string;
+
+  // Akkoord
   agreement: boolean;
   privacyAgreement: boolean;
 }
+
+const calculateAge = (birthDateString: string): number | null => {
+  if (!birthDateString) return null;
+  const birthDate = new Date(birthDateString);
+  if (isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 0 ? age : null;
+};
 
 interface SubmitState {
   isSubmitting: boolean;
@@ -273,45 +301,46 @@ export function useFormSubmit() {
         : null;
 
       // 2. Insert form data to database
+      const calculatedAge = calculateAge(data.geboortedatum);
+
       const payload = {
         naam: data.naam,
-        leeftijd: parseInt(data.leeftijd),
+        geboortedatum: data.geboortedatum,
+        leeftijd: calculatedAge,
         woonplaats: data.woonplaats,
         gsm: data.gsm,
         email: data.email,
         instagram: data.instagram || null,
+        huidige_bezigheid: data.huidigeBezigheid,
+        studie_uitleg: data.studieUitleg || null,
+        werk_uitleg: data.werkUitleg || null,
+        bezigheid_anders_uitleg: data.bezigheidAndersUitleg || null,
         expeditie_voorkeur: data.expeditieVoorkeur,
         beschikbaarheid: data.beschikbaarheid,
+        persoonlijkheid: data.persoonlijkheid,
+        nieuwe_groep: data.nieuweGroep,
+        nieuwe_groep_extra: data.nieuweGroepExtra || null,
+        rol_vriendengroep: data.rolVriendengroep,
+        rol_vriendengroep_extra: data.rolVriendengroepExtra || null,
+        sociaal_meerdaagse: data.sociaalMeerdaagse,
+        sociaal_meerdaagse_extra: data.sociaalMeerdaagseExtra || null,
+        vrije_tijd_interesses: data.vrijeTijdInteresses,
+        vrije_tijd_anders: data.vrijeTijdAnders || null,
         motivatie: data.motivatie,
         doelen: data.doelen,
-        persoonlijkheid: data.persoonlijkheid,
-        groepsrol: data.groepsrol,
-        spannendst: data.spannendst,
-        ongemakkelijk: data.ongemakkelijk,
-        waarom_passen: data.waaromPassen,
-        wat_spreekt_aan: data.watSpreektAan,
-        sportiviteit: data.sportiviteit,
-        sociale_interactie: data.socialeInteractie,
-        zelfstandigheid: data.zelfstandigheid,
-        // New questions for Part 4
         km_wandelen: data.kmWandelen,
         meerdere_dagen_wandelen: data.meerdereDagenWandelen,
-        fysieke_uitdaging: data.fysiekeUitdaging,
-        reactie_regen_moeheid: data.reactieRegenMoeheid,
-        omgang_trager_wandelen: data.omgangTragerWandelen,
-        eigen_moeheid: data.eigenMoeheid,
-        omgang_groepsbeslissing: data.omgangGroepsbeslissing,
-        omgang_irritaties_conflicten: data.omgangIrritatiesConflicten,
         ergernissen_anderen: data.ergernissenAnderen,
         type_persoon_botsen: data.typePersoonBotsen,
-        behoefte_groep_moeilijk: data.behoefteGroepMoeilijk,
-        reden_stoppen: data.redenStoppen,
+        extra_info_groep: data.extraInfoGroep || null,
         medisch: data.medisch,
         medisch_uitleg: data.medisch ? data.medischUitleg : null,
         noodcontact_naam: data.noodcontactNaam,
         noodcontact_gsm: data.noodcontactGsm,
         foto_url: fotoPath,
         video_url: videoPath,
+        vrienden_ingeschreven: data.vriendenIngeschreven,
+        vrienden_namen: data.vriendenIngeschreven ? data.vriendenNamen : null,
         ...(notities ? { notities } : {}),
       };
 

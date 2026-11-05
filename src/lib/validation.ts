@@ -2,19 +2,25 @@ import { z } from 'zod';
 
 // Form validation schema with Dutch error messages
 export const signupFormSchema = z.object({
+  // Deel 1: Even kennismaken
   naam: z.string()
-    .min(2, 'Naam moet minstens 2 karakters bevatten')
-    .max(100, 'Naam is te lang')
-    .regex(/^[\p{L}\s'.\-]+$/u, 'Naam mag alleen letters, spaties en koppeltekens bevatten'),
+    .min(2, 'Vul je volledige voor- en achternaam in')
+    .max(100, 'Naam is te lang'),
   
-  leeftijd: z.string()
+  geboortedatum: z.string()
+    .min(1, 'Vul je geboortedatum in')
     .refine((val) => {
-      const num = parseInt(val, 10);
-      return !isNaN(num) && num >= 18 && num <= 26;
-    }, 'Leeftijd moet tussen 18 en 26 jaar zijn'),
+      const d = new Date(val);
+      if (isNaN(d.getTime())) return false;
+      const today = new Date();
+      let age = today.getFullYear() - d.getFullYear();
+      const m = today.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+      return age >= 16 && age <= 40;
+    }, 'Controleer je geboortedatum (expedities zijn gericht op jongvolwassenen)'),
   
   woonplaats: z.string()
-    .min(2, 'Woonplaats moet minstens 2 karakters bevatten')
+    .min(2, 'Vul je woonplaats (gemeente of stad) in')
     .max(100, 'Woonplaats is te lang'),
   
   gsm: z.string()
@@ -28,78 +34,66 @@ export const signupFormSchema = z.object({
     .max(100, 'E-mailadres is te lang'),
   
   instagram: z.string()
-    .max(50, 'Instagram handle is te lang')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'Vul je Instagram-gebruikersnaam in')
+    .max(60, 'Instagram-gebruikersnaam is te lang'),
   
+  huidigeBezigheid: z.string()
+    .min(1, 'Selecteer wat je momenteel doet'),
+  
+  studieUitleg: z.string().optional().or(z.literal('')),
+  werkUitleg: z.string().optional().or(z.literal('')),
+  bezigheidAndersUitleg: z.string().optional().or(z.literal('')),
+  
+  // Deel 2: Jouw expeditie
   expeditieVoorkeur: z.string()
     .min(1, 'Selecteer welke expeditie jouw voorkeur heeft'),
   
   beschikbaarheid: z.array(z.string())
-    .min(1, 'Selecteer minstens één beschikbare datum'),
+    .min(1, 'Selecteer minstens één beschikbare reisweek'),
   
+  // Deel 3: Wie ben jij?
+  persoonlijkheid: z.array(z.string())
+    .min(1, 'Selecteer minstens één eigenschap')
+    .max(3, 'Je kan maximaal 3 eigenschappen selecteren'),
+  
+  nieuweGroep: z.string()
+    .min(1, 'Selecteer hoe jij meestal bent in een nieuwe groep'),
+  
+  nieuweGroepExtra: z.string().optional().or(z.literal('')),
+  
+  rolVriendengroep: z.string()
+    .min(1, 'Selecteer welke rol je meestal opneemt in een vriendengroep'),
+  
+  rolVriendengroepExtra: z.string().optional().or(z.literal('')),
+  
+  sociaalMeerdaagse: z.string()
+    .min(1, 'Selecteer hoe sociaal jij bent tijdens een meerdaagse trip'),
+  
+  sociaalMeerdaagseExtra: z.string().optional().or(z.literal('')),
+  
+  vrijeTijdInteresses: z.array(z.string())
+    .min(1, 'Selecteer minstens één interesse')
+    .max(5, 'Je kan maximaal 5 interesses selecteren'),
+  
+  vrijeTijdAnders: z.string().optional().or(z.literal('')),
+  
+  // Deel 4: Wat verwacht je van PlotTwist?
   motivatie: z.string()
-    .min(20, 'Motivatie moet minstens 20 karakters bevatten')
-    .max(2000, 'Motivatie is te lang (max 2000 karakters)'),
+    .min(10, 'Vertel ons wat meer over waarom je mee wilt (minstens 10 karakters)')
+    .max(2000, 'Tekst is te lang (max 2000 karakters)'),
   
   doelen: z.array(z.string())
     .min(1, 'Selecteer minstens één doel')
     .max(2, 'Je kan maximaal 2 doelen selecteren'),
   
+  // Deel 5: Wandelen en fysieke haalbaarheid
   kmWandelen: z.string()
-    .min(1, 'Selecteer hoeveel kilometer je kan wandelen'),
+    .min(1, 'Selecteer hoeveel kilometer je denkt te kunnen wandelen'),
   
   meerdereDagenWandelen: z.string()
-    .min(1, 'Selecteer je voorkeur voor meerdere dagen wandelen'),
+    .min(1, 'Selecteer hoe je staat tegenover meerdere dagen wandelen'),
   
-  fysiekeUitdaging: z.string()
-    .min(1, 'Selecteer de gewenste hoeveelheid fysieke uitdaging'),
-  
-  sportiviteit: z.string()
-    .min(1, 'Selecteer hoe sportief je bent'),
-  
-  persoonlijkheid: z.array(z.string())
-    .min(1, 'Selecteer minstens één eigenschap')
-    .max(3, 'Je kan maximaal 3 eigenschappen selecteren'),
-  
-  groepsrol: z.string()
-    .min(1, 'Selecteer een groepsrol'),
-  
-  socialeInteractie: z.string()
-    .min(1, 'Selecteer hoeveel sociale interactie je fijn vindt'),
-  
-  spannendst: z.string()
-    .min(1, 'Selecteer wat je het spannendst vindt'),
-  
-  reactieRegenMoeheid: z.string()
-    .min(1, 'Selecteer hoe je reageert in deze situatie'),
-  
-  omgangTragerWandelen: z.string()
-    .min(1, 'Selecteer hoe je omgaat met tragere wandelaars'),
-  
-  eigenMoeheid: z.string()
-    .min(1, 'Selecteer wat je doet bij eigen moeheid'),
-  
-  ongemakkelijk: z.string()
-    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
-    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
-  
-  omgangGroepsbeslissing: z.string()
-    .min(1, 'Selecteer hoe je omgaat met groepsbeslissingen'),
-  
-  omgangIrritatiesConflicten: z.string()
-    .min(1, 'Selecteer hoe je omgaat met irritaties of conflicten'),
-  
-  zelfstandigheid: z.string()
-    .min(1, 'Selecteer hoe zelfstandig je bent'),
-  
-  watSpreektAan: z.string()
-    .min(1, 'Selecteer wat jou het meest aanspreekt'),
-  
-  waaromPassen: z.string()
-    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
-    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
-  
+  // Deel 6: De laatste persoonlijke vragen
   ergernissenAnderen: z.string()
     .min(5, 'Dit veld moet minstens 5 karakters bevatten')
     .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
@@ -108,17 +102,13 @@ export const signupFormSchema = z.object({
     .min(5, 'Dit veld moet minstens 5 karakters bevatten')
     .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
   
-  behoefteGroepMoeilijk: z.string()
-    .min(1, 'Selecteer wat je van de groep nodig hebt'),
+  extraInfoGroep: z.string().optional().or(z.literal('')),
   
-  redenStoppen: z.string()
-    .min(5, 'Dit veld moet minstens 5 karakters bevatten')
-    .max(1000, 'Dit veld is te lang (max 1000 karakters)'),
-  
+  // Deel 7: Praktisch en veiligheid
   medisch: z.boolean(),
   
   medischUitleg: z.string()
-    .max(1000, 'Medische uitleg is te lang')
+    .max(1000, 'Toelichting is te lang')
     .optional()
     .or(z.literal('')),
   
@@ -131,10 +121,7 @@ export const signupFormSchema = z.object({
     .max(20, 'GSM-nummer noodcontact is te lang')
     .regex(/^\+?[\d\s().-]+$/, 'GSM-nummer mag alleen cijfers, spaties en + bevatten'),
   
-  // Een foto vragen we nadrukkelijk, maar we blokkeren de inschrijving er niet
-  // mee. Uploaden loopt op telefoons vaak mis (in-app browser van Instagram,
-  // foto's die nog in iCloud staan, 4K-bestanden) en dan is iemand het hele
-  // ingevulde formulier kwijt aan iets waar hij of zij niets aan kan doen.
+  // Deel 8: Foto en video
   foto: z.instanceof(File)
     .refine((file) => file.size <= 50 * 1024 * 1024, {
       message: 'Foto is te groot, maximaal 50MB toegelaten. Kies een kleinere foto.',
@@ -148,6 +135,11 @@ export const signupFormSchema = z.object({
     .nullable()
     .optional(),
   
+  // Deel 9: Nog een laatste vraag
+  vriendenIngeschreven: z.boolean(),
+  vriendenNamen: z.string().optional().or(z.literal('')),
+  
+  // Voorwaarden & Privacy
   agreement: z.boolean()
     .refine((val) => val === true, 'Je moet akkoord gaan met de voorwaarden'),
 

@@ -4,11 +4,16 @@ export interface Inschrijving {
   
   // Personal info
   naam: string;
-  leeftijd: number;
+  leeftijd?: number | null;
+  geboortedatum?: string | null;
   woonplaats: string;
   gsm: string;
   email: string;
   instagram: string | null;
+  huidige_bezigheid?: string | null;
+  studie_uitleg?: string | null;
+  werk_uitleg?: string | null;
+  bezigheid_anders_uitleg?: string | null;
   expeditie_voorkeur?: string | null;
   
   // Availability & Motivation
@@ -18,20 +23,29 @@ export interface Inschrijving {
   // Goals & Personality
   doelen: string[];
   persoonlijkheid: string[];
-  groepsrol: string;
+  groepsrol?: string | null;
+  nieuwe_groep?: string | null;
+  nieuwe_groep_extra?: string | null;
+  rol_vriendengroep?: string | null;
+  rol_vriendengroep_extra?: string | null;
+  sociaal_meerdaagse?: string | null;
+  sociaal_meerdaagse_extra?: string | null;
+  vrije_tijd_interesses?: string[] | null;
+  vrije_tijd_anders?: string | null;
   
-  // Questions
-  spannendst: string;
-  ongemakkelijk: string;
-  waarom_passen: string;
-  wat_spreekt_aan: string;
+  // Questions (legacy & active)
+  spannendst?: string | null;
+  ongemakkelijk?: string | null;
+  waarom_passen?: string | null;
+  wat_spreekt_aan?: string | null;
+  extra_info_groep?: string | null;
   
-  // Self ratings
-  sportiviteit: string;
-  sociale_interactie: string;
-  zelfstandigheid: string;
+  // Self ratings (legacy)
+  sportiviteit?: string | null;
+  sociale_interactie?: string | null;
+  zelfstandigheid?: string | null;
 
-  // New questions for Part 4
+  // Wandelen & Fysiek
   km_wandelen?: string | null;
   meerdere_dagen_wandelen?: string | null;
   fysieke_uitdaging?: string | null;
@@ -44,6 +58,10 @@ export interface Inschrijving {
   type_persoon_botsen?: string | null;
   behoefte_groep_moeilijk?: string | null;
   reden_stoppen?: string | null;
+  
+  // Vrienden
+  vrienden_ingeschreven?: boolean | null;
+  vrienden_namen?: string | null;
   
   // Medical
   medisch: boolean;

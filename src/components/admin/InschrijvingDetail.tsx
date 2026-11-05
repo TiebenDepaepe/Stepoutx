@@ -310,7 +310,21 @@ export function InschrijvingDetail({
             <InfoRow icon={Phone} label="GSM" value={inschrijving.gsm} />
             <InfoRow icon={MapPin} label="Woonplaats" value={inschrijving.woonplaats} />
             <InfoRow icon={Instagram} label="Instagram" value={inschrijving.instagram} />
-            <InfoRow icon={Calendar} label="Leeftijd" value={`${inschrijving.leeftijd} jaar`} />
+            <InfoRow 
+              icon={Calendar} 
+              label="Geboortedatum / Leeftijd" 
+              value={inschrijving.geboortedatum ? `${inschrijving.geboortedatum} (${inschrijving.leeftijd ?? '?'} jaar)` : (inschrijving.leeftijd ? `${inschrijving.leeftijd} jaar` : null)} 
+            />
+            {inschrijving.huidige_bezigheid && (
+              <InfoRow icon={UserCheck} label="Wat doe je momenteel?" fullWidth>
+                <p className="text-charcoal font-medium">
+                  {inschrijving.huidige_bezigheid}
+                  {inschrijving.studie_uitleg ? ` — Studie: ${inschrijving.studie_uitleg}` : ''}
+                  {inschrijving.werk_uitleg ? ` — Werk: ${inschrijving.werk_uitleg}` : ''}
+                  {inschrijving.bezigheid_anders_uitleg ? ` — Toelichting: ${inschrijving.bezigheid_anders_uitleg}` : ''}
+                </p>
+              </InfoRow>
+            )}
           </div>
         </section>
 
@@ -345,10 +359,10 @@ export function InschrijvingDetail({
         <section>
           <SectionTitle>Wandel- & Fysieke Profiel</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InfoRow icon={Activity} label="Sportiviteit" value={inschrijving.sportiviteit} />
-            <InfoRow icon={Activity} label="Fysieke Uitdaging" value={inschrijving.fysieke_uitdaging} />
             <InfoRow icon={Activity} label="Kilometers per dag" value={inschrijving.km_wandelen} />
             <InfoRow icon={Activity} label="Meerdere dagen wandelen" value={inschrijving.meerdere_dagen_wandelen} />
+            <InfoRow icon={Activity} label="Sportiviteit (oud)" value={inschrijving.sportiviteit} />
+            <InfoRow icon={Activity} label="Fysieke Uitdaging (oud)" value={inschrijving.fysieke_uitdaging} />
           </div>
         </section>
 
@@ -359,13 +373,45 @@ export function InschrijvingDetail({
             <InfoRow icon={Smile} label="Persoonlijkheid (hoe vrienden omschrijven)" fullWidth>
               <TagList items={inschrijving.persoonlijkheid} />
             </InfoRow>
-            <InfoRow icon={Users} label="Groepsrol in nieuwe groep" value={inschrijving.groepsrol} fullWidth />
-            <InfoRow icon={MessageCircle} label="Sociale Interactie" value={inschrijving.sociale_interactie} fullWidth />
+            {inschrijving.nieuwe_groep && (
+              <InfoRow icon={Users} label="In een nieuwe groep" fullWidth>
+                <p className="text-charcoal font-medium">
+                  {inschrijving.nieuwe_groep}
+                  {inschrijving.nieuwe_groep_extra ? ` (Extra: ${inschrijving.nieuwe_groep_extra})` : ''}
+                </p>
+              </InfoRow>
+            )}
+            {inschrijving.rol_vriendengroep && (
+              <InfoRow icon={Users} label="Rol in vriendengroep" fullWidth>
+                <p className="text-charcoal font-medium">
+                  {inschrijving.rol_vriendengroep}
+                  {inschrijving.rol_vriendengroep_extra ? ` (Extra: ${inschrijving.rol_vriendengroep_extra})` : ''}
+                </p>
+              </InfoRow>
+            )}
+            {inschrijving.sociaal_meerdaagse && (
+              <InfoRow icon={MessageCircle} label="Sociaal tijdens meerdaagse trip" fullWidth>
+                <p className="text-charcoal font-medium">
+                  {inschrijving.sociaal_meerdaagse}
+                  {inschrijving.sociaal_meerdaagse_extra ? ` (Extra: ${inschrijving.sociaal_meerdaagse_extra})` : ''}
+                </p>
+              </InfoRow>
+            )}
+            {inschrijving.vrije_tijd_interesses && inschrijving.vrije_tijd_interesses.length > 0 && (
+              <InfoRow icon={Star} label="Vrije tijd & Interesses" fullWidth>
+                <TagList items={inschrijving.vrije_tijd_interesses} color="purple" />
+                {inschrijving.vrije_tijd_anders && (
+                  <p className="text-sm text-charcoal/80 mt-1 italic">Andere interesses: {inschrijving.vrije_tijd_anders}</p>
+                )}
+              </InfoRow>
+            )}
+            <InfoRow icon={Users} label="Groepsrol (oud)" value={inschrijving.groepsrol} fullWidth />
+            <InfoRow icon={MessageCircle} label="Sociale Interactie (oud)" value={inschrijving.sociale_interactie} fullWidth />
             <InfoRow icon={Users} label="Omgang met tragere wandelaars" value={inschrijving.omgang_trager_wandelen} fullWidth />
             <InfoRow icon={Users} label="Reactie bij eigen moeheid" value={inschrijving.eigen_moeheid} fullWidth />
             <InfoRow icon={Users} label="Omgang met ongewenste groepsbeslissingen" value={inschrijving.omgang_groepsbeslissing} fullWidth />
             <InfoRow icon={Users} label="Omgang met irritaties of conflicten" value={inschrijving.omgang_irritaties_conflicten} fullWidth />
-            <InfoRow icon={UserCheck} label="Zelfstandigheid" value={inschrijving.zelfstandigheid} fullWidth />
+            <InfoRow icon={UserCheck} label="Zelfstandigheid (oud)" value={inschrijving.zelfstandigheid} fullWidth />
             <InfoRow icon={Users} label="Behoefte van groep bij moeilijkheden" value={inschrijving.behoefte_groep_moeilijk} fullWidth />
           </div>
         </section>
@@ -374,25 +420,43 @@ export function InschrijvingDetail({
         <section>
           <SectionTitle>Persoonlijke Reacties & Verwachtingen</SectionTitle>
           <div className="grid grid-cols-1 gap-5">
-            <InfoRow icon={Zap} label="Wat vind je het spannendst?" value={inschrijving.spannendst} fullWidth />
-            <InfoRow icon={AlertTriangle} label="Reactie bij regen, moeheid & geen slaapplek" value={inschrijving.reactie_regen_moeheid} fullWidth />
-            <InfoRow icon={AlertTriangle} label="Hoe ga je om met ongemakkelijke/spannende situaties?" value={inschrijving.ongemakkelijk} fullWidth />
-            <InfoRow icon={Star} label="Wat spreekt je het meest aan?" value={inschrijving.wat_spreekt_aan} fullWidth />
-            <InfoRow icon={CheckCircle} label="Waarom pas je goed in de groep?" value={inschrijving.waarom_passen} fullWidth />
             <InfoRow icon={AlertTriangle} label="Waar zouden anderen zich aan kunnen ergeren bij jou?" value={inschrijving.ergernissen_anderen} fullWidth />
             <InfoRow icon={AlertTriangle} label="Met welk type persoon bots je soms?" value={inschrijving.type_persoon_botsen} fullWidth />
-            <InfoRow icon={AlertTriangle} label="Reden om eventueel te willen stoppen" value={inschrijving.reden_stoppen} fullWidth />
+            {inschrijving.extra_info_groep && (
+              <InfoRow icon={FileText} label="Extra info voor groepsindeling" value={inschrijving.extra_info_groep} fullWidth />
+            )}
+            <InfoRow icon={Zap} label="Wat vind je het spannendst? (oud)" value={inschrijving.spannendst} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Reactie bij regen, moeheid (oud)" value={inschrijving.reactie_regen_moeheid} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Hoe ga je om met ongemakkelijke situaties? (oud)" value={inschrijving.ongemakkelijk} fullWidth />
+            <InfoRow icon={Star} label="Wat spreekt je het meest aan? (oud)" value={inschrijving.wat_spreekt_aan} fullWidth />
+            <InfoRow icon={CheckCircle} label="Waarom pas je goed in de groep? (oud)" value={inschrijving.waarom_passen} fullWidth />
+            <InfoRow icon={AlertTriangle} label="Reden om eventueel te willen stoppen (oud)" value={inschrijving.reden_stoppen} fullWidth />
           </div>
         </section>
 
+        {/* Vriend(in) ingeschreven */}
+        {inschrijving.vrienden_ingeschreven !== undefined && inschrijving.vrienden_ingeschreven !== null && (
+          <section>
+            <SectionTitle>Vrienden Inschrijving</SectionTitle>
+            <div className="grid grid-cols-1 gap-5">
+              <InfoRow 
+                icon={Users} 
+                label="Heeft een vriend of vriendin zich ook ingeschreven?" 
+                value={inschrijving.vrienden_ingeschreven ? `Ja (${inschrijving.vrienden_namen || 'Geen naam opgegeven'})` : 'Nee'} 
+                fullWidth 
+              />
+            </div>
+          </section>
+        )}
+
         {/* Medical */}
         <section>
-          <SectionTitle>Medisch</SectionTitle>
+          <SectionTitle>Praktisch & Veiligheid (Medisch)</SectionTitle>
           <div className="grid grid-cols-1 gap-5">
             <InfoRow 
               icon={Heart} 
-              label="Medische info" 
-              value={inschrijving.medisch ? (inschrijving.medisch_uitleg || 'Ja, details beschikbaar') : 'Geen medische info'} 
+              label="Lichamelijke klachten / medisch / allergieën" 
+              value={inschrijving.medisch ? (inschrijving.medisch_uitleg || 'Ja, toelichting opgegeven') : 'Nee (geen bijzonderheden)'} 
               fullWidth 
             />
           </div>

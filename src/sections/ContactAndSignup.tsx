@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mail, CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Calendar, Heart, Users, Shield, Camera, Video, Loader2, AlertCircle, Info, ChevronDown, ArrowRight } from 'lucide-react';
+import { CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Users, Shield, Camera, Video, Loader2, AlertCircle, Info, ChevronDown, Compass, Smile, Target, Activity, MessageCircle } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -10,174 +10,211 @@ const formatFileSize = (bytes: number): string =>
     ? `${Math.max(1, Math.round(bytes / 1024))} KB`
     : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
-// Form data and options
-const motivationOptions = [
-  'nieuwe vrienden maken',
-  'meer zelfvertrouwen krijgen',
-  'avontuur beleven',
-  'uit mijn comfortzone komen',
-  'even weg zijn uit mijn omgeving',
-  'iets totaal nieuws proberen'
+// Options constants
+const huidigeBezigheidOptions = [
+  'Ik studeer',
+  'Ik werk',
+  'Ik studeer en werk',
+  'Iets anders',
 ];
+
+const expeditieOptions = [
+  'Nederland / Duitsland',
+  'Italie (+€145)',
+];
+
 const personalityOptions = [
-  'rustig',
-  'sociaal',
-  'humoristisch',
-  'gevoelig',
-  'direct',
-  'spontaan',
-  'zorgzaam',
-  'avontuurlijk',
-  'georganiseerd',
-  'dromerig'
+  'Rustig',
+  'Sociaal',
+  'Grappig',
+  'Spontaan',
+  'Zorgzaam',
+  'Avontuurlijk',
+  'Gevoelig',
+  'Direct',
+  'Creatief',
+  'Georganiseerd',
+  'Enthousiast',
+  'Nuchter',
 ];
-const groupRoleOptions = [
-  'de stille observator',
-  'rustig, maar aanwezig',
-  'iemand die snel met iedereen praat',
-  'de grappenmaker',
-  'degene die initiatief neemt'
+
+const nieuweGroepOptions = [
+  'Ik kijk eerst rustig de kat uit de boom',
+  'Ik ben eerst wat rustig, maar kom snel los',
+  'Ik maak meestal gemakkelijk contact',
+  'Ik ben vaak degene die grapjes maakt en de sfeer erin brengt',
+  'Dat hangt echt van de groep af',
 ];
-const excitementOptions = [
-  'nieuwe mensen leren kennen',
-  'liften',
-  'overnachten bij onbekenden',
-  'niet precies weten wat er gaat gebeuren',
-  'fysiek moe worden'
+
+const rolVriendengroepOptions = [
+  'Ik neem vaak het initiatief en stel dingen voor',
+  'Soms neem ik het voortouw, soms volg ik gewoon mee',
+  'Ik sluit me graag aan bij plannen van anderen',
+  'Ik ben vooral degene die voor humor en sfeer zorgt',
+  'Ik ben eerder de rustige persoon in de groep',
 ];
+
+const sociaalMeerdaagseOptions = [
+  'Ik ben graag bijna de hele tijd bij de groep',
+  'Ik hou van veel groepsmomenten, maar ook af en toe rust',
+  'Ik heb regelmatig even tijd voor mezelf nodig',
+  'Dat hangt af van de mensen en de sfeer',
+];
+
+const vrijeTijdOptions = [
+  'Reizen',
+  'Festivals',
+  'Uitgaan',
+  'Muziek',
+  'Sport',
+  'Fitness',
+  'Lopen',
+  'Wandelen',
+  'Dansen',
+  'Gamen',
+  'Films & series',
+  'Koken',
+  'Fotografie',
+  'Creatief bezig zijn',
+  'Lezen',
+  'Dieren',
+  'Nieuwe restaurants ontdekken',
+  'Gezelschapsspellen',
+  'Natuur',
+  'Steden ontdekken',
+  'Social media',
+  'Koffie & terrasjes',
+  'Kunst & cultuur',
+  'Andere',
+];
+
+const doelenOptions = [
+  'Nieuwe vrienden maken',
+  'Een onvergetelijke reis beleven',
+  'Avontuur en spontaniteit',
+  'Mijn zelfvertrouwen vergroten',
+  'Even ontsnappen aan de dagelijkse routine',
+  'Iets totaal nieuws proberen',
+];
+
 const kmWandelenOptions = [
-  'minder dan 10 km',
+  'Minder dan 10 km',
   '10 tot 15 km',
   '15 tot 20 km',
-  'meer dan 20 km'
+  '20 km of meer',
 ];
-const meerdereDagenWandelenOptions = [
-  'dat lijkt mij te zwaar',
-  'dat wordt uitdagend, maar ik wil het proberen',
-  'dat is voor mij haalbaar',
-  'ik kijk juist uit naar de fysieke uitdaging'
+
+const meerdereDagenWandelenOptionsNedDui = [
+  'Dat lijkt me momenteel te zwaar',
+  'Dat wordt uitdagend, maar ik wil het graag proberen',
+  'Dat lijkt me goed haalbaar',
+  'Ik heb hier al ervaring mee',
 ];
-const fysiekeUitdagingOptions = [
-  'liever beperkt, ik ga vooral mee voor de groep en het avontuur',
-  'gemiddeld, het mag uitdagend zijn',
-  'veel, ik wil mezelf fysiek echt uitdagen',
-  'zeer veel, hoe zwaarder hoe beter'
-];
-const sportiviteitOptions = [
-  'ik sport bijna nooit',
-  'ik sport af en toe',
-  'ik sport één tot drie keer per week',
-  'ik sport meer dan drie keer per week'
-];
-const socialeInteractieOptions = [
-  'ik ben het liefst bijna altijd samen met de groep',
-  'ik hou van een combinatie van groepsmomenten en eigen momenten',
-  'ik heb regelmatig tijd voor mezelf nodig'
-];
-const reactieRegenMoeheidOptions = [
-  'ik word snel stil, onzeker of gefrustreerd',
-  'ik heb even tijd nodig, maar werk daarna weer mee',
-  'ik probeer rustig te blijven en mee te zoeken',
-  'ik probeer de sfeer goed te houden en neem initiatief'
-];
-const omgangTragerWandelenOptions = [
-  'ik pas mijn tempo zonder probleem aan',
-  'ik pas mijn tempo aan, maar vind dat soms lastig',
-  'ik wil liever mijn eigen tempo blijven wandelen',
-  'dat hangt af van de situatie'
-];
-const eigenMoeheidOptions = [
-  'ik geef snel aan dat ik wil stoppen',
-  'ik heb extra pauzes of aanmoediging nodig',
-  'ik vertraag, maar probeer verder te gaan',
-  'ik blijf doorgaan en probeer positief te blijven'
-];
-const omgangGroepsbeslissingOptions = [
-  'ik pas mij meestal gewoon aan',
-  'ik geef mijn mening, maar respecteer de beslissing',
-  'ik probeer de anderen te overtuigen',
-  'ik vind het moeilijk wanneer de groep niet voor mijn keuze gaat'
-];
-const omgangIrritatiesConflictenOptions = [
-  'ik vermijd het gesprek',
-  'ik bespreek het pas wanneer iemand anders erover begint',
-  'ik probeer het rustig met de persoon te bespreken',
-  'ik spreek het meestal meteen en direct uit'
-];
-const zelfstandigheidOptions = [
-  'ik neem gemakkelijk initiatief',
-  'ik denk actief mee, maar hoef niet de leiding te nemen',
-  'ik volg meestal mee met de groep',
-  'ik heb graag duidelijke begeleiding'
-];
-const watSpreektAanOptions = [
-  'sociale uitdagingen, zoals gesprekken en opdrachten met onbekenden',
-  'fysieke uitdagingen, zoals wandelen en actief bezig zijn',
-  'een combinatie van beide'
-];
-const behoefteGroepMoeilijkOptions = [
-  'rust en ruimte',
-  'aanmoediging',
-  'praktische hulp',
-  'humor en afleiding',
-  'duidelijke afspraken'
+
+const meerdereDagenWandelenOptionsItalie = [
+  'Dat regex lijkt me momenteel te zwaar'.replace('regex ', ''),
+  'Dat wordt uitdagend en ik twijfel of het haalbaar is',
+  'Dat lijkt me haalbaar, ook al wordt het zwaar',
+  'Ik heb hier al ervaring mee',
 ];
 
 interface FormData {
-  naam: string; leeftijd: string; woonplaats: string; gsm: string; email: string; instagram: string;
+  // Deel 1: Even kennismaken
+  naam: string;
+  geboortedatum: string;
+  woonplaats: string;
+  gsm: string;
+  email: string;
+  instagram: string;
+  huidigeBezigheid: string;
+  studieUitleg: string;
+  werkUitleg: string;
+  bezigheidAndersUitleg: string;
+
+  // Deel 2: Jouw expeditie
   expeditieVoorkeur: string;
-  beschikbaarheid: string[]; motivatie: string; doelen: string[];
-  persoonlijkheid: string[]; groepsrol: string; spannendst: string; ongemakkelijk: string; waaromPassen: string;
-  
-  // Deel 4 questions
+  beschikbaarheid: string[];
+
+  // Deel 3: Wie ben jij?
+  persoonlijkheid: string[];
+  nieuweGroep: string;
+  nieuweGroepExtra: string;
+  rolVriendengroep: string;
+  rolVriendengroepExtra: string;
+  sociaalMeerdaagse: string;
+  sociaalMeerdaagseExtra: string;
+  vrijeTijdInteresses: string[];
+  vrijeTijdAnders: string;
+
+  // Deel 4: Wat verwacht je van PlotTwist?
+  motivatie: string;
+  doelen: string[];
+
+  // Deel 5: Wandelen en fysieke haalbaarheid
   kmWandelen: string;
   meerdereDagenWandelen: string;
-  fysiekeUitdaging: string;
-  sportiviteit: string;
-  socialeInteractie: string;
-  reactieRegenMoeheid: string;
-  omgangTragerWandelen: string;
-  eigenMoeheid: string;
-  omgangGroepsbeslissing: string;
-  omgangIrritatiesConflicten: string;
-  zelfstandigheid: string;
-  watSpreektAan: string;
+
+  // Deel 6: De laatste persoonlijke vragen
   ergernissenAnderen: string;
   typePersoonBotsen: string;
-  behoefteGroepMoeilijk: string;
-  redenStoppen: string;
+  extraInfoGroep: string;
 
-  medisch: boolean; medischUitleg: string; noodcontactNaam: string; noodcontactGsm: string;
-  foto: File | null; video: File | null;
+  // Deel 7: Praktisch en veiligheid
+  medisch: boolean;
+  medischUitleg: string;
+  noodcontactNaam: string;
+  noodcontactGsm: string;
+
+  // Deel 8: Foto en video
+  foto: File | null;
+  video: File | null;
+
+  // Deel 9: Nog een laatste vraag
+  vriendenIngeschreven: boolean;
+  vriendenNamen: string;
+
+  // Akkoord
   agreement: boolean;
   privacyAgreement: boolean;
 }
 
 const initialFormData: FormData = {
-  naam: '', leeftijd: '', woonplaats: '', gsm: '', email: '', instagram: '',
+  naam: '',
+  geboortedatum: '',
+  woonplaats: '',
+  gsm: '',
+  email: '',
+  instagram: '',
+  huidigeBezigheid: '',
+  studieUitleg: '',
+  werkUitleg: '',
+  bezigheidAndersUitleg: '',
   expeditieVoorkeur: '',
-  beschikbaarheid: [], motivatie: '', doelen: [],
-  persoonlijkheid: [], groepsrol: '', spannendst: '', ongemakkelijk: '', waaromPassen: '',
-  
+  beschikbaarheid: [],
+  persoonlijkheid: [],
+  nieuweGroep: '',
+  nieuweGroepExtra: '',
+  rolVriendengroep: '',
+  rolVriendengroepExtra: '',
+  sociaalMeerdaagse: '',
+  sociaalMeerdaagseExtra: '',
+  vrijeTijdInteresses: [],
+  vrijeTijdAnders: '',
+  motivatie: '',
+  doelen: [],
   kmWandelen: '',
   meerdereDagenWandelen: '',
-  fysiekeUitdaging: '',
-  sportiviteit: '',
-  socialeInteractie: '',
-  reactieRegenMoeheid: '',
-  omgangTragerWandelen: '',
-  eigenMoeheid: '',
-  omgangGroepsbeslissing: '',
-  omgangIrritatiesConflicten: '',
-  zelfstandigheid: '',
-  watSpreektAan: '',
   ergernissenAnderen: '',
   typePersoonBotsen: '',
-  behoefteGroepMoeilijk: '',
-  redenStoppen: '',
-
-  medisch: false, medischUitleg: '', noodcontactNaam: '', noodcontactGsm: '',
-  foto: null, video: null,
+  extraInfoGroep: '',
+  medisch: false,
+  medischUitleg: '',
+  noodcontactNaam: '',
+  noodcontactGsm: '',
+  foto: null,
+  video: null,
+  vriendenIngeschreven: false,
+  vriendenNamen: '',
   agreement: false,
   privacyAgreement: false,
 };
@@ -188,23 +225,13 @@ const responseOptions = [
   { icon: XCircle, title: 'Niet geselecteerd', description: <>De expeditie past op dit moment niet goed bij jou of bij de groep.</>, bgColor: 'bg-red-100', iconColor: 'text-red-500' },
 ];
 
-const IS_REGISTRATION_OPEN = true;
-
 export default function ContactAndSignup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [showForm, setShowForm] = useState(true);
-  const revealForm = () => setShowForm(true);
   const [showTripGuide, setShowTripGuide] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  /**
-   * De meeste bezoekers komen via een link in Instagram binnen en blijven dan in
-   * de in-app browser hangen. Die kan op heel wat toestellen de bestandskiezer
-   * niet openen: je tikt op "upload een foto" en er gebeurt simpelweg niets.
-   * Daar kunnen wij in code niets aan verhelpen, dus zeggen we het gewoon.
-   */
   const [isInAppBrowser] = useState(() =>
     /Instagram|FBAN|FBAV|FB_IAB|Messenger|TikTok|Snapchat|Pinterest|Line\//i.test(
       typeof navigator === 'undefined' ? '' : navigator.userAgent
@@ -227,7 +254,6 @@ export default function ContactAndSignup() {
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev };
@@ -239,7 +265,6 @@ export default function ContactAndSignup() {
 
   const handleBlur = (fieldName: string) => {
     setTouchedFields((prev) => new Set(prev).add(fieldName));
-    // Validate single field on blur
     const result = validateForm({ ...formData, [fieldName]: formData[fieldName as keyof FormData] });
     if (!result.success) {
       const fieldError = result.errors[fieldName];
@@ -249,14 +274,33 @@ export default function ContactAndSignup() {
     }
   };
 
-  const handleCheckboxChange = (field: keyof FormData, value: string, max?: number) => {
+  const handleRadioChange = (name: string, value: string | boolean) => {
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // If switching destination, reset destination-specific physical questions if needed
+      return updated;
+    });
+    if (formErrors[name]) {
+      setFormErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCheckboxChange = (field: 'persoonlijkheid' | 'doelen' | 'vrijeTijdInteresses', value: string, maxItems?: number) => {
     setFormData((prev) => {
       const current = prev[field] as string[];
-      if (current.includes(value)) return { ...prev, [field]: current.filter((v) => v !== value) };
-      if (max && current.length >= max) return prev;
-      return { ...prev, [field]: [...current, value] };
+      let updated: string[];
+      if (current.includes(value)) {
+        updated = current.filter((item) => item !== value);
+      } else {
+        if (maxItems && current.length >= maxItems) return prev;
+        updated = [...current, value];
+      }
+      return { ...prev, [field]: updated };
     });
-    // Clear error when user makes a selection
     if (formErrors[field]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev };
@@ -266,68 +310,41 @@ export default function ContactAndSignup() {
     }
   };
 
-  const handleRadioChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user makes a selection
-    if (formErrors[field]) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'foto' | 'video') => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      const fileError = validateFile(file, type === 'foto' ? 'image' : 'video');
+      if (fileError) {
+        setFormErrors((prev) => ({ ...prev, [type]: fileError }));
+        e.target.value = '';
+        return;
+      }
+    }
+    setFormData((prev) => ({ ...prev, [type]: file }));
+    if (formErrors[type]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[field];
+        delete newErrors[type];
         return newErrors;
       });
     }
   };
-  
-  const handleFileChange = (field: 'foto' | 'video', file: File | null) => {
-    // Mark field as touched immediately so error shows
-    setTouchedFields((prev) => new Set(prev).add(field));
-    
-    // Validate file first before setting it
-    if (file) {
-      const error = validateFile(file, field === 'foto' ? 'image' : 'video');
-      if (error) {
-        // Don't set the file if validation fails - keep previous or null
-        setFormErrors((prev) => ({ ...prev, [field]: error }));
-        // Still update the file input to show user selected something, 
-        // but mark it as invalid
-        setFormData((prev) => ({ ...prev, [field]: file }));
-      } else {
-        setFormErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors[field];
-          return newErrors;
-        });
-        setFormData((prev) => ({ ...prev, [field]: file }));
-      }
-    } else {
-      // File was cleared. Ook de input leegmaken: anders vuurt het opnieuw
-      // kiezen van net datzelfde bestand geen change-event af.
-      const input = document.getElementById(`${field}-upload`) as HTMLInputElement | null;
-      if (input) input.value = '';
-      setFormData((prev) => ({ ...prev, [field]: null }));
-      setFormErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+
+  const getFieldError = (fieldName: string) => {
+    return formErrors[fieldName] || (touchedFields.has(fieldName) ? formErrors[fieldName] : undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Mark all fields as touched
-    setTouchedFields(new Set(Object.keys(formData)));
-    
-    // Validate entire form before submission
+
+    // Validate form with zod
     const validationResult = validateForm(formData);
-    
     if (!validationResult.success) {
       setFormErrors(validationResult.errors);
       
-      // Scroll to first error
       const firstErrorField = Object.keys(validationResult.errors)[0];
-      const errorElement = document.querySelector(`[name="${firstErrorField}"], [data-field="${firstErrorField}"]`);
+      const errorElement = document.querySelector(`[name="${firstErrorField}"]`) || 
+                           document.querySelector(`[data-field="${firstErrorField}"]`);
       if (errorElement) {
         errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (errorElement as HTMLElement).focus();
@@ -335,37 +352,80 @@ export default function ContactAndSignup() {
       return;
     }
 
-    // Clear any previous errors
+    // Conditional validations
+    if ((formData.huidigeBezigheid === 'Ik studeer' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.studieUitleg.trim()) {
+      setFormErrors(prev => ({ ...prev, studieUitleg: 'Vul in wat je studeert' }));
+      const errorElement = document.querySelector(`[name="studieUitleg"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if ((formData.huidigeBezigheid === 'Ik werk' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.werkUitleg.trim()) {
+      setFormErrors(prev => ({ ...prev, werkUitleg: 'Vul in wat voor werk je doet' }));
+      const errorElement = document.querySelector(`[name="werkUitleg"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (formData.huidigeBezigheid === 'Iets anders' && !formData.bezigheidAndersUitleg.trim()) {
+      setFormErrors(prev => ({ ...prev, bezigheidAndersUitleg: 'Vertel wat je momenteel doet' }));
+      const errorElement = document.querySelector(`[name="bezigheidAndersUitleg"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (formData.vrijeTijdInteresses.includes('Andere') && !formData.vrijeTijdAnders.trim()) {
+      setFormErrors(prev => ({ ...prev, vrijeTijdAnders: 'Vul in welke andere interesses je hebt' }));
+      const errorElement = document.querySelector(`[name="vrijeTijdAnders"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (formData.medisch && !formData.medischUitleg.trim()) {
+      setFormErrors(prev => ({ ...prev, medischUitleg: 'Vul in waarmee we rekening moeten houden' }));
+      const errorElement = document.querySelector(`[name="medischUitleg"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (formData.vriendenIngeschreven && !formData.vriendenNamen.trim()) {
+      setFormErrors(prev => ({ ...prev, vriendenNamen: 'Vul de voor- en achternaam in van je vriend(in)' }));
+      const errorElement = document.querySelector(`[name="vriendenNamen"]`);
+      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    
+    // Clear errors
     setFormErrors({});
 
     const result = await submitForm(formData);
-    
     if (result.success) {
       setSubmitted(true);
     }
   };
 
-  // Helper to show error message for a field
-  const getFieldError = (fieldName: string): string | null => {
-    return touchedFields.has(fieldName) ? formErrors[fieldName] || null : null;
-  };
+  const isItalie = formData.expeditieVoorkeur.includes('Italie');
 
   if (submitted) {
     return (
-      <section ref={sectionRef} className="py-20 md:py-28 bg-white relative overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-mint to-lavender rounded-3xl p-8 md:p-12 text-center">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Check className="w-10 h-10 text-green-600" />
+      <section id="contact" className="py-20 md:py-32 bg-white relative overflow-hidden">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-lavender/30 rounded-3xl p-8 md:p-12 border border-purple-accent/20">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-charcoal mb-4">Bedankt voor je inschrijving!</h2>
-            <p className="text-charcoal/70 text-lg">We nemen zo snel mogelijk contact met je op. Hou je mailbox in de gaten!</p>
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-4">
+              Bedankt voor je inschrijving!
+            </h3>
+            <p className="text-charcoal/70 mb-6">
+              We hebben je gegevens goed ontvangen. We bekijken je profiel zorgvuldig om te zien of je past bij een van onze groepen. Je hoort snel van ons!
+            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-accent/10 rounded-full text-sm text-purple-accent">
+              <Sparkles className="w-4 h-4" />
+              Hou je mailbox in de gaten
+            </div>
+
             {uploadWarnings.length > 0 && (
-              <div className="mt-6 rounded-2xl bg-white/70 border border-amber-300 p-4 text-left">
-                <p className="text-sm font-medium text-amber-900 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  Je inschrijving is opgeslagen, alleen je bestand niet
-                </p>
+              <div className="mt-6 p-4 bg-amber-50 rounded-2xl border border-amber-200 text-left">
+                <div className="flex items-center gap-2 text-amber-800 font-semibold text-sm">
+                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+                  Je inschrijving is opgeslagen, maar één bestand ontbreekt nog:
+                </div>
                 {uploadWarnings.map((warning) => (
                   <p key={warning} className="mt-1.5 text-xs text-amber-900/80 leading-relaxed">{warning}</p>
                 ))}
@@ -382,14 +442,13 @@ export default function ContactAndSignup() {
 
   return (
     <section ref={sectionRef} id="contact" className="relative bg-white pb-16 md:pb-24">
-      {/* PART 1: Contact Info Section - no border, no shadow, less padding */}
+      {/* PART 1: Info Header */}
       <div className="pt-16 md:pt-20 pb-4 relative overflow-hidden">
         <div className="absolute top-10 left-[10%] w-32 h-32 bg-lavender/30 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-[10%] w-40 h-40 bg-mint/30 rounded-full blur-3xl" />
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            
             <div className="text-center mb-8">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-lavender/50 rounded-full text-sm font-medium text-charcoal mb-6">
                 <Sparkles className="w-4 h-4 text-purple-accent" />
@@ -408,8 +467,6 @@ export default function ContactAndSignup() {
                 <p className="text-charcoal/70 leading-relaxed">
                   Op basis daarvan stelt <span className="font-medium text-purple-accent">Daria</span> de groepen samen. Daarna krijg je altijd een mail met één van deze drie antwoorden:
                 </p>
-
-                
               </div>
 
               <div className="space-y-3">
@@ -437,96 +494,40 @@ export default function ContactAndSignup() {
         </div>
       </div>
 
-      {/* PART 2: Form Section with Gradient Reveal - less top padding */}
-      {/* 
-        STRUCTURE NOTE FOR FUTURE DEVELOPERS:
-        This section has a "peek" effect where the form is partially hidden until clicked.
-        The clipped-container (the div with max-h-[450px] or max-h-[8000px]) controls the visible height.
-        The reveal button MUST be positioned INSIDE this container to appear at the correct % height.
-      */}
+      {/* PART 2: Form Section */}
       <div id="signup-form" className="relative">
-        {!IS_REGISTRATION_OPEN ? (
-          <div className="pt-4 pb-12 relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
-            
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <div className="bg-white rounded-3xl p-8 md:p-12 shadow-soft border border-charcoal/10 text-center my-6">
-                <div className="w-16 h-16 bg-lavender/60 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Clock className="w-8 h-8 text-purple-accent" />
-                </div>
-                <span className="inline-block px-4 py-1.5 bg-purple-100 text-purple-800 font-bold text-xs uppercase tracking-wider rounded-full mb-4">
-                  Inschrijvingen
-                </span>
-                <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-3">
-                  Binnenkort nieuwe inschrijvingen
-                </h3>
-                <p className="text-charcoal/70 text-base md:text-lg leading-relaxed mb-8 max-w-lg mx-auto">
-                  De inschrijvingen zijn op dit moment gesloten. Binnenkort komen er nieuwe edities en inschrijvingen beschikbaar!
+        <div className="pt-4 pb-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
+          
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Form Header */}
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-4">
+                Inschrijfformulier
+              </h3>
+              
+              {/* Klein geel kadertje */}
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 md:p-5 text-amber-900 text-sm md:text-base leading-relaxed text-left shadow-sm">
+                <p className="font-medium">
+                  We besteden veel tijd en aandacht aan het samenstellen van groepen die goed bij elkaar passen. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen. Er zijn geen juiste of foute antwoorden, dus wees vooral jezelf!
                 </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <button
-                    disabled
-                    className="btn-primary text-base px-8 py-4 bg-gray-400 border-gray-400 text-white cursor-not-allowed opacity-80 shadow-none pointer-events-none w-full sm:w-auto"
-                  >
-                    <Clock className="w-5 h-5 mr-2" />
-                    Binnenkort nieuwe inschrijvingen
-                  </button>
-                  <a
-                    href="#nieuwsbrief"
-                    className="px-6 py-4 rounded-xl border border-purple-accent/30 text-purple-accent font-medium hover:bg-lavender/30 transition-colors text-base inline-flex items-center justify-center w-full sm:w-auto"
-                  >
-                    <Mail className="w-4 h-4 mr-2" />
-                    Hou me op de hoogte
-                  </a>
-                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          /* Clipped container: this is the positioning context for the reveal button */
-          <div 
-            className={`relative transition-all duration-700 ease-out ${showForm ? 'max-h-none' : 'max-h-[450px] overflow-hidden'}`}
-          >
-            {/* Gradient overlay when hidden - creates the fade-out effect at the bottom */}
-            {!showForm && (
-              <div className="absolute inset-0 z-20 backdrop-blur-[1px]">
-                <div className="h-full w-full bg-gradient-to-b from-white via-white via-[20%] to-transparent" />
-              </div>
-            )}
 
-            {/* Form content - less top padding */}
-            <div className="pt-2 pb-4 relative">
-              <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
-              
-              <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                {/* Form Header - partially visible */}
-                <div className={`text-center mb-6 transition-all duration-500 ${showForm ? 'opacity-100' : 'opacity-70'}`}>
-                  <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
-                    Inschrijfformulier
-                  </h3>
-                  <div className="text-charcoal/60 space-y-3">
-                    <p>
-                      <span className="font-bold text-charcoal">Belangrijk:</span> je schrijft je altijd alleen in. Samen inschrijven met een vriend of vriendin is niet mogelijk, omdat PlotTwist net bedoeld is om nieuwe mensen te leren kennen.
-                    </p>
-                    <p>
-                      Vul de vragen daarom eerlijk in. We besteden veel tijd en aandacht aan het samenstellen van een groep die goed bij elkaar past. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen.
-                    </p>
-                  </div>
-                </div>
-
-              <form onSubmit={handleSubmit} className="space-y-8 mt-8">
-                {/* Part 1 - Basic Info (partially visible with more fields) */}
-                <div className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 transition-opacity duration-500 ${showForm ? 'opacity-100' : 'opacity-60'}`}>
+            <form onSubmit={handleSubmit} className="space-y-8 mt-8">
+              {/* Deel 1: Even kennismaken */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
                     <User className="w-5 h-5 text-purple-accent" />
                   </div>
-                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 1 – Basis</h4>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 1: Even kennismaken</h4>
                 </div>
+                
                 <div className="grid md:grid-cols-2 gap-4">
+                  {/* 1. Wat is je voornaam en achternaam? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">Naam *</label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">1. Wat is je voornaam en achternaam? *</label>
                     <input 
                       type="text" 
                       name="naam" 
@@ -539,7 +540,7 @@ export default function ContactAndSignup() {
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="Jouw naam" 
+                      placeholder="bv. Laura Janssens" 
                     />
                     {getFieldError('naam') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -548,33 +549,36 @@ export default function ContactAndSignup() {
                       </p>
                     )}
                   </div>
+
+                  {/* 2. Wat is je geboortedatum? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">Leeftijd *</label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">2. Wat is je geboortedatum? *</label>
                     <input 
-                      type="number" 
-                      name="leeftijd" 
-                      value={formData.leeftijd} 
+                      type="date" 
+                      name="geboortedatum" 
+                      value={formData.geboortedatum} 
                       onChange={handleTextChange} 
-                      onBlur={() => handleBlur('leeftijd')}
+                      onBlur={() => handleBlur('geboortedatum')}
                       required 
-                      min="18" 
-                      max="26" 
+                      max="2012-01-01"
+                      min="1980-01-01"
                       className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
-                        getFieldError('leeftijd') 
+                        getFieldError('geboortedatum') 
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="18-26" 
                     />
-                    {getFieldError('leeftijd') && (
+                    {getFieldError('geboortedatum') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
-                        {getFieldError('leeftijd')}
+                        {getFieldError('geboortedatum')}
                       </p>
                     )}
                   </div>
+
+                  {/* 3. Waar woon je? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">Woonplaats *</label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">3. Waar woon je? *</label>
                     <input 
                       type="text" 
                       name="woonplaats" 
@@ -587,7 +591,7 @@ export default function ContactAndSignup() {
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="Stad/dorp" 
+                      placeholder="Gemeente of stad" 
                     />
                     {getFieldError('woonplaats') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -596,8 +600,10 @@ export default function ContactAndSignup() {
                       </p>
                     )}
                   </div>
+
+                  {/* 4. Wat is je gsm-nummer? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">GSM-nummer *</label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">4. Wat is je gsm-nummer? *</label>
                     <input 
                       type="tel" 
                       name="gsm" 
@@ -619,8 +625,10 @@ export default function ContactAndSignup() {
                       </p>
                     )}
                   </div>
+
+                  {/* 5. Wat is je e-mailadres? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">E-mailadres *</label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">5. Wat is je e-mailadres? *</label>
                     <input 
                       type="email" 
                       name="email" 
@@ -633,7 +641,7 @@ export default function ContactAndSignup() {
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="jouw@email.be" 
+                      placeholder="jouw@email.com" 
                     />
                     {getFieldError('email') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -642,20 +650,23 @@ export default function ContactAndSignup() {
                       </p>
                     )}
                   </div>
+
+                  {/* 6. Wat is je Instagram? */}
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">Instagram <span className="text-charcoal/50">(optioneel)</span></label>
+                    <label className="block text-sm font-medium text-charcoal mb-2">6. Wat is je Instagram? *</label>
                     <input 
                       type="text" 
                       name="instagram" 
                       value={formData.instagram} 
                       onChange={handleTextChange} 
                       onBlur={() => handleBlur('instagram')}
+                      required 
                       className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
                         getFieldError('instagram') 
                           ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
                           : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
                       }`} 
-                      placeholder="@jouwprofiel" 
+                      placeholder="@gebruikersnaam" 
                     />
                     {getFieldError('instagram') && (
                       <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -666,931 +677,1085 @@ export default function ContactAndSignup() {
                   </div>
                 </div>
 
-                {/* Question: Welke expeditie heeft jouw voorkeur? */}
-                <div className="mt-8 pt-6 border-t border-charcoal/10 space-y-4" data-field="expeditieVoorkeur">
-                  <div>
-                    <label className="block text-sm font-semibold text-charcoal">
-                      Welke expeditie heeft jouw voorkeur? *
-                    </label>
-                    <p className="text-xs text-charcoal/60 mt-1">
-                      We houden zoveel mogelijk rekening met jouw voorkeur, maar kunnen niet garanderen dat je op deze bestemming terechtkomt.
-                    </p>
-                  </div>
-
-                  <div className={`space-y-3 rounded-2xl p-1 ${getFieldError('expeditieVoorkeur') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                    {[
-                      { id: 'Nederland / Duitsland', label: 'Nederland / Duitsland' },
-                      { id: 'Italië (+€145)', label: 'Italië (+€145)' },
-                    ].map((option) => (
-                      <label
-                        key={option.id}
-                        className={`flex items-center gap-3 p-4 bg-gray-50 rounded-2xl cursor-pointer transition-all hover:bg-purple-accent/5 border ${
-                          formData.expeditieVoorkeur === option.id 
-                            ? 'border-purple-accent bg-purple-50/40 ring-2 ring-purple-accent/20' 
-                            : 'border-charcoal/10'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="expeditieVoorkeur"
-                          value={option.id}
-                          checked={formData.expeditieVoorkeur === option.id}
-                          onChange={(e) => handleRadioChange('expeditieVoorkeur', e.target.value)}
-                          required
-                          className="w-5 h-5 text-purple-accent focus:ring-purple-accent"
+                {/* 7. Wat doe je momenteel? */}
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-charcoal mb-3">7. Wat doe je momenteel? *</label>
+                  <div data-field="huidigeBezigheid" className={`grid sm:grid-cols-2 gap-2.5 rounded-xl p-1 ${getFieldError('huidigeBezigheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {huidigeBezigheidOptions.map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3.5 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.huidigeBezigheid === option ? 'ring-2 ring-purple-accent bg-purple-accent/5' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="huidigeBezigheid" 
+                          value={option} 
+                          checked={formData.huidigeBezigheid === option} 
+                          onChange={(e) => handleRadioChange('huidigeBezigheid', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
                         />
-                        <span className="font-medium text-charcoal">{option.label}</span>
+                        <span className="text-charcoal font-medium text-sm">{option}</span>
                       </label>
                     ))}
                   </div>
+                  {getFieldError('huidigeBezigheid') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('huidigeBezigheid')}
+                    </p>
+                  )}
 
+                  {/* Vervolgveld: Ik studeer */}
+                  {(formData.huidigeBezigheid === 'Ik studeer' || formData.huidigeBezigheid === 'Ik studeer en werk') && (
+                    <div className="mt-4 p-4 bg-gray-50/80 rounded-2xl border border-charcoal/5">
+                      <label className="block text-sm font-medium text-charcoal mb-2">Wat studeer je? *</label>
+                      <input 
+                        type="text" 
+                        name="studieUitleg" 
+                        value={formData.studieUitleg} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('studieUitleg')}
+                        required
+                        className={`w-full px-4 py-3 bg-white rounded-xl border outline-none transition-all ${
+                          getFieldError('studieUitleg') ? 'border-red-400 focus:border-red-500' : 'border-charcoal/10 focus:border-purple-accent'
+                        }`}
+                        placeholder="bv. Toegepaste Psychologie, Rechten, Marketing..." 
+                      />
+                      {getFieldError('studieUitleg') && (
+                        <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {getFieldError('studieUitleg')}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Vervolgveld: Ik werk */}
+                  {(formData.huidigeBezigheid === 'Ik werk' || formData.huidigeBezigheid === 'Ik studeer en werk') && (
+                    <div className="mt-4 p-4 bg-gray-50/80 rounded-2xl border border-charcoal/5">
+                      <label className="block text-sm font-medium text-charcoal mb-2">Wat voor werk doe je? *</label>
+                      <input 
+                        type="text" 
+                        name="werkUitleg" 
+                        value={formData.werkUitleg} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('werkUitleg')}
+                        required
+                        className={`w-full px-4 py-3 bg-white rounded-xl border outline-none transition-all ${
+                          getFieldError('werkUitleg') ? 'border-red-400 focus:border-red-500' : 'border-charcoal/10 focus:border-purple-accent'
+                        }`}
+                        placeholder="bv. Verpleegkundige, Developer, Zelfstandige..." 
+                      />
+                      {getFieldError('werkUitleg') && (
+                        <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {getFieldError('werkUitleg')}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Vervolgveld: Iets anders */}
+                  {formData.huidigeBezigheid === 'Iets anders' && (
+                    <div className="mt-4 p-4 bg-gray-50/80 rounded-2xl border border-charcoal/5">
+                      <label className="block text-sm font-medium text-charcoal mb-2">Vertel gerust wat je momenteel doet *</label>
+                      <input 
+                        type="text" 
+                        name="bezigheidAndersUitleg" 
+                        value={formData.bezigheidAndersUitleg} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('bezigheidAndersUitleg')}
+                        required
+                        className={`w-full px-4 py-3 bg-white rounded-xl border outline-none transition-all ${
+                          getFieldError('bezigheidAndersUitleg') ? 'border-red-400 focus:border-red-500' : 'border-charcoal/10 focus:border-purple-accent'
+                        }`}
+                        placeholder="bv. Tussenjaar, op reis, werkzoekend..." 
+                      />
+                      {getFieldError('bezigheidAndersUitleg') && (
+                        <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {getFieldError('bezigheidAndersUitleg')}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Deel 2: Jouw expeditie */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Compass className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 2: Jouw expeditie</h4>
+                </div>
+
+                {/* 8. Welke expeditie heeft jouw voorkeur? */}
+                <div className="mb-8">
+                  <label className="block text-base font-semibold text-charcoal mb-1">
+                    8. Welke expeditie heeft jouw voorkeur? *
+                  </label>
+                  <p className="text-xs text-charcoal/60 mb-3">
+                    We houden zoveel mogelijk rekening met je voorkeur, maar kunnen niet garanderen dat je op deze bestemming terechtkomt.
+                  </p>
+                  
+                  <div data-field="expeditieVoorkeur" className={`grid sm:grid-cols-2 gap-3 p-1 rounded-xl ${getFieldError('expeditieVoorkeur') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {expeditieOptions.map((option) => (
+                      <label 
+                        key={option} 
+                        className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer transition-all border ${
+                          formData.expeditieVoorkeur === option 
+                            ? 'ring-2 ring-purple-accent border-purple-accent bg-purple-accent/5 font-semibold text-purple-accent' 
+                            : 'border-charcoal/10 hover:bg-purple-accent/5 text-charcoal'
+                        }`}
+                      >
+                        <input 
+                          type="radio" 
+                          name="expeditieVoorkeur" 
+                          value={option} 
+                          checked={formData.expeditieVoorkeur === option} 
+                          onChange={(e) => handleRadioChange('expeditieVoorkeur', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span>{option}</span>
+                      </label>
+                    ))}
+                  </div>
                   {getFieldError('expeditieVoorkeur') && (
-                    <p className="text-xs text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-3.5 h-3.5" />
+                    <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
                       {getFieldError('expeditieVoorkeur')}
                     </p>
                   )}
 
-                  {/* Info box when Italië (+€145) is selected */}
-                  {formData.expeditieVoorkeur === 'Italië (+€145)' && (
-                    <div className="p-4 bg-purple-50/90 border border-purple-200/80 rounded-2xl text-charcoal/90 text-sm space-y-2 animate-fadeIn">
-                      <div className="flex items-center gap-2 font-semibold text-purple-accent">
-                        <Info className="w-4 h-4 text-purple-accent flex-shrink-0" />
-                        <span>Extra vervoerskosten: €145</span>
+                  {/* Automatische informatie bij keuze voor Italie */}
+                  {isItalie && (
+                    <div className="mt-4 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-sm text-charcoal/80 space-y-2 animate-fadeIn">
+                      <div className="flex items-center gap-2 font-bold text-amber-900">
+                        <Info className="w-4 h-4 text-amber-700 shrink-0" />
+                        <span>Extra vervoerskost: €145</span>
                       </div>
-                      <p className="text-xs sm:text-sm text-charcoal/80 leading-relaxed">
-                        Voor de reis naar Italië regelen wij een nachtbus. De rit duurt ongeveer 18 uur. Deze extra vervoerskost komt bovenop de standaardprijs van je expeditie. Meer praktische informatie ontvang je later.
+                      <p className="leading-relaxed text-amber-900/90 text-xs sm:text-sm">
+                        Voor Italie voorzien we nachtelijk busvervoer. Je vertrekt ongeveer 18 uur eerder dan bij de reguliere expeditie. Meer praktische informatie ontvang je later.
                       </p>
                     </div>
                   )}
 
-                  {/* Collapsible guidance: Welke reis past het best bij jou? */}
-                  <div className="pt-2">
+                  {/* Collapsible gids: Welke reis past het best bij jou? */}
+                  <div className="mt-4">
                     <button
                       type="button"
                       onClick={() => setShowTripGuide(!showTripGuide)}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-purple-accent hover:text-purple-accent/80 transition-colors py-2 px-3 rounded-xl hover:bg-lavender/30 group"
+                      className="w-full flex items-center justify-between p-3.5 bg-lavender/40 hover:bg-lavender/60 border border-purple-accent/20 rounded-xl text-left transition-all"
                     >
-                      <span>Welke reis past het best bij jou?</span>
-                      <ChevronDown 
-                        className={`w-4 h-4 transition-transform duration-300 ${
-                          showTripGuide ? 'rotate-180' : ''
-                        }`} 
-                      />
+                      <span className="text-sm font-semibold text-charcoal flex items-center gap-2">
+                        <Compass className="w-4 h-4 text-purple-accent" />
+                        Welke reis past het best bij jou?
+                      </span>
+                      <ChevronDown className={`w-4 h-4 text-purple-accent transition-transform duration-300 ${showTripGuide ? 'rotate-180' : ''}`} />
                     </button>
 
                     {showTripGuide && (
-                      <div className="mt-3 p-4 md:p-5 bg-lavender/25 border border-purple-accent/15 rounded-2xl text-xs sm:text-sm text-charcoal/85 space-y-3 leading-relaxed animate-fadeIn">
-                        <p>
-                          Voor je eerste PlotTwist raden we Nederland/Duitsland aan. Het avontuur is toegankelijker en er is meer ruimte om een sterke band op te bouwen met je groep en de locals.
-                        </p>
-                        <p>
-                          Italië is minstens even bijzonder, maar ook fysiek uitdagender. Verwacht meer wandelen, een grotere taalbarrière en nog meer avontuur!
-                        </p>
-                        <p className="font-semibold text-charcoal">
-                          Beide reizen zijn uniek, maar voor een eerste PlotTwist blijft Nederland/Duitsland onze aanrader.
-                        </p>
+                      <div className="mt-3 p-4 md:p-5 bg-lavender/20 border border-purple-accent/15 rounded-2xl space-y-4 text-xs sm:text-sm text-charcoal/80">
+                        <div>
+                          <p className="font-bold text-purple-accent text-sm mb-1">Nederland / Duitsland</p>
+                          <p className="leading-relaxed">
+                            Onze populairste formule! De reis gaat door in prachtige, afwisselende natuurgebieden dichtbij huis. Ideaal als je volop wilt genieten van het groepsavontuur, gezelligheid en leuke activiteiten zonder extreme wandeltochten of lange reistijd.
+                          </p>
+                        </div>
+                        <div className="pt-2 border-t border-purple-accent/10">
+                          <p className="font-bold text-purple-accent text-sm mb-1">Italie (+€145)</p>
+                          <p className="leading-relaxed">
+                            Voor de liefhebbers van ruige bergen, adembenemende panorama&apos;s en zonovergoten landschappen. Deze reis vraagt wat meer uithoudingsvermogen door hoogteverschillen en langere afstanden. Vervoer gebeurt comfortabel met een nachtbus.
+                          </p>
+                        </div>
                       </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 9. Wanneer ben je beschikbaar? */}
+                <div className="pt-6 border-t border-charcoal/5">
+                  <label className="block text-base font-semibold text-charcoal mb-1">
+                    9. Wanneer ben je beschikbaar? *
+                  </label>
+                  <p className="text-xs text-charcoal/60 mb-3">
+                    Selecteer alle weken waarin je mee kan gaan. Hoe meer opties, hoe groter de kans op een passende match.
+                  </p>
+
+                  {isItalie && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-4 flex items-center gap-2">
+                      <Info className="w-4 h-4 shrink-0 text-amber-700" />
+                      <span>Let op: de expedities naar Italie vertrekken 1 dag vroeger.</span>
+                    </div>
+                  )}
+
+                  <div data-field="beschikbaarheid" className={`p-1 rounded-2xl ${getFieldError('beschikbaarheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    <CalendarDatePicker
+                      selectedDates={formData.beschikbaarheid}
+                      onChange={(dates) => {
+                        setFormData((prev) => ({ ...prev, beschikbaarheid: dates }));
+                        if (formErrors.beschikbaarheid) {
+                          setFormErrors((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors.beschikbaarheid;
+                            return newErrors;
+                          });
+                        }
+                      }}
+                      error={getFieldError('beschikbaarheid')}
+                    />
+                  </div>
+                  {getFieldError('beschikbaarheid') && (
+                    <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('beschikbaarheid')}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Deel 3: Wie ben jij? */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Smile className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 3: Wie ben jij?</h4>
+                </div>
+                <p className="text-xs sm:text-sm text-charcoal/60 italic mb-6">
+                  Geen juiste of foute antwoorden! We willen je gewoon wat beter leren kennen, zodat we een leuke groep kunnen samenstellen.
+                </p>
+
+                {/* 10. Hoe zouden je vrienden jou omschrijven? */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    10. Hoe zouden je vrienden jou omschrijven? <span className="text-charcoal/50">(kies max. 3)</span> *
+                  </label>
+                  <div data-field="persoonlijkheid" className="flex flex-wrap gap-2">
+                    {personalityOptions.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleCheckboxChange('persoonlijkheid', option, 3)}
+                        className={`px-3.5 py-2 rounded-full text-sm font-medium transition-all ${
+                          formData.persoonlijkheid.includes(option)
+                            ? 'bg-purple-accent text-white shadow-sm'
+                            : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {getFieldError('persoonlijkheid') && (
+                    <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('persoonlijkheid')}
+                    </p>
+                  )}
+                </div>
+
+                {/* 11. Hoe ben jij meestal in een nieuwe groep? */}
+                <div className="pt-6 border-t border-charcoal/5 mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    11. Hoe ben jij meestal in een nieuwe groep? *
+                  </label>
+                  <div data-field="nieuweGroep" className={`space-y-2 rounded-xl p-1 ${getFieldError('nieuweGroep') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {nieuweGroepOptions.map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.nieuweGroep === option ? 'ring-2 ring-purple-accent bg-purple-accent/5' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="nieuweGroep" 
+                          value={option} 
+                          checked={formData.nieuweGroep === option} 
+                          onChange={(e) => handleRadioChange('nieuweGroep', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span className="text-charcoal text-sm">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {getFieldError('nieuweGroep') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('nieuweGroep')}
+                    </p>
+                  )}
+                  {/* Optioneel tekstveld: Wil je iets toevoegen? */}
+                  <div className="mt-3">
+                    <input 
+                      type="text" 
+                      name="nieuweGroepExtra" 
+                      value={formData.nieuweGroepExtra} 
+                      onChange={handleTextChange} 
+                      className="w-full px-4 py-2.5 bg-gray-50 rounded-xl border border-charcoal/10 text-xs sm:text-sm outline-none focus:border-purple-accent" 
+                      placeholder="Wil je iets toevoegen? (optioneel)" 
+                    />
+                  </div>
+                </div>
+
+                {/* 12. Welke rol neem jij meestal op in een vriendengroep? */}
+                <div className="pt-6 border-t border-charcoal/5 mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    12. Welke rol neem jij meestal op in een vriendengroep? *
+                  </label>
+                  <div data-field="rolVriendengroep" className={`space-y-2 rounded-xl p-1 ${getFieldError('rolVriendengroep') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {rolVriendengroepOptions.map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.rolVriendengroep === option ? 'ring-2 ring-purple-accent bg-purple-accent/5' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="rolVriendengroep" 
+                          value={option} 
+                          checked={formData.rolVriendengroep === option} 
+                          onChange={(e) => handleRadioChange('rolVriendengroep', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span className="text-charcoal text-sm">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {getFieldError('rolVriendengroep') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('rolVriendengroep')}
+                    </p>
+                  )}
+                  {/* Optioneel tekstveld: Wil je iets toevoegen? */}
+                  <div className="mt-3">
+                    <input 
+                      type="text" 
+                      name="rolVriendengroepExtra" 
+                      value={formData.rolVriendengroepExtra} 
+                      onChange={handleTextChange} 
+                      className="w-full px-4 py-2.5 bg-gray-50 rounded-xl border border-charcoal/10 text-xs sm:text-sm outline-none focus:border-purple-accent" 
+                      placeholder="Wil je iets toevoegen? (optioneel)" 
+                    />
+                  </div>
+                </div>
+
+                {/* 13. Hoe sociaal ben jij tijdens een meerdaagse trip? */}
+                <div className="pt-6 border-t border-charcoal/5 mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    13. Hoe sociaal ben jij tijdens een meerdaagse trip? *
+                  </label>
+                  <div data-field="sociaalMeerdaagse" className={`space-y-2 rounded-xl p-1 ${getFieldError('sociaalMeerdaagse') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {sociaalMeerdaagseOptions.map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.sociaalMeerdaagse === option ? 'ring-2 ring-purple-accent bg-purple-accent/5' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="sociaalMeerdaagse" 
+                          value={option} 
+                          checked={formData.sociaalMeerdaagse === option} 
+                          onChange={(e) => handleRadioChange('sociaalMeerdaagse', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span className="text-charcoal text-sm">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {getFieldError('sociaalMeerdaagse') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('sociaalMeerdaagse')}
+                    </p>
+                  )}
+                  {/* Optioneel tekstveld: Wil je iets toevoegen? */}
+                  <div className="mt-3">
+                    <input 
+                      type="text" 
+                      name="sociaalMeerdaagseExtra" 
+                      value={formData.sociaalMeerdaagseExtra} 
+                      onChange={handleTextChange} 
+                      className="w-full px-4 py-2.5 bg-gray-50 rounded-xl border border-charcoal/10 text-xs sm:text-sm outline-none focus:border-purple-accent" 
+                      placeholder="Wil je iets toevoegen? (optioneel)" 
+                    />
+                  </div>
+                </div>
+
+                {/* 14. Wat doe je graag in je vrije tijd? */}
+                <div className="pt-6 border-t border-charcoal/5">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    14. Wat doe je graag in je vrije tijd? <span className="text-charcoal/50">(kies max. 5 interesses)</span> *
+                  </label>
+                  <div data-field="vrijeTijdInteresses" className="flex flex-wrap gap-2">
+                    {vrijeTijdOptions.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleCheckboxChange('vrijeTijdInteresses', option, 5)}
+                        className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                          formData.vrijeTijdInteresses.includes(option)
+                            ? 'bg-purple-accent text-white shadow-sm'
+                            : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {getFieldError('vrijeTijdInteresses') && (
+                    <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('vrijeTijdInteresses')}
+                    </p>
+                  )}
+
+                  {/* Automatische functie bij 'Andere' */}
+                  {formData.vrijeTijdInteresses.includes('Andere') && (
+                    <div className="mt-3 p-3.5 bg-purple-accent/5 rounded-xl border border-purple-accent/20">
+                      <label className="block text-xs font-semibold text-charcoal mb-1.5">
+                        Welke andere interesses heb je? *
+                      </label>
+                      <input 
+                        type="text" 
+                        name="vrijeTijdAnders" 
+                        value={formData.vrijeTijdAnders} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('vrijeTijdAnders')}
+                        required
+                        className="w-full px-3 py-2 bg-white rounded-lg border border-charcoal/15 text-sm outline-none focus:border-purple-accent" 
+                        placeholder="Beschrijf je overige interesses..." 
+                      />
+                      {getFieldError('vrijeTijdAnders') && (
+                        <p className="mt-1 text-xs text-red-500">{getFieldError('vrijeTijdAnders')}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Deel 4: Wat verwacht je van PlotTwist? */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Target className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 4: Wat verwacht je van PlotTwist?</h4>
+                </div>
+
+                {/* 15. Waarom wil je graag mee met PlotTwist? */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    15. Waarom wil je graag mee met PlotTwist? *
+                  </label>
+                  <textarea 
+                    name="motivatie" 
+                    value={formData.motivatie} 
+                    onChange={handleTextChange} 
+                    onBlur={() => handleBlur('motivatie')}
+                    required 
+                    rows={4} 
+                    className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                      getFieldError('motivatie') 
+                        ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                        : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                    }`} 
+                    placeholder="Vertel ons waarom je graag mee wilt en wat je aanspreekt aan het concept..." 
+                  />
+                  {getFieldError('motivatie') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('motivatie')}
+                    </p>
+                  )}
+                </div>
+
+                {/* 16. Wat hoop je vooral uit deze expeditie te halen? */}
+                <div className="pt-6 border-t border-charcoal/5">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    16. Wat hoop je vooral uit deze expeditie te halen? <span className="text-charcoal/50">(kies max. 2)</span> *
+                  </label>
+                  <div data-field="doelen" className="grid sm:grid-cols-2 gap-2.5">
+                    {doelenOptions.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleCheckboxChange('doelen', option, 2)}
+                        className={`p-3.5 rounded-xl text-left text-sm font-medium transition-all border ${
+                          formData.doelen.includes(option)
+                            ? 'bg-purple-accent text-white border-purple-accent shadow-sm'
+                            : 'bg-gray-50 border-charcoal/5 text-charcoal hover:bg-purple-accent/5'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {getFieldError('doelen') && (
+                    <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('doelen')}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Deel 5: Wandelen en fysieke haalbaarheid */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 5: Wandelen en fysieke haalbaarheid</h4>
+                </div>
+
+                {/* Introductietekst aangepast aan gekozen bestemming */}
+                {isItalie ? (
+                  <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl mb-6 text-xs sm:text-sm text-charcoal/80 space-y-2">
+                    <p className="font-semibold text-charcoal">
+                      Tijdens PlotTwist in Italie wandelen we gemiddeld 20 km per dag, soms met hoogteverschillen en met een rugzak van maximaal 10 kg. We nemen pauzes, maar dit vraagt een goede wandelconditie.
+                    </p>
+                    <p className="italic text-charcoal/70">
+                      Je hoeft geen ervaren hiker te zijn, maar langere wandelingen moeten wel haalbaar zijn. Twijfel je? Dan raden we aan om eerst Nederland/Duitsland te kiezen. Daar beleef je minstens evenveel avontuur, met minder fysieke belasting.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-lavender/40 border border-purple-accent/15 rounded-2xl mb-6 text-xs sm:text-sm text-charcoal/80 space-y-2">
+                    <p className="font-semibold text-charcoal">
+                      Tijdens PlotTwist wandelen we gemiddeld 15 km per dag, verspreid over de hele dag, met een rugzak van maximaal 10 kg. We nemen voldoende pauzes, helpen elkaar en hebben ook rustigere momenten.
+                    </p>
+                    <p className="italic text-charcoal/70">
+                      Je hoeft geen topsporter te zijn! Wees wel eerlijk over je conditie. Ook met minder wandelervaring kan je deelnemen als de expeditie voor jou haalbaar is. Motivatie en bereidheid om je voor te bereiden zijn belangrijk.
+                    </p>
+                  </div>
+                )}
+
+                {/* 17. Hoeveel kilometer denk je momenteel op een dag te kunnen wandelen met een rugzak? */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    17. Hoeveel kilometer denk je momenteel op een dag te kunnen wandelen met een rugzak? *
+                  </label>
+                  <div data-field="kmWandelen" className={`grid sm:grid-cols-2 gap-2.5 rounded-xl p-1 ${getFieldError('kmWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {kmWandelenOptions.map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.kmWandelen === option ? 'ring-2 ring-purple-accent bg-purple-accent/5 font-medium' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="kmWandelen" 
+                          value={option} 
+                          checked={formData.kmWandelen === option} 
+                          onChange={(e) => handleRadioChange('kmWandelen', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span className="text-charcoal text-sm">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {getFieldError('kmWandelen') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('kmWandelen')}
+                    </p>
+                  )}
+                </div>
+
+                {/* 18. Vraag aangepast aan bestemming */}
+                <div className="pt-6 border-t border-charcoal/5">
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    {isItalie 
+                      ? '18. Hoe sta je tegenover meerdere dagen na elkaar gemiddeld 20 km wandelen, soms met hoogteverschillen? *'
+                      : '18. Hoe sta je tegenover meerdere dagen na elkaar gemiddeld 15 km wandelen? *'}
+                  </label>
+                  <div data-field="meerdereDagenWandelen" className={`space-y-2 rounded-xl p-1 ${getFieldError('meerdereDagenWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                    {(isItalie ? meerdereDagenWandelenOptionsItalie : meerdereDagenWandelenOptionsNedDui).map((option) => (
+                      <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.meerdereDagenWandelen === option ? 'ring-2 ring-purple-accent bg-purple-accent/5 font-medium' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="meerdereDagenWandelen" 
+                          value={option} 
+                          checked={formData.meerdereDagenWandelen === option} 
+                          onChange={(e) => handleRadioChange('meerdereDagenWandelen', e.target.value)} 
+                          required 
+                          className="w-5 h-5 text-purple-accent" 
+                        />
+                        <span className="text-charcoal text-sm">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {getFieldError('meerdereDagenWandelen') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('meerdereDagenWandelen')}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Deel 6: De laatste persoonlijke vragen */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 6: De laatste persoonlijke vragen</h4>
+                </div>
+
+                {/* 19. Waar zouden andere deelnemers zich mogelijk aan kunnen ergeren bij jou? */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    19. Waar zouden andere deelnemers zich mogelijk aan kunnen ergeren bij jou? *
+                  </label>
+                  <textarea 
+                    name="ergernissenAnderen" 
+                    value={formData.ergernissenAnderen} 
+                    onChange={handleTextChange} 
+                    onBlur={() => handleBlur('ergernissenAnderen')}
+                    required 
+                    rows={3} 
+                    className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                      getFieldError('ergernissenAnderen') 
+                        ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                        : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                    }`} 
+                    placeholder="Wees gerust eerlijk! Iedereen heeft gewoontes of mindere kantjes..." 
+                  />
+                  {getFieldError('ergernissenAnderen') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('ergernissenAnderen')}
+                    </p>
+                  )}
+                </div>
+
+                {/* 20. Met welke eigenschappen van andere mensen heb jij het soms moeilijk? */}
+                <div className="mb-6 pt-6 border-t border-charcoal/5">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    20. Met welke eigenschappen van andere mensen heb jij het soms moeilijk? *
+                  </label>
+                  <textarea 
+                    name="typePersoonBotsen" 
+                    value={formData.typePersoonBotsen} 
+                    onChange={handleTextChange} 
+                    onBlur={() => handleBlur('typePersoonBotsen')}
+                    required 
+                    rows={3} 
+                    className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
+                      getFieldError('typePersoonBotsen') 
+                        ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                        : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                    }`} 
+                    placeholder="Denk aan karaktereigenschappen of communicatiestijlen waar je minder goed mee overweg kan..." 
+                  />
+                  {getFieldError('typePersoonBotsen') && (
+                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {getFieldError('typePersoonBotsen')}
+                    </p>
+                  )}
+                </div>
+
+                {/* 21. Is er nog iets dat je ons wilt vertellen voordat we de groepen samenstellen? (optioneel) */}
+                <div className="pt-6 border-t border-charcoal/5">
+                  <label className="block text-sm font-medium text-charcoal mb-1">
+                    21. Is er nog iets dat je ons wilt vertellen voordat we de groepen samenstellen? <span className="text-charcoal/50">(optioneel)</span>
+                  </label>
+                  <p className="text-xs text-charcoal/60 mb-2">
+                    Bijvoorbeeld iets over je persoonlijkheid, met welke mensen je goed klikt of iets waarvan je denkt dat wij het best weten.
+                  </p>
+                  <textarea 
+                    name="extraInfoGroep" 
+                    value={formData.extraInfoGroep} 
+                    onChange={handleTextChange} 
+                    rows={3} 
+                    className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 outline-none focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 resize-none transition-all" 
+                    placeholder="Iets toevoegen dat kan helpen bij de groepsindeling..." 
+                  />
+                </div>
+              </div>
+
+              {/* Deel 7: Praktisch en veiligheid */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 7: Praktisch en veiligheid</h4>
+                </div>
+
+                {/* 22. Zijn er lichamelijke klachten, medische zaken of allergieen? */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    22. Zijn er lichamelijke klachten, medische zaken of allergieën waarmee we rekening moeten houden om je veilig te laten deelnemen? *
+                  </label>
+                  <div data-field="medisch" className="flex gap-4">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${!formData.medisch ? 'bg-purple-accent/10 border-purple-accent text-purple-accent font-semibold' : 'bg-gray-50 border-charcoal/10'}`}>
+                      <input 
+                        type="radio" 
+                        name="medisch" 
+                        checked={!formData.medisch} 
+                        onChange={() => setFormData(prev => ({ ...prev, medisch: false, medischUitleg: '' }))} 
+                        className="sr-only" 
+                      />
+                      <span>Nee</span>
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${formData.medisch ? 'bg-purple-accent/10 border-purple-accent text-purple-accent font-semibold' : 'bg-gray-50 border-charcoal/10'}`}>
+                      <input 
+                        type="radio" 
+                        name="medisch" 
+                        checked={formData.medisch} 
+                        onChange={() => setFormData(prev => ({ ...prev, medisch: true }))} 
+                        className="sr-only" 
+                      />
+                      <span>Ja</span>
+                    </label>
+                  </div>
+
+                  {formData.medisch && (
+                    <div className="mt-4 p-4 bg-gray-50/80 rounded-2xl border border-charcoal/10 space-y-2">
+                      <label className="block text-sm font-medium text-charcoal">
+                        Waarmee moeten we rekening houden? *
+                      </label>
+                      <textarea 
+                        name="medischUitleg" 
+                        value={formData.medischUitleg} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('medischUitleg')}
+                        required 
+                        rows={3} 
+                        className={`w-full px-4 py-3 bg-white rounded-xl border outline-none transition-all resize-none ${
+                          getFieldError('medischUitleg') 
+                            ? 'border-red-400 focus:border-red-500' 
+                            : 'border-charcoal/10 focus:border-purple-accent'
+                        }`} 
+                        placeholder="Beschrijf relevante blessures, medicatie of allergieën..." 
+                      />
+                      {getFieldError('medischUitleg') && (
+                        <p className="text-xs text-red-500">{getFieldError('medischUitleg')}</p>
+                      )}
+                      <p className="text-xs text-charcoal/50 leading-relaxed italic">
+                        Deze informatie wordt afzonderlijk en vertrouwelijk behandeld en is bedoeld voor de veiligheid, niet voor de persoonlijkheidsmatching.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* 23 & 24. Noodcontact */}
+                <div className="grid md:grid-cols-2 gap-4 pt-6 border-t border-charcoal/5">
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">23. Noodcontact: volledige naam *</label>
+                    <input 
+                      type="text" 
+                      name="noodcontactNaam" 
+                      value={formData.noodcontactNaam} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('noodcontactNaam')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('noodcontactNaam') 
+                          ? 'border-red-400 focus:border-red-500' 
+                          : 'border-charcoal/10 focus:border-purple-accent'
+                      }`} 
+                      placeholder="bv. Mama, partner, broer..." 
+                    />
+                    {getFieldError('noodcontactNaam') && (
+                      <p className="mt-1.5 text-xs text-red-500">{getFieldError('noodcontactNaam')}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">24. Noodcontact: gsm-nummer *</label>
+                    <input 
+                      type="tel" 
+                      name="noodcontactGsm" 
+                      value={formData.noodcontactGsm} 
+                      onChange={handleTextChange} 
+                      onBlur={() => handleBlur('noodcontactGsm')}
+                      required 
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
+                        getFieldError('noodcontactGsm') 
+                          ? 'border-red-400 focus:border-red-500' 
+                          : 'border-charcoal/10 focus:border-purple-accent'
+                      }`} 
+                      placeholder="+32 4XX XX XX XX" 
+                    />
+                    {getFieldError('noodcontactGsm') && (
+                      <p className="mt-1.5 text-xs text-red-500">{getFieldError('noodcontactGsm')}</p>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Rest of form - only visible when revealed */}
-              {showForm && (
-                <div className="space-y-8 mt-8">
-                  {/* Part 2 - Availability */}
-                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-mint rounded-xl flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-purple-accent" />
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 2 – Beschikbaarheid</h4>
-                    </div>
-                    <div data-field="beschikbaarheid">
-                      <CalendarDatePicker
-                        selectedDates={formData.beschikbaarheid}
-                        onChange={(dates) => {
-                          setFormData(prev => ({ ...prev, beschikbaarheid: dates }));
-                          // Clear error when user makes a selection
-                          if (formErrors.beschikbaarheid) {
-                            setFormErrors(prev => {
-                              const newErrors = { ...prev };
-                              delete newErrors.beschikbaarheid;
-                              return newErrors;
-                            });
-                          }
-                        }}
-                        error={getFieldError('beschikbaarheid')}
-                      />
-                    </div>
+              {/* Deel 8: Foto en video */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-purple-accent" />
                   </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 8: Foto en video</h4>
+                </div>
 
-                  {/* Part 3 - Motivation */}
-                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-blush rounded-xl flex items-center justify-center">
-                        <Heart className="w-5 h-5 text-purple-accent" />
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 3 – Motivatie</h4>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom wil je mee met PlotTwist? *</label>
-                        <textarea 
-                          name="motivatie" 
-                          value={formData.motivatie} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('motivatie')}
-                          required 
-                          rows={4} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('motivatie') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vertel ons waarom je mee wilt..." 
-                        />
-                        {getFieldError('motivatie') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('motivatie')}
-                          </p>
-                        )}
-                      </div>
-
-                    </div>
-                  </div>
-
-                  {/* Part 4 - Expectations, Walking & Group Dynamics */}
-                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-sky-soft rounded-xl flex items-center justify-center">
-                        <Users className="w-5 h-5 text-purple-accent" />
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 4 – Verwachtingen, wandelen & groepsdynamiek</h4>
-                    </div>
-                    <div className="space-y-8">
-                      {/* Q1: Wat hoop je uit deze expeditie te halen? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat hoop je uit deze expeditie te halen? <span className="text-charcoal/50">(Kies maximaal 2)</span> *</label>
-                        <div data-field="doelen" className="flex flex-wrap gap-2">
-                          {motivationOptions.map((option) => (
-                            <button key={option} type="button" onClick={() => handleCheckboxChange('doelen', option, 2)} className={`px-4 py-2 rounded-full text-sm transition-all ${formData.doelen.includes(option) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
-                              {option}
-                            </button>
-                          ))}
-                        </div>
-                        {getFieldError('doelen') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('doelen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q2: Hoeveel kilometer kun jij op één dag wandelen met een volle rugzak? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoeveel kilometer kun jij op één dag wandelen met een volle rugzak? *</label>
-                        <div data-field="kmWandelen" className={`space-y-2 rounded-xl p-1 ${getFieldError('kmWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {kmWandelenOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.kmWandelen === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="kmWandelen" value={option} checked={formData.kmWandelen === option} onChange={(e) => handleRadioChange('kmWandelen', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('kmWandelen') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('kmWandelen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q3: Hoe sta je tegenover meerdere dagen na elkaar 15 km wandelen met een volle rugzak? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe sta je tegenover meerdere dagen na elkaar 15 km wandelen met een volle rugzak? *</label>
-                        <div data-field="meerdereDagenWandelen" className={`space-y-2 rounded-xl p-1 ${getFieldError('meerdereDagenWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {meerdereDagenWandelenOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.meerdereDagenWandelen === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="meerdereDagenWandelen" value={option} checked={formData.meerdereDagenWandelen === option} onChange={(e) => handleRadioChange('meerdereDagenWandelen', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('meerdereDagenWandelen') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('meerdereDagenWandelen')}
-                          </p>
-                        )}
-                      </div>
-
-
-                      {/* Q5: Hoeveel fysieke uitdaging wil je tijdens PlotTwist? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoeveel fysieke uitdaging wil je tijdens PlotTwist? *</label>
-                        <div data-field="fysiekeUitdaging" className={`space-y-2 rounded-xl p-1 ${getFieldError('fysiekeUitdaging') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {fysiekeUitdagingOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.fysiekeUitdaging === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="fysiekeUitdaging" value={option} checked={formData.fysiekeUitdaging === option} onChange={(e) => handleRadioChange('fysiekeUitdaging', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('fysiekeUitdaging') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('fysiekeUitdaging')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q6: Hoe sportief ben jij momenteel? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe sportief ben jij momenteel? *</label>
-                        <div data-field="sportiviteit" className={`space-y-2 rounded-xl p-1 ${getFieldError('sportiviteit') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {sportiviteitOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.sportiviteit === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="sportiviteit" value={option} checked={formData.sportiviteit === option} onChange={(e) => handleRadioChange('sportiviteit', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('sportiviteit') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('sportiviteit')}
-                          </p>
-                        )}
-                      </div>
-
-
-                      {/* Q8: Hoe zouden je vrienden jou omschrijven? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe zouden je vrienden jou omschrijven? <span className="text-charcoal/50">(kies max. 3)</span> *</label>
-                        <div data-field="persoonlijkheid" className="flex flex-wrap gap-2">
-                          {personalityOptions.map((option) => (
-                            <button key={option} type="button" onClick={() => handleCheckboxChange('persoonlijkheid', option, 3)} className={`px-3 py-2 rounded-full text-sm transition-all ${formData.persoonlijkheid.includes(option) ? 'bg-purple-accent text-white' : 'bg-gray-100 text-charcoal hover:bg-purple-accent/10'}`}>
-                              {option}
-                            </button>
-                          ))}
-                        </div>
-                        {getFieldError('persoonlijkheid') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('persoonlijkheid')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q9: In een nieuwe groep ben jij meestal: */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">In een nieuwe groep ben jij meestal: *</label>
-                        <div data-field="groepsrol" className={`space-y-2 rounded-xl p-1 ${getFieldError('groepsrol') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {groupRoleOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.groepsrol === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="groepsrol" value={option} checked={formData.groepsrol === option} onChange={(e) => handleRadioChange('groepsrol', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('groepsrol') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('groepsrol')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q10: Hoeveel sociale interactie vind je fijn tijdens een trip? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoeveel sociale interactie vind je fijn tijdens een trip? *</label>
-                        <div data-field="socialeInteractie" className={`space-y-2 rounded-xl p-1 ${getFieldError('socialeInteractie') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {socialeInteractieOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.socialeInteractie === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="socialeInteractie" value={option} checked={formData.socialeInteractie === option} onChange={(e) => handleRadioChange('socialeInteractie', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('socialeInteractie') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('socialeInteractie')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q11: Wat vind je het spannendst aan deze expeditie? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat vind je het spannendst aan deze expeditie? *</label>
-                        <div data-field="spannendst" className={`space-y-2 rounded-xl p-1 ${getFieldError('spannendst') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {excitementOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.spannendst === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="spannendst" value={option} checked={formData.spannendst === option} onChange={(e) => handleRadioChange('spannendst', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('spannendst') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('spannendst')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q12: Stel: het regent, iedereen is moe en jullie hebben nog geen slaapplek. Hoe reageer jij waarschijnlijk? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Stel: het regent, iedereen is moe en jullie hebben nog geen slaapplek. Hoe reageer jij waarschijnlijk? *</label>
-                        <div data-field="reactieRegenMoeheid" className={`space-y-2 rounded-xl p-1 ${getFieldError('reactieRegenMoeheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {reactieRegenMoeheidOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.reactieRegenMoeheid === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="reactieRegenMoeheid" value={option} checked={formData.reactieRegenMoeheid === option} onChange={(e) => handleRadioChange('reactieRegenMoeheid', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('reactieRegenMoeheid') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('reactieRegenMoeheid')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q13: Hoe ga je om met iemand die trager wandelt dan jij? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe ga je om met iemand die trager wandelt dan jij? *</label>
-                        <div data-field="omgangTragerWandelen" className={`space-y-2 rounded-xl p-1 ${getFieldError('omgangTragerWandelen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {omgangTragerWandelenOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.omgangTragerWandelen === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="omgangTragerWandelen" value={option} checked={formData.omgangTragerWandelen === option} onChange={(e) => handleRadioChange('omgangTragerWandelen', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('omgangTragerWandelen') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('omgangTragerWandelen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q14: Wat doe je wanneer jij zelf tijdens een wandeling erg moe wordt? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat doe je wanneer jij zelf tijdens een wandeling erg moe wordt? *</label>
-                        <div data-field="eigenMoeheid" className={`space-y-2 rounded-xl p-1 ${getFieldError('eigenMoeheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {eigenMoeheidOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.eigenMoeheid === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="eigenMoeheid" value={option} checked={formData.eigenMoeheid === option} onChange={(e) => handleRadioChange('eigenMoeheid', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('eigenMoeheid') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('eigenMoeheid')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q15: Hoe ga jij meestal om met ongemakkelijke of spannende situaties? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Hoe ga jij meestal om met ongemakkelijke of spannende situaties? *</label>
-                        <textarea 
-                          name="ongemakkelijk" 
-                          value={formData.ongemakkelijk} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('ongemakkelijk')}
-                          required 
-                          rows={3} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('ongemakkelijk') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vul hier je antwoord in..." 
-                        />
-                        {getFieldError('ongemakkelijk') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('ongemakkelijk')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q16: Hoe ga je om met een groepsbeslissing waar jij het niet volledig mee eens bent? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe ga je om met een groepsbeslissing waar jij het niet volledig mee eens bent? *</label>
-                        <div data-field="omgangGroepsbeslissing" className={`space-y-2 rounded-xl p-1 ${getFieldError('omgangGroepsbeslissing') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {omgangGroepsbeslissingOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.omgangGroepsbeslissing === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="omgangGroepsbeslissing" value={option} checked={formData.omgangGroepsbeslissing === option} onChange={(e) => handleRadioChange('omgangGroepsbeslissing', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('omgangGroepsbeslissing') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('omgangGroepsbeslissing')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q17: Hoe ga jij om met irritaties of conflicten in een groep? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe ga jij om met irritaties of conflicten in een groep? *</label>
-                        <div data-field="omgangIrritatiesConflicten" className={`space-y-2 rounded-xl p-1 ${getFieldError('omgangIrritatiesConflicten') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {omgangIrritatiesConflictenOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.omgangIrritatiesConflicten === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="omgangIrritatiesConflicten" value={option} checked={formData.omgangIrritatiesConflicten === option} onChange={(e) => handleRadioChange('omgangIrritatiesConflicten', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('omgangIrritatiesConflicten') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('omgangIrritatiesConflicten')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q18: Hoe zelfstandig voel jij je tijdens een expeditie? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Hoe zelfstandig voel jij je tijdens een expeditie? *</label>
-                        <div data-field="zelfstandigheid" className={`space-y-2 rounded-xl p-1 ${getFieldError('zelfstandigheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {zelfstandigheidOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.zelfstandigheid === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="zelfstandigheid" value={option} checked={formData.zelfstandigheid === option} onChange={(e) => handleRadioChange('zelfstandigheid', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('zelfstandigheid') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('zelfstandigheid')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q19: Wat spreekt jou het meest aan? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat spreekt jou het meest aan? *</label>
-                        <div data-field="watSpreektAan" className={`space-y-2 rounded-xl p-1 ${getFieldError('watSpreektAan') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {watSpreektAanOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.watSpreektAan === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="watSpreektAan" value={option} checked={formData.watSpreektAan === option} onChange={(e) => handleRadioChange('watSpreektAan', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('watSpreektAan') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('watSpreektAan')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q20: Waarom zou jij goed in een PlotTwist-groep passen? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Waarom zou jij goed in een PlotTwist-groep passen? *</label>
-                        <textarea 
-                          name="waaromPassen" 
-                          value={formData.waaromPassen} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('waaromPassen')}
-                          required 
-                          rows={3} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('waaromPassen') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vul hier je antwoord in..." 
-                        />
-                        {getFieldError('waaromPassen') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('waaromPassen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q21: Waar zouden andere deelnemers zich mogelijk aan kunnen ergeren bij jou? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Waar zouden andere deelnemers zich mogelijk aan kunnen ergeren bij jou? *</label>
-                        <textarea 
-                          name="ergernissenAnderen" 
-                          value={formData.ergernissenAnderen} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('ergernissenAnderen')}
-                          required 
-                          rows={3} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('ergernissenAnderen') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vul hier je antwoord in..." 
-                        />
-                        {getFieldError('ergernissenAnderen') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('ergernissenAnderen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q22: Met welk type persoon bots jij soms? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Met welk type persoon bots jij soms? *</label>
-                        <textarea 
-                          name="typePersoonBotsen" 
-                          value={formData.typePersoonBotsen} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('typePersoonBotsen')}
-                          required 
-                          rows={3} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('typePersoonBotsen') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vul hier je antwoord in..." 
-                        />
-                        {getFieldError('typePersoonBotsen') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('typePersoonBotsen')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q23: Wat heb jij van de groep nodig wanneer je het moeilijk hebt? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Wat heb jij van de groep nodig wanneer je het moeilijk hebt? *</label>
-                        <div data-field="behoefteGroepMoeilijk" className={`space-y-2 rounded-xl p-1 ${getFieldError('behoefteGroepMoeilijk') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {behoefteGroepMoeilijkOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.behoefteGroepMoeilijk === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="behoefteGroepMoeilijk" value={option} checked={formData.behoefteGroepMoeilijk === option} onChange={(e) => handleRadioChange('behoefteGroepMoeilijk', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('behoefteGroepMoeilijk') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('behoefteGroepMoeilijk')}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Q24: Wat zou voor jou een reden kunnen zijn om tijdens de expeditie te willen stoppen? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Wat zou voor jou een reden kunnen zijn om tijdens de expeditie te willen stoppen? *</label>
-                        <textarea 
-                          name="redenStoppen" 
-                          value={formData.redenStoppen} 
-                          onChange={handleTextChange} 
-                          onBlur={() => handleBlur('redenStoppen')}
-                          required 
-                          rows={3} 
-                          className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                            getFieldError('redenStoppen') 
-                              ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                              : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                          }`} 
-                          placeholder="Vul hier je antwoord in..." 
-                        />
-                        {getFieldError('redenStoppen') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('redenStoppen')}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Part 5 - Practical */}
-                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-mint rounded-xl flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-purple-accent" />
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 5 – Praktisch & veiligheid</h4>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Heb je medische zaken of allergieën waar we rekening mee moeten houden?</label>
-                        <div className="flex gap-4 mb-3">
-                          <label className="flex items-center gap-2">
-                            <input type="radio" name="medisch" checked={!formData.medisch} onChange={() => setFormData((prev) => ({ ...prev, medisch: false, medischUitleg: '' }))} className="w-5 h-5 text-purple-accent" />
-                            <span className="text-charcoal">Nee</span>
-                          </label>
-                          <label className="flex items-center gap-2">
-                            <input type="radio" name="medisch" checked={formData.medisch} onChange={() => setFormData((prev) => ({ ...prev, medisch: true }))} className="w-5 h-5 text-purple-accent" />
-                            <span className="text-charcoal">Ja</span>
-                          </label>
-                        </div>
-                        {formData.medisch && (
-                          <textarea name="medischUitleg" value={formData.medischUitleg} onChange={handleTextChange} rows={3} className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 outline-none transition-all resize-none" placeholder="Leg uit..." />
-                        )}
-                      </div>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-charcoal mb-2">Noodcontact naam *</label>
-                          <input 
-                            type="text" 
-                            name="noodcontactNaam" 
-                            value={formData.noodcontactNaam} 
-                            onChange={handleTextChange} 
-                            onBlur={() => handleBlur('noodcontactNaam')}
-                            required 
-                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
-                              getFieldError('noodcontactNaam') 
-                                ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                                : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                            }`} 
-                            placeholder="Naam" 
-                          />
-                          {getFieldError('noodcontactNaam') && (
-                            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {getFieldError('noodcontactNaam')}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-charcoal mb-2">Noodcontact GSM *</label>
-                          <input 
-                            type="tel" 
-                            name="noodcontactGsm" 
-                            value={formData.noodcontactGsm} 
-                            onChange={handleTextChange} 
-                            onBlur={() => handleBlur('noodcontactGsm')}
-                            required 
-                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all ${
-                              getFieldError('noodcontactGsm') 
-                                ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                                : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                            }`} 
-                            placeholder="+32 4XX XX XX XX" 
-                          />
-                          {getFieldError('noodcontactGsm') && (
-                            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {getFieldError('noodcontactGsm')}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Part 6 - Optional Uploads */}
-                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
-                        <Camera className="w-5 h-5 text-purple-accent" />
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-charcoal">Deel 6 – Foto & Video</h4>
-                    </div>
-                    <div className="space-y-6">
-                      {isInAppBrowser && (
-                        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4">
-                          <p className="text-sm font-medium text-amber-900 flex items-start gap-2">
-                            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                            Je bekijkt deze pagina in de browser van een app (bv. Instagram)
-                          </p>
-                          <p className="mt-1.5 text-xs text-amber-900/80 leading-relaxed">
-                            Daarin lukt het kiezen van een foto of video vaak niet: je tikt op het vak hieronder en er gebeurt niets.
-                            Tik rechtsboven op de drie puntjes en kies “Openen in browser” (Safari of Chrome), dan werkt het wel.
-                            Lukt dat ook niet? Verstuur je inschrijving gerust zonder foto – die telt evengoed mee.
-                          </p>
-                        </div>
-                      )}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-1">
-                          Upload een foto <span className="text-charcoal/50">(optioneel, maar we zien je graag)</span>
-                        </label>
-                        <p className="text-xs text-charcoal/50 mb-3">
-                          Lukt uploaden niet op je telefoon? Verstuur je inschrijving dan gewoon zonder foto en stuur ze daarna door via Instagram.
-                        </p>
-                        <div className="relative">
-                          {/* sr-only en niet `hidden`: een input met display:none krijgt in
-                              sommige in-app browsers geen klik door vanuit het label. */}
-                          <input type="file" accept="image/*" onChange={(e) => handleFileChange('foto', e.target.files?.[0] || null)} className="sr-only" id="foto-upload" data-field="foto" />
-                          <label 
-                            htmlFor="foto-upload" 
-                            className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
-                              getFieldError('foto')
-                                ? 'border-red-400 hover:border-red-500 hover:bg-red-50/30'
-                                : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
-                            }`}
-                          >
-                            <Upload className={`w-5 h-5 flex-shrink-0 ${getFieldError('foto') ? 'text-red-400' : 'text-charcoal/50'}`} />
-                            <span className={`min-w-0 break-words ${getFieldError('foto') ? 'text-red-600' : 'text-charcoal/70'}`}>
-                              {formData.foto ? `${formData.foto.name} (${formatFileSize(formData.foto.size)})` : 'Klik om een foto te uploaden'}
-                            </span>
-                          </label>
-                        </div>
-                        {formData.foto && (
-                          <button type="button" onClick={() => handleFileChange('foto', null)} className="mt-1.5 text-xs text-charcoal/50 underline hover:text-charcoal">
-                            Foto verwijderen
-                          </button>
-                        )}
-                        {getFieldError('foto') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('foto')}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-2">Upload een korte video (15–30 sec) <span className="text-charcoal/50">(optioneel)</span></label>
-                        <p className="text-xs text-charcoal/50 mb-3">Vertel kort wie je bent en waarom je mee wil. Max 50MB: film in 1080p (niet in 4K), dan zit je ruim onder de limiet.</p>
-                        <div className="relative">
-                          <input type="file" accept="video/*" onChange={(e) => handleFileChange('video', e.target.files?.[0] || null)} className="sr-only" id="video-upload" data-field="video" />
-                          <label 
-                            htmlFor="video-upload" 
-                            className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-dashed cursor-pointer transition-all ${
-                              getFieldError('video')
-                                ? 'border-red-400 hover:border-red-500 hover:bg-red-50/30'
-                                : 'border-charcoal/20 hover:border-purple-accent hover:bg-purple-accent/5'
-                            }`}
-                          >
-                            <Video className={`w-5 h-5 flex-shrink-0 ${getFieldError('video') ? 'text-red-400' : 'text-charcoal/50'}`} />
-                            <span className={`min-w-0 break-words ${getFieldError('video') ? 'text-red-600' : 'text-charcoal/70'}`}>
-                              {formData.video ? `${formData.video.name} (${formatFileSize(formData.video.size)})` : 'Klik om een video te uploaden'}
-                            </span>
-                          </label>
-                        </div>
-                        {formData.video && (
-                          <button type="button" onClick={() => handleFileChange('video', null)} className="mt-1.5 text-xs text-charcoal/50 underline hover:text-charcoal">
-                            Video verwijderen
-                          </button>
-                        )}
-                        {getFieldError('video') && (
-                          <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('video')}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Error Message */}
-                  {isError && (
-                    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-center animate-fade-in">
-                      <p className="text-red-600 font-medium flex items-center justify-center gap-2">
-                        <XCircle className="w-5 h-5" />
-                        Er ging iets mis
-                      </p>
-                      <p className="text-red-500 text-sm mt-1">{error}</p>
-                      <p className="text-red-400 text-xs mt-2">
-                        Probeer het opnieuw of contacteer ons via instagram.
+                {isInAppBrowser && (
+                  <div className="mb-6 p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs sm:text-sm text-amber-900 leading-relaxed flex items-start gap-2.5">
+                    <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Tip voor het uploaden:</p>
+                      <p>
+                        In de ingebouwde browser van Instagram of TikTok kan het kiezen van een bestand soms blokkeren. Open deze pagina via de drie puntjes rechtsboven in Safari of Chrome als een upload niet lukt.
                       </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Submit Section - Agreement + Button */}
-                  <div data-field="agreement" className={`bg-white rounded-3xl p-6 md:p-8 shadow-soft border transition-all ${getFieldError('agreement') || getFieldError('privacyAgreement') ? 'border-red-300 bg-red-50/30' : 'border-charcoal/5'}`}>
-                    {/* Agreement Checkbox */}
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="agreement"
-                        checked={formData.agreement}
-                        onChange={(e) => {
-                          setFormData((prev) => ({ ...prev, agreement: e.target.checked }));
-                          if (formErrors.agreement) {
-                            setFormErrors((prev) => {
-                              const newErrors = { ...prev };
-                              delete newErrors.agreement;
-                              return newErrors;
-                            });
-                          }
-                        }}
-                        className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
-                      />
-                      <span className="text-sm text-charcoal/80 leading-relaxed">
-                        Ik bevestig dat ik weet dat de expeditie €450 kost en dat ik bij selectie een voorschot van €250 betaal om mijn plek vast te leggen. *
-                      </span>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* 25. Upload een foto van jezelf */}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-1">
+                      25. Upload een foto van jezelf. *
                     </label>
-                    {getFieldError('agreement') && (
-                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {getFieldError('agreement')}
-                      </p>
-                    )}
-
-                    {/* Privacy Agreement Checkbox */}
-                    <label data-field="privacyAgreement" className="flex items-start gap-3 cursor-pointer mt-4">
-                      <input
-                        type="checkbox"
-                        name="privacyAgreement"
-                        checked={formData.privacyAgreement}
-                        onChange={(e) => {
-                          setFormData((prev) => ({ ...prev, privacyAgreement: e.target.checked }));
-                          if (formErrors.privacyAgreement) {
-                            setFormErrors((prev) => {
-                              const newErrors = { ...prev };
-                              delete newErrors.privacyAgreement;
-                              return newErrors;
-                            });
-                          }
-                        }}
-                        className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                    <p className="text-xs text-charcoal/50 mb-3">
+                      Upload een duidelijke foto waarop we je goed kunnen herkennen.
+                    </p>
+                    <div className="relative">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => handleFileChange(e, 'foto')} 
+                        className="hidden" 
+                        id="foto-upload" 
                       />
-                      <span className="text-sm text-charcoal/80 leading-relaxed">
-                        Ik heb het{' '}
-                        <a
-                          href="#/privacybeleid"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-accent hover:underline font-medium"
-                        >
-                          privacybeleid
-                        </a>{' '}
-                        gelezen en ga akkoord met de verwerking van mijn persoonsgegevens. *
-                      </span>
-                    </label>
-                    {getFieldError('privacyAgreement') && (
-                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {getFieldError('privacyAgreement')}
-                      </p>
-                    )}
-
-                    {/* Submit Button */}
-                    <div className="mt-5">
-                      <button 
-                        type="submit" 
-                        disabled={isSubmitting}
-                        className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                      >
-                        {isSubmitting ? (
+                      <label htmlFor="foto-upload" className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:bg-lavender/10 ${formData.foto ? 'border-green-400 bg-green-50/30' : getFieldError('foto') ? 'border-red-400 bg-red-50/20' : 'border-charcoal/20'}`}>
+                        {formData.foto ? (
                           <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Bezig met verzenden...
+                            <Check className="w-8 h-8 text-green-600 mb-2" />
+                            <span className="text-sm font-medium text-charcoal text-center truncate max-w-full">{formData.foto.name}</span>
+                            <span className="text-xs text-charcoal/50 mt-1">{formatFileSize(formData.foto.size)} · Klik om te wijzigen</span>
                           </>
                         ) : (
                           <>
-                            <Send className="w-5 h-5" />
-                            Verstuur inschrijving
+                            <Upload className="w-8 h-8 text-charcoal/40 mb-2" />
+                            <span className="text-sm font-medium text-charcoal">Kies een foto</span>
+                            <span className="text-xs text-charcoal/50 mt-1">JPG, PNG (max. 50MB)</span>
                           </>
                         )}
-                      </button>
+                      </label>
                     </div>
+                    {getFieldError('foto') && (
+                      <p className="mt-1.5 text-xs text-red-500">{getFieldError('foto')}</p>
+                    )}
+                  </div>
 
-                    {isSubmitting && (
-                      <div className="mt-4 space-y-1">
-                        {uploadProgress.foto > 0 && uploadProgress.foto < 100 && (
-                          <p className="text-xs text-charcoal/50">Foto uploaden...</p>
+                  {/* 26. Stel jezelf kort voor in een video */}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-1">
+                      26. Stel jezelf kort voor in een video van max. 30 sec. <span className="text-charcoal/50">(niet verplicht)</span>
+                    </label>
+                    <p className="text-xs text-charcoal/50 mb-3">
+                      Vertel wie je bent of waarom je zin hebt in PlotTwist. Gewoon jezelf zijn!
+                    </p>
+                    <div className="relative">
+                      <input 
+                        type="file" 
+                        accept="video/*" 
+                        onChange={(e) => handleFileChange(e, 'video')} 
+                        className="hidden" 
+                        id="video-upload" 
+                      />
+                      <label htmlFor="video-upload" className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:bg-lavender/10 ${formData.video ? 'border-green-400 bg-green-50/30' : getFieldError('video') ? 'border-red-400 bg-red-50/20' : 'border-charcoal/20'}`}>
+                        {formData.video ? (
+                          <>
+                            <Video className="w-8 h-8 text-green-600 mb-2" />
+                            <span className="text-sm font-medium text-charcoal text-center truncate max-w-full">{formData.video.name}</span>
+                            <span className="text-xs text-charcoal/50 mt-1">{formatFileSize(formData.video.size)} · Klik om te wijzigen</span>
+                          </>
+                        ) : (
+                          <>
+                            <Video className="w-8 h-8 text-charcoal/40 mb-2" />
+                            <span className="text-sm font-medium text-charcoal">Kies een video (optioneel)</span>
+                            <span className="text-xs text-charcoal/50 mt-1">MP4, MOV (max. 50MB)</span>
+                          </>
                         )}
-                        {uploadProgress.video > 0 && uploadProgress.video < 100 && (
-                          <p className="text-xs text-charcoal/50">Video uploaden...</p>
-                        )}
-                      </div>
+                      </label>
+                    </div>
+                    {getFieldError('video') && (
+                      <p className="mt-1.5 text-xs text-red-500">{getFieldError('video')}</p>
                     )}
                   </div>
                 </div>
-              )}
-            </form>
-            </div>
-          </div>
+              </div>
 
-          {/* 
-            REVEAL BUTTON - POSITIONED INSIDE THE CLIPPED CONTAINER
-            This button sits at ~10% from the top of the visible form area when collapsed.
-            It's positioned relative to the clipped container (max-h-[450px]), 
-            NOT the full form height, so the percentage works correctly.
-          */}
-          {!showForm && (
-            <div className="absolute top-[25%] left-0 right-0 z-30 flex justify-center">
-              <button
-                onClick={revealForm}
-                className="btn-primary text-lg px-8 py-4 group"
-              >
-                <Mail className="w-5 h-5 mr-2" />
-                Schrijf je hier in
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          )}
+              {/* Deel 9: Nog een laatste vraag */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                    <Users className="w-5 h-5 text-purple-accent" />
+                  </div>
+                  <h4 className="text-lg font-display font-bold text-charcoal">Deel 9: Nog een laatste vraag</h4>
+                </div>
+
+                {/* 27. Heeft een vriend of vriendin van jou zich ook ingeschreven voor PlotTwist? */}
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    27. Heeft een vriend of vriendin van jou zich ook ingeschreven voor PlotTwist? *
+                  </label>
+                  <div className="flex gap-4">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${!formData.vriendenIngeschreven ? 'bg-purple-accent/10 border-purple-accent text-purple-accent font-semibold' : 'bg-gray-50 border-charcoal/10'}`}>
+                      <input 
+                        type="radio" 
+                        name="vriendenIngeschreven" 
+                        checked={!formData.vriendenIngeschreven} 
+                        onChange={() => setFormData(prev => ({ ...prev, vriendenIngeschreven: false, vriendenNamen: '' }))} 
+                        className="sr-only" 
+                      />
+                      <span>Nee</span>
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${formData.vriendenIngeschreven ? 'bg-purple-accent/10 border-purple-accent text-purple-accent font-semibold' : 'bg-gray-50 border-charcoal/10'}`}>
+                      <input 
+                        type="radio" 
+                        name="vriendenIngeschreven" 
+                        checked={formData.vriendenIngeschreven} 
+                        onChange={() => setFormData(prev => ({ ...prev, vriendenIngeschreven: true }))} 
+                        className="sr-only" 
+                      />
+                      <span>Ja</span>
+                    </label>
+                  </div>
+
+                  {formData.vriendenIngeschreven && (
+                    <div className="mt-4 p-4 bg-gray-50/80 rounded-2xl border border-charcoal/10 space-y-2 animate-fadeIn">
+                      <label className="block text-sm font-medium text-charcoal">
+                        Wat is de voornaam en achternaam van die persoon? *
+                      </label>
+                      <input 
+                        type="text" 
+                        name="vriendenNamen" 
+                        value={formData.vriendenNamen} 
+                        onChange={handleTextChange} 
+                        onBlur={() => handleBlur('vriendenNamen')}
+                        required
+                        className={`w-full px-4 py-3 bg-white rounded-xl border outline-none transition-all ${
+                          getFieldError('vriendenNamen') ? 'border-red-400 focus:border-red-500' : 'border-charcoal/10 focus:border-purple-accent'
+                        }`} 
+                        placeholder="Voornaam en achternaam (of meerdere namen)..." 
+                      />
+                      {getFieldError('vriendenNamen') && (
+                        <p className="text-xs text-red-500">{getFieldError('vriendenNamen')}</p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-4 bg-lavender/30 border border-purple-accent/15 rounded-2xl text-xs sm:text-sm text-charcoal/70 leading-relaxed mt-4">
+                    Bij PlotTwist matchen we bewust geen vrienden samen, zodat iedereen als onbekende aan hetzelfde avontuur begint. We proberen hier bij het samenstellen van de groepen rekening mee te houden. Ontdek je achteraf dat je toch bij een vriend of vriendin in de groep bent geplaatst? Laat het ons dan zeker weten, dan zoeken we samen naar een passende oplossing.
+                  </div>
+                </div>
+              </div>
+
+              {/* Agreement & Submission */}
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 space-y-4">
+                {isError && error && (
+                  <div className="p-4 bg-red-50 rounded-2xl border border-red-200 text-sm text-red-700 flex items-start gap-2.5">
+                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Er ging iets mis bij het versturen:</p>
+                      <p className="mt-0.5 text-xs text-red-600">{error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Terms Agreement */}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="agreement"
+                    checked={formData.agreement}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, agreement: e.target.checked }));
+                      if (formErrors.agreement) {
+                        setFormErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.agreement;
+                          return newErrors;
+                        });
+                      }
+                    }}
+                    className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                  />
+                  <span className="text-sm text-charcoal/80 leading-relaxed">
+                    Ik begrijp dat dit een aanvraag is en geen definitieve boeking. Pas na selectie en betaling van het voorschot is mijn plek bevestigd. *
+                  </span>
+                </label>
+                {getFieldError('agreement') && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {getFieldError('agreement')}
+                  </p>
+                )}
+
+                {/* Privacy Agreement */}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="privacyAgreement"
+                    checked={formData.privacyAgreement}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, privacyAgreement: e.target.checked }));
+                      if (formErrors.privacyAgreement) {
+                        setFormErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.privacyAgreement;
+                          return newErrors;
+                        });
+                      }
+                    }}
+                    className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                  />
+                  <span className="text-sm text-charcoal/80 leading-relaxed">
+                    Ik heb het{' '}
+                    <a
+                      href="#/privacybeleid"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-accent hover:underline font-medium"
+                    >
+                      privacybeleid
+                    </a>{' '}
+                    gelezen en ga akkoord met de verwerking van mijn persoonsgegevens. *
+                  </span>
+                </label>
+                {getFieldError('privacyAgreement') && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {getFieldError('privacyAgreement')}
+                  </p>
+                )}
+
+                {/* Submit Button */}
+                <div className="pt-4">
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Bezig met verzenden...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Verstuur inschrijving
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {isSubmitting && (
+                  <div className="mt-4 space-y-1 text-center">
+                    {uploadProgress.foto > 0 && uploadProgress.foto < 100 && (
+                      <p className="text-xs text-charcoal/50">Foto uploaden...</p>
+                    )}
+                    {uploadProgress.video > 0 && uploadProgress.video < 100 && (
+                      <p className="text-xs text-charcoal/50">Video uploaden...</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </form>
+          </div>
         </div>
-        )}
       </div>
     </section>
   );
