@@ -858,15 +858,20 @@ export default function ContactAndSignup() {
                     {showTripGuide && (
                       <div className="mt-3 p-4 md:p-5 bg-lavender/20 border border-purple-accent/15 rounded-2xl space-y-4 text-xs sm:text-sm text-charcoal/80">
                         <div>
-                          <p className="font-bold text-purple-accent text-sm mb-1">Nederland / Duitsland</p>
+                          <p className="font-bold text-purple-accent text-sm mb-1">Nederland / Duitsland – Aanrader!</p>
                           <p className="leading-relaxed">
-                            Onze populairste formule! De reis gaat door in prachtige, afwisselende natuurgebieden dichtbij huis. Ideaal als je volop wilt genieten van het groepsavontuur, gezelligheid en leuke activiteiten zonder extreme wandeltochten of lange reistijd.
+                            De ideale eerste PlotTwist! De focus ligt hier nog meer op elkaar leren kennen en de connectie met de locals, dankzij de vertrouwde taal en omgeving. Wij raden deze reis sterk aan!
                           </p>
                         </div>
-                        <div className="pt-2 border-t border-purple-accent/10">
-                          <p className="font-bold text-purple-accent text-sm mb-1">Italie (+€145)</p>
+                        <div className="pt-3 border-t border-purple-accent/10">
+                          <p className="font-bold text-purple-accent text-sm mb-1">Italie (+€145) – Voor de echte avonturiers!</p>
                           <p className="leading-relaxed">
-                            Voor de liefhebbers van ruige bergen, adembenemende panorama&apos;s en zonovergoten landschappen. Deze reis vraagt wat meer uithoudingsvermogen door hoogteverschillen en langere afstanden. Vervoer gebeurt comfortabel met een nachtbus.
+                            Een avontuurlijke reis door prachtige berglandschappen! Deze expeditie is fysiek uitdagender en ideaal voor wie graag een stapje verder gaat.
+                          </p>
+                        </div>
+                        <div className="pt-3 border-t border-purple-accent/10">
+                          <p className="text-xs text-charcoal/70 leading-relaxed">
+                            <span className="font-bold text-charcoal">Let op:</span> We houden zoveel mogelijk rekening met je reisvoorkeur, maar kunnen niet garanderen dat je ook op deze bestemming terechtkomt.
                           </p>
                         </div>
                       </div>
