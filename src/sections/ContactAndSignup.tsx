@@ -836,7 +836,7 @@ export default function ContactAndSignup() {
                         <span>Extra vervoerskost: €145</span>
                       </div>
                       <p className="leading-relaxed text-amber-900/90 text-xs sm:text-sm">
-                        Voor Italie voorzien we nachtelijk busvervoer. Je vertrekt ongeveer 18 uur eerder dan bij de reguliere expeditie. Meer praktische informatie ontvang je later.
+                        Voor Italië voorzien we nachtelijk busvervoer. Het is ongeveer 18 uur rijden met de bus en je vertrekt 1 dag vroeger dan bij de andere expedities. Meer praktische informatie ontvang je later.
                       </p>
                     </div>
                   )}
