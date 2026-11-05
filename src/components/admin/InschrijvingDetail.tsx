@@ -349,8 +349,6 @@ export function InschrijvingDetail({
             <InfoRow icon={Activity} label="Fysieke Uitdaging" value={inschrijving.fysieke_uitdaging} />
             <InfoRow icon={Activity} label="Kilometers per dag" value={inschrijving.km_wandelen} />
             <InfoRow icon={Activity} label="Meerdere dagen wandelen" value={inschrijving.meerdere_dagen_wandelen} />
-            <InfoRow icon={Activity} label="Bereid te trainen" value={inschrijving.bereid_trainen} />
-            <InfoRow icon={Heart} label="Lichamelijke klachten / beperkingen" value={inschrijving.lichamelijke_klachten} fullWidth />
           </div>
         </section>
 

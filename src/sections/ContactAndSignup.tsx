@@ -57,12 +57,6 @@ const meerdereDagenWandelenOptions = [
   'dat is voor mij haalbaar',
   'ik kijk juist uit naar de fysieke uitdaging'
 ];
-const bereidTrainenOptions = [
-  'ja',
-  'misschien',
-  'nee',
-  'ik wandel of sport al voldoende'
-];
 const fysiekeUitdagingOptions = [
   'liever beperkt, ik ga vooral mee voor de groep en het avontuur',
   'gemiddeld, het mag uitdagend zijn',
@@ -138,11 +132,8 @@ interface FormData {
   // Deel 4 questions
   kmWandelen: string;
   meerdereDagenWandelen: string;
-  bereidTrainen: string;
   fysiekeUitdaging: string;
   sportiviteit: string;
-  lichamelijkeKlachten: string;
-  lichamelijkeKlachtenUitleg: string;
   socialeInteractie: string;
   reactieRegenMoeheid: string;
   omgangTragerWandelen: string;
@@ -170,11 +161,8 @@ const initialFormData: FormData = {
   
   kmWandelen: '',
   meerdereDagenWandelen: '',
-  bereidTrainen: '',
   fysiekeUitdaging: '',
   sportiviteit: '',
-  lichamelijkeKlachten: '',
-  lichamelijkeKlachtenUitleg: '',
   socialeInteractie: '',
   reactieRegenMoeheid: '',
   omgangTragerWandelen: '',
@@ -347,27 +335,10 @@ export default function ContactAndSignup() {
       return;
     }
 
-    // Validate physical complaints explanation if 'ja' is selected
-    if (formData.lichamelijkeKlachten === 'ja' && !formData.lichamelijkeKlachtenUitleg.trim()) {
-      setFormErrors(prev => ({ ...prev, lichamelijkeKlachtenUitleg: 'Vul de uitleg in voor je lichamelijke klachten' }));
-      const errorElement = document.querySelector(`[name="lichamelijkeKlachtenUitleg"]`);
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        (errorElement as HTMLElement).focus();
-      }
-      return;
-    }
-    
     // Clear any previous errors
     setFormErrors({});
 
-    // Map physical complaints for database submission
-    const submissionData = { ...formData };
-    if (formData.lichamelijkeKlachten === 'ja') {
-      submissionData.lichamelijkeKlachten = `ja, namelijk: ${formData.lichamelijkeKlachtenUitleg}`;
-    }
-    
-    const result = await submitForm(submissionData);
+    const result = await submitForm(formData);
     
     if (result.success) {
       setSubmitted(true);
@@ -916,24 +887,6 @@ export default function ContactAndSignup() {
                         )}
                       </div>
 
-                      {/* Q4: Ben je bereid om vooraf te trainen als je momenteel weinig wandelt? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Ben je bereid om vooraf te trainen als je momenteel weinig wandelt? *</label>
-                        <div data-field="bereidTrainen" className={`space-y-2 rounded-xl p-1 ${getFieldError('bereidTrainen') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {bereidTrainenOptions.map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.bereidTrainen === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="bereidTrainen" value={option} checked={formData.bereidTrainen === option} onChange={(e) => handleRadioChange('bereidTrainen', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('bereidTrainen') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('bereidTrainen')}
-                          </p>
-                        )}
-                      </div>
 
                       {/* Q5: Hoeveel fysieke uitdaging wil je tijdens PlotTwist? */}
                       <div>
@@ -973,48 +926,6 @@ export default function ContactAndSignup() {
                         )}
                       </div>
 
-                      {/* Q7: Heb je lichamelijke klachten of beperkingen die wandelen met een rugzak moeilijker kunnen maken? */}
-                      <div>
-                        <label className="block text-sm font-medium text-charcoal mb-3">Heb je lichamelijke klachten of beperkingen die wandelen met een rugzak moeilijker kunnen maken? *</label>
-                        <div data-field="lichamelijkeKlachten" className={`space-y-2 rounded-xl p-1 ${getFieldError('lichamelijkeKlachten') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                          {['nee', 'ja'].map((option) => (
-                            <label key={option} className={`flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.lichamelijkeKlachten === option ? 'ring-2 ring-purple-accent' : ''}`}>
-                              <input type="radio" name="lichamelijkeKlachten" value={option} checked={formData.lichamelijkeKlachten === option} onChange={(e) => handleRadioChange('lichamelijkeKlachten', e.target.value)} required className="w-5 h-5 text-purple-accent" />
-                              <span className="text-charcoal">{option === 'nee' ? 'nee' : 'ja, namelijk:'}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {getFieldError('lichamelijkeKlachten') && (
-                          <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getFieldError('lichamelijkeKlachten')}
-                          </p>
-                        )}
-                        {formData.lichamelijkeKlachten === 'ja' && (
-                          <div className="mt-3">
-                            <textarea 
-                              name="lichamelijkeKlachtenUitleg" 
-                              value={formData.lichamelijkeKlachtenUitleg} 
-                              onChange={handleTextChange} 
-                              onBlur={() => handleBlur('lichamelijkeKlachtenUitleg')}
-                              required 
-                              rows={2} 
-                              className={`w-full px-4 py-3 bg-gray-50 rounded-xl border outline-none transition-all resize-none ${
-                                getFieldError('lichamelijkeKlachtenUitleg') 
-                                  ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                                  : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
-                              }`} 
-                              placeholder="Beschrijf je klachten of beperkingen..." 
-                            />
-                            {getFieldError('lichamelijkeKlachtenUitleg') && (
-                              <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" />
-                                {getFieldError('lichamelijkeKlachtenUitleg')}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
 
                       {/* Q8: Hoe zouden je vrienden jou omschrijven? */}
                       <div>

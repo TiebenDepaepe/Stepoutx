@@ -34,9 +34,7 @@ export interface Inschrijving {
   // New questions for Part 4
   km_wandelen?: string | null;
   meerdere_dagen_wandelen?: string | null;
-  bereid_trainen?: string | null;
   fysieke_uitdaging?: string | null;
-  lichamelijke_klachten?: string | null;
   reactie_regen_moeheid?: string | null;
   omgang_trager_wandelen?: string | null;
   eigen_moeheid?: string | null;

@@ -25,9 +25,7 @@ interface FormData {
   // New questions for Part 4
   kmWandelen: string;
   meerdereDagenWandelen: string;
-  bereidTrainen: string;
   fysiekeUitdaging: string;
-  lichamelijkeKlachten: string;
   reactieRegenMoeheid: string;
   omgangTragerWandelen: string;
   eigenMoeheid: string;
@@ -298,9 +296,7 @@ export function useFormSubmit() {
         // New questions for Part 4
         km_wandelen: data.kmWandelen,
         meerdere_dagen_wandelen: data.meerdereDagenWandelen,
-        bereid_trainen: data.bereidTrainen,
         fysieke_uitdaging: data.fysiekeUitdaging,
-        lichamelijke_klachten: data.lichamelijkeKlachten,
         reactie_regen_moeheid: data.reactieRegenMoeheid,
         omgang_trager_wandelen: data.omgangTragerWandelen,
         eigen_moeheid: data.eigenMoeheid,

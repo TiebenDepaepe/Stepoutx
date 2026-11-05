@@ -52,17 +52,11 @@ export const signupFormSchema = z.object({
   meerdereDagenWandelen: z.string()
     .min(1, 'Selecteer je voorkeur voor meerdere dagen wandelen'),
   
-  bereidTrainen: z.string()
-    .min(1, 'Selecteer of je bereid bent te trainen'),
-  
   fysiekeUitdaging: z.string()
     .min(1, 'Selecteer de gewenste hoeveelheid fysieke uitdaging'),
   
   sportiviteit: z.string()
     .min(1, 'Selecteer hoe sportief je bent'),
-  
-  lichamelijkeKlachten: z.string()
-    .min(1, 'Vul in of je klachten of beperkingen hebt'),
   
   persoonlijkheid: z.array(z.string())
     .min(1, 'Selecteer minstens één eigenschap')
