@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { sendRegistrationConfirmationEmail } from '@/services/emailService';
 
 interface FormData {
   // Deel 1: Even kennismaken
@@ -361,6 +362,18 @@ export function useFormSubmit() {
         }
         throw new Error(`Database fout (${insertError.code}): ${insertError.message}`);
       }
+
+      // 3. Stuur automatische bevestigingsmail (blokkeert de inschrijving niet als dit mislukt)
+      void sendRegistrationConfirmationEmail({
+        naam: data.naam,
+        email: data.email,
+        gsm: data.gsm,
+        woonplaats: data.woonplaats,
+        instagram: data.instagram,
+        expeditieVoorkeur: data.expeditieVoorkeur,
+        beschikbaarheid: data.beschikbaarheid,
+        motivatie: data.motivatie,
+      });
 
       setState({
         isSubmitting: false,
