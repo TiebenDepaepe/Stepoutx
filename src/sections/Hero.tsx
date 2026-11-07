@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Compass, MapPin, Tent, Backpack } from 'lucide-react';
+import { ArrowRight, Compass, MapPin, Tent, Backpack, Sparkles } from 'lucide-react';
 
 
 
@@ -105,7 +105,22 @@ export default function Hero() {
               alt="Plot Twist Logo" 
               className="h-60 sm:h-72 md:h-[24rem] lg:h-[30rem] w-auto object-contain mb-0" 
             />
-            <p className="-mt-6 sm:-mt-8 md:-mt-10 lg:-mt-14 text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
+            <div className="-mt-6 sm:-mt-8 md:-mt-10 lg:-mt-14 mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  const element = document.querySelector('#contact');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/95 hover:bg-white border border-purple-accent/25 rounded-full text-xs sm:text-sm font-medium text-charcoal shadow-sm hover:shadow transition-all"
+              >
+                <Sparkles className="w-4 h-4 text-purple-accent shrink-0" />
+                <span>
+                  <span className="font-bold text-purple-accent">Nieuw!</span> Italië reizen online!
+                </span>
+              </button>
+            </div>
+            <p className="text-lg md:text-xl text-charcoal/70 mb-8 max-w-lg leading-relaxed">
               Een avontuurlijke reis voor jongeren van 18 tot 26 jaar, waar je met onbekenden vertrekt en terugkomt met verhalen, nieuwe connecties en een paar stevige plotwists.
             </p>
             <button onClick={scrollToOverOns} className="btn-primary group">
