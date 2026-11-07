@@ -7,14 +7,14 @@ const trips = [
     title: 'Expeditie Nederland',
     shortDesc: 'Liften, bij locals slapen en puur avontuur.',
     image: '/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg',
-    videoUrl: 'https://www.instagram.com/reel/DblEQjloNAM/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
+    videoUrl: 'https://www.instagram.com/reel/DZ77pQIIz3M/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
   },
   {
     id: 2,
     title: 'Backpacken met onbekenden',
     shortDesc: 'Met 8 personen grenzen verleggen en nieuwe vriendschappen sluiten.',
     image: '/images/MVsfi8VMFgYmg2E46x4oNhPzNs.jpg',
-    videoUrl: 'https://www.instagram.com/reel/DZ77pQIIz3M/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
+    videoUrl: 'https://www.instagram.com/reel/DblEQjloNAM/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
   },
 ];
 
