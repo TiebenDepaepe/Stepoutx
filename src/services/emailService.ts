@@ -1,8 +1,8 @@
 // EmailJS configuratie voor automatische mails bij inschrijving
 // Vul hieronder je 3 gegevens van https://dashboard.emailjs.com/ in:
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_amj6m3q';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_tpc4rl5';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'QxosUbEvgRRSc8tLU';
 
 const ADMIN_NOTIFICATION_EMAIL = 'daria@stepoutx.com';
 
