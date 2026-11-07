@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Users, Shield, Camera, Video, Loader2, AlertCircle, Info, ChevronDown, Compass, Smile, Target, Activity, MessageCircle } from 'lucide-react';
+import { CheckCircle, Clock, XCircle, Sparkles, Send, Upload, Check, User, Users, Shield, Camera, Video, Loader2, AlertCircle, Info, ChevronDown, Compass, Smile, Target, Activity, MessageCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { validateForm, validateFile } from '@/lib/validation';
 import { CalendarDatePicker } from '@/components/calendar-date-picker';
@@ -227,10 +227,14 @@ const responseOptions = [
 
 export default function ContactAndSignup() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   const [showTripGuide, setShowTripGuide] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const formTopRef = useRef<HTMLDivElement>(null);
+  const TOTAL_STEPS = 9;
 
   const [isInAppBrowser] = useState(() =>
     /Instagram|FBAN|FBAV|FB_IAB|Messenger|TikTok|Snapchat|Pinterest|Line\//i.test(
@@ -334,59 +338,104 @@ export default function ContactAndSignup() {
     return formErrors[fieldName] || (touchedFields.has(fieldName) ? formErrors[fieldName] : undefined);
   };
 
+  const stepFields: Record<number, string[]> = {
+    1: ['naam', 'geboortedatum', 'woonplaats', 'gsm', 'email', 'instagram', 'huidigeBezigheid'],
+    2: ['expeditieVoorkeur', 'beschikbaarheid'],
+    3: ['persoonlijkheid', 'nieuweGroep', 'rolVriendengroep', 'sociaalMeerdaagse', 'vrijeTijdInteresses'],
+    4: ['motivatie', 'doelen'],
+    5: ['kmWandelen', 'meerdereDagenWandelen'],
+    6: ['ergernissenAnderen', 'typePersoonBotsen'],
+    7: ['noodcontactNaam', 'noodcontactGsm'],
+    8: ['foto', 'video'],
+    9: ['agreement', 'privacyAgreement'],
+  };
+
+  const validateStep = (step: number): boolean => {
+    const validationResult = validateForm(formData);
+    const allErrors = validationResult.success ? {} : validationResult.errors;
+    const fieldsToCheck = stepFields[step] || [];
+    const stepErrors: Record<string, string> = {};
+
+    for (const field of fieldsToCheck) {
+      if (allErrors[field]) {
+        stepErrors[field] = allErrors[field];
+      }
+    }
+
+    if (step === 1) {
+      if ((formData.huidigeBezigheid === 'Ik studeer' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.studieUitleg.trim()) {
+        stepErrors.studieUitleg = 'Vul in wat je studeert';
+      }
+      if ((formData.huidigeBezigheid === 'Ik werk' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.werkUitleg.trim()) {
+        stepErrors.werkUitleg = 'Vul in wat voor werk je doet';
+      }
+      if (formData.huidigeBezigheid === 'Iets anders' && !formData.bezigheidAndersUitleg.trim()) {
+        stepErrors.bezigheidAndersUitleg = 'Vertel wat je momenteel doet';
+      }
+    }
+
+    if (step === 3) {
+      if (formData.vrijeTijdInteresses.includes('Andere') && !formData.vrijeTijdAnders.trim()) {
+        stepErrors.vrijeTijdAnders = 'Vul in welke andere interesses je hebt';
+      }
+    }
+
+    if (step === 7) {
+      if (formData.medisch && !formData.medischUitleg.trim()) {
+        stepErrors.medischUitleg = 'Vul in waarmee we rekening moeten houden';
+      }
+    }
+
+    if (step === 9) {
+      if (formData.vriendenIngeschreven && !formData.vriendenNamen.trim()) {
+        stepErrors.vriendenNamen = 'Vul de voor- en achternaam in van je vriend(in)';
+      }
+    }
+
+    if (Object.keys(stepErrors).length > 0) {
+      setFormErrors((prev) => ({ ...prev, ...stepErrors }));
+      const firstErrorField = Object.keys(stepErrors)[0];
+      const errorElement =
+        document.querySelector(`[name="${firstErrorField}"]`) ||
+        document.querySelector(`[data-field="${firstErrorField}"]`);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (errorElement as HTMLElement).focus?.();
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (!validateStep(currentStep)) return;
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep((prev) => prev + 1);
+      setTimeout(() => {
+        formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+      setTimeout(() => {
+        formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form with zod
-    const validationResult = validateForm(formData);
-    if (!validationResult.success) {
-      setFormErrors(validationResult.errors);
-      
-      const firstErrorField = Object.keys(validationResult.errors)[0];
-      const errorElement = document.querySelector(`[name="${firstErrorField}"]`) || 
-                           document.querySelector(`[data-field="${firstErrorField}"]`);
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        (errorElement as HTMLElement).focus();
-      }
+    if (currentStep < TOTAL_STEPS) {
+      handleNextStep();
       return;
     }
 
-    // Conditional validations
-    if ((formData.huidigeBezigheid === 'Ik studeer' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.studieUitleg.trim()) {
-      setFormErrors(prev => ({ ...prev, studieUitleg: 'Vul in wat je studeert' }));
-      const errorElement = document.querySelector(`[name="studieUitleg"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if ((formData.huidigeBezigheid === 'Ik werk' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.werkUitleg.trim()) {
-      setFormErrors(prev => ({ ...prev, werkUitleg: 'Vul in wat voor werk je doet' }));
-      const errorElement = document.querySelector(`[name="werkUitleg"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if (formData.huidigeBezigheid === 'Iets anders' && !formData.bezigheidAndersUitleg.trim()) {
-      setFormErrors(prev => ({ ...prev, bezigheidAndersUitleg: 'Vertel wat je momenteel doet' }));
-      const errorElement = document.querySelector(`[name="bezigheidAndersUitleg"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if (formData.vrijeTijdInteresses.includes('Andere') && !formData.vrijeTijdAnders.trim()) {
-      setFormErrors(prev => ({ ...prev, vrijeTijdAnders: 'Vul in welke andere interesses je hebt' }));
-      const errorElement = document.querySelector(`[name="vrijeTijdAnders"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if (formData.medisch && !formData.medischUitleg.trim()) {
-      setFormErrors(prev => ({ ...prev, medischUitleg: 'Vul in waarmee we rekening moeten houden' }));
-      const errorElement = document.querySelector(`[name="medischUitleg"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if (formData.vriendenIngeschreven && !formData.vriendenNamen.trim()) {
-      setFormErrors(prev => ({ ...prev, vriendenNamen: 'Vul de voor- en achternaam in van je vriend(in)' }));
-      const errorElement = document.querySelector(`[name="vriendenNamen"]`);
-      errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!validateStep(TOTAL_STEPS)) {
       return;
     }
     
@@ -490,32 +539,66 @@ export default function ContactAndSignup() {
             <p className="text-center text-sm text-charcoal/50">
               Zo blijven de groepen klein en goed samengesteld.
             </p>
+
+            {!isFormOpen && (
+              <div className="text-center mt-8">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFormOpen(true);
+                    setTimeout(() => {
+                      formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
+                  }}
+                  className="btn-primary text-base md:text-lg px-8 py-4 group"
+                >
+                  Ik wil me inschrijven
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* PART 2: Form Section */}
-      <div id="signup-form" className="relative">
+      <div id="signup-form" ref={formTopRef} className="relative">
+        {isFormOpen && (
         <div className="pt-4 pb-12 relative">
           <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
           
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Form Header */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-4">
                 Inschrijfformulier
               </h3>
               
               {/* Klein geel kadertje */}
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 md:p-5 text-amber-900 text-sm md:text-base leading-relaxed text-left shadow-sm">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 md:p-5 text-amber-900 text-sm md:text-base leading-relaxed text-left shadow-sm mb-6">
                 <p className="font-medium">
                   We besteden veel tijd en aandacht aan het samenstellen van groepen die goed bij elkaar passen. Hoe eerlijker je antwoorden, hoe beter we jou kunnen matchen met de juiste mensen. Er zijn geen juiste of foute antwoorden, dus wees vooral jezelf!
                 </p>
               </div>
+
+              {/* Voortgangsbalk */}
+              <div className="bg-white rounded-2xl p-4 shadow-soft border border-charcoal/5">
+                <div className="flex items-center justify-between text-xs sm:text-sm font-medium text-charcoal mb-2">
+                  <span>Deel {currentStep} van {TOTAL_STEPS}</span>
+                  <span className="text-purple-accent font-semibold">{Math.round((currentStep / TOTAL_STEPS) * 100)}%</span>
+                </div>
+                <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-accent rounded-full transition-all duration-500"
+                    style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8 mt-8">
+            <form onSubmit={handleSubmit} noValidate className="space-y-8 mt-6">
               {/* Deel 1: Even kennismaken */}
+              {currentStep === 1 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -779,8 +862,10 @@ export default function ContactAndSignup() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Deel 2: Jouw expeditie */}
+              {currentStep === 2 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -919,8 +1004,10 @@ export default function ContactAndSignup() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Deel 3: Wie ben jij? */}
+              {currentStep === 3 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1132,8 +1219,10 @@ export default function ContactAndSignup() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Deel 4: Wat verwacht je van PlotTwist? */}
+              {currentStep === 4 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1198,8 +1287,10 @@ export default function ContactAndSignup() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Deel 5: Wandelen en fysieke haalbaarheid */}
+              {currentStep === 5 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1289,8 +1380,10 @@ export default function ContactAndSignup() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Deel 6: De laatste persoonlijke vragen */}
+              {currentStep === 6 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1371,8 +1464,10 @@ export default function ContactAndSignup() {
                   />
                 </div>
               </div>
+              )}
 
               {/* Deel 7: Praktisch en veiligheid */}
+              {currentStep === 7 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1482,8 +1577,10 @@ export default function ContactAndSignup() {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Deel 8: Foto en video */}
+              {currentStep === 8 && (
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1580,8 +1677,38 @@ export default function ContactAndSignup() {
                   </div>
                 </div>
               </div>
+              )}
+
+              {/* Stappen-navigatie voor deel 1 t/m 8 */}
+              {currentStep < TOTAL_STEPS && (
+                <div className="flex items-center justify-between gap-4 pt-2">
+                  {currentStep > 1 ? (
+                    <button
+                      type="button"
+                      onClick={handlePrevStep}
+                      className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white border border-charcoal/15 text-charcoal font-display font-semibold text-sm sm:text-base hover:bg-gray-50 transition-all shadow-sm"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Vorige
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-charcoal text-white font-display font-bold text-sm sm:text-base hover:bg-charcoal/90 transition-all shadow-md hover:shadow-lg group"
+                  >
+                    Volgende
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              )}
 
               {/* Deel 9: Nog een laatste vraag */}
+              {currentStep === 9 && (
+              <>
               <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
@@ -1726,12 +1853,21 @@ export default function ContactAndSignup() {
                   </p>
                 )}
 
-                {/* Submit Button */}
-                <div className="pt-4">
+                {/* Submit & Back Buttons */}
+                <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-gray-100 hover:bg-gray-200 text-charcoal font-display font-semibold text-base transition-all disabled:opacity-50"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    Vorige
+                  </button>
                   <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   >
                     {isSubmitting ? (
                       <>
@@ -1758,9 +1894,12 @@ export default function ContactAndSignup() {
                   </div>
                 )}
               </div>
+              </>
+              )}
             </form>
           </div>
         </div>
+        )}
       </div>
     </section>
   );
