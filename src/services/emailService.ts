@@ -107,7 +107,8 @@ export async function sendRegistrationConfirmationEmail(
   }
 
   const recipientEmail = params.email.trim();
-  const voornaam = params.naam.trim().split(/\s+/)[0] || params.naam;
+  const rawVoornaam = params.naam.trim().split(/\s+/)[0] || params.naam.trim();
+  const voornaam = rawVoornaam ? rawVoornaam.charAt(0).toUpperCase() + rawVoornaam.slice(1) : rawVoornaam;
   const participantMessage = buildParticipantMessage(voornaam);
   const adminMessage = buildAdminNotificationMessage(params);
 
