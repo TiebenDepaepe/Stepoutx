@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Sparkles,
-  Users,
   UserCheck,
   Compass,
-  Navigation,
   Home,
   ShieldCheck,
   Ticket,
@@ -12,6 +10,7 @@ import {
   Flame,
   ClipboardCheck,
   Heart,
+  Gift,
   ChevronDown,
   Info,
   type LucideIcon,
@@ -33,13 +32,6 @@ const includedBlocks: IncludedBlock[] = [
       'Iedere groep krijgt een eigen route, met andere plekken, ontmoetingen en verrassingen. De basis van het avontuur blijft hetzelfde, maar hoe de reis verloopt, is telkens anders. Je boekt dus geen standaardroute die iedere week opnieuw wordt afgewerkt.',
   },
   {
-    icon: Users,
-    title: '8 onbekenden. Geen 50 toeristen.',
-    subtitle: 'Een kleine groep waarin niemand verloren loopt.',
-    description:
-      'Je reist met slechts 7 andere deelnemers en een vaste begeleider. Geen enorme groep waarin je telkens dezelfde paar mensen spreekt. Iedereen maakt deel uit van hetzelfde avontuur.',
-  },
-  {
     icon: UserCheck,
     title: 'Een groep die bewust is samengesteld',
     subtitle: 'Geen namen uit een hoed trekken.',
@@ -54,18 +46,11 @@ const includedBlocks: IncludedBlock[] = [
       'We bereiden de route voor, maar de exacte bestemmingen blijven geheim. Zo ontdek je onderweg waar je terechtkomt. Geen voorspelbaar reisprogramma dat je vooraf al volledig op Google kunt bekijken.',
   },
   {
-    icon: Navigation,
-    title: '6 dagen vol onverwachte momenten',
-    subtitle: 'Niet gewoon van hotel naar hotel.',
-    description:
-      'Liften, nieuwe plekken ontdekken, samen uitdagingen aangaan en slapen bij locals: de weg ernaartoe is minstens even belangrijk als de bestemming. Wat er precies gebeurt, weet je nooit helemaal vooraf.',
-  },
-  {
     icon: Home,
     title: 'Slapen bij locals',
     subtitle: 'Bijzondere ontmoetingen onderweg.',
     description:
-      'In plaats van standaard hotelnachten is het zoeken naar een slaapplek bij locals onderdeel van het avontuur. Dat levert ontmoetingen en verhalen op die je tijdens een klassieke reis niet snel meemaakt. Een overnachtingsplek is niet altijd op voorhand bekend.',
+      "Slapen bij locals is een van de unieke onderdelen van PlotTwist. We onderzoeken en testen vooraf in welke regio's dit mogelijk is. De exacte slaapplekken liggen niet vast, maar dat betekent niet dat je er alleen voor staat. Je wordt tijdens het zoeken begeleid en ondersteund door je PlotTwist-leader. Zo combineren we een goed voorbereid avontuur met spontane ontmoetingen en onverwachte ervaringen.",
   },
   {
     icon: ShieldCheck,
@@ -94,6 +79,13 @@ const includedBlocks: IncludedBlock[] = [
     subtitle: 'De onverwachte momenten maken het verhaal.',
     description:
       "Onderweg en 's avonds voorzien we challenges en spellen om samen plezier te maken en elkaar beter te leren kennen.",
+  },
+  {
+    icon: Gift,
+    title: "Extra's: PlotTwist shirts + sportrepen",
+    subtitle: 'Een blijvend aandenken en energie voor onderweg.',
+    description:
+      'Elke deelnemer krijgt een exclusief PlotTwist T-shirt en sportrepen voor onderweg tijdens de expeditie.',
   },
   {
     icon: ClipboardCheck,
