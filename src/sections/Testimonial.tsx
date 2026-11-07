@@ -110,6 +110,10 @@ export default function Testimonial() {
             </p>
           </div>
 
+          <p className="text-center text-xs text-charcoal/50 mt-4">
+            (deze reviews waren anoniem)
+          </p>
+
           {/* Navigation */}
           <div className="flex items-center justify-center gap-4 mt-8">
             <button
