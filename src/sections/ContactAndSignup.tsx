@@ -970,8 +970,13 @@ export default function ContactAndSignup() {
                     9. Wanneer ben je beschikbaar? *
                   </label>
                   <p className="text-xs text-charcoal/60 mb-3">
-                    Selecteer alle weken waarin je mee kan gaan. Hoe meer opties, hoe groter de kans op een passende match.
+                    Selecteer alle weken waarin je mee kan gaan.
                   </p>
+
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-3 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 shrink-0 text-amber-700" />
+                    <span>Hoe meer datums je aanduidt, hoe groter de kans op een passende match!</span>
+                  </div>
 
                   {isItalie && (
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-4 flex items-center gap-2">
