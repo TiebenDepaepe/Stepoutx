@@ -364,7 +364,7 @@ export function useFormSubmit() {
       }
 
       // 3. Stuur automatische bevestigingsmail (blokkeert de inschrijving niet als dit mislukt)
-      void sendRegistrationConfirmationEmail({
+      await sendRegistrationConfirmationEmail({
         naam: data.naam,
         email: data.email,
         gsm: data.gsm,

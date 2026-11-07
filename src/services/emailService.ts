@@ -95,7 +95,7 @@ async function sendEmailJS(templateParams: Record<string, string>): Promise<void
 
 /**
  * Verstuurt automatisch:
- * 1. De bevestigingsmail naar de deelnemer
+ * 1. De bevestigingsmail naar het e-mailadres dat de deelnemer in het formulier heeft ingevuld
  * 2. Een melding van de nieuwe inschrijving naar daria@stepoutx.com
  */
 export async function sendRegistrationConfirmationEmail(
@@ -106,28 +106,47 @@ export async function sendRegistrationConfirmationEmail(
     return;
   }
 
+  const recipientEmail = params.email.trim();
   const voornaam = params.naam.trim().split(/\s+/)[0] || params.naam;
+  const participantMessage = buildParticipantMessage(voornaam);
+  const adminMessage = buildAdminNotificationMessage(params);
 
   try {
-    // 1. Bevestigingsmail naar de deelnemer
-    await sendEmailJS({
-      to_email: params.email,
-      to_name: params.naam,
-      voornaam,
-      reply_to: ADMIN_NOTIFICATION_EMAIL,
-      subject: 'YESSS, je hebt je aangemeld voor PlotTwist!',
-      message: buildParticipantMessage(voornaam),
-    });
+    await Promise.allSettled([
+      // 1. Bevestigingsmail naar het e-mailadres dat in Deel 1 (vraag 5) is ingevuld
+      sendEmailJS({
+        to_email: recipientEmail,
+        email: recipientEmail,
+        user_email: recipientEmail,
+        recipient: recipientEmail,
+        to_name: params.naam,
+        name: params.naam,
+        user_name: params.naam,
+        voornaam,
+        Voornaam: voornaam,
+        from_name: 'PlotTwist Travel',
+        reply_to: ADMIN_NOTIFICATION_EMAIL,
+        subject: 'YESSS, je hebt je aangemeld voor PlotTwist!',
+        message: participantMessage,
+      }),
 
-    // 2. Melding naar daria@stepoutx.com
-    await sendEmailJS({
-      to_email: ADMIN_NOTIFICATION_EMAIL,
-      to_name: 'Daria',
-      voornaam: 'Daria',
-      reply_to: params.email,
-      subject: `Nieuwe PlotTwist inschrijving: ${params.naam}`,
-      message: buildAdminNotificationMessage(params),
-    });
+      // 2. Melding naar daria@stepoutx.com
+      sendEmailJS({
+        to_email: ADMIN_NOTIFICATION_EMAIL,
+        email: ADMIN_NOTIFICATION_EMAIL,
+        user_email: ADMIN_NOTIFICATION_EMAIL,
+        recipient: ADMIN_NOTIFICATION_EMAIL,
+        to_name: 'Daria',
+        name: 'Daria',
+        user_name: 'Daria',
+        voornaam: 'Daria',
+        Voornaam: 'Daria',
+        from_name: params.naam,
+        reply_to: recipientEmail,
+        subject: `Nieuwe PlotTwist inschrijving: ${params.naam}`,
+        message: adminMessage,
+      }),
+    ]);
   } catch (err) {
     console.warn('Fout bij versturen automatische e-mails:', err);
   }
