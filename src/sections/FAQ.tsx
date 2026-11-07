@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, X, Sparkles, Star } from 'lucide-react';
+import { Plus, X, Sparkles, Star, Send, CheckCircle, Loader2, MessageCircle } from 'lucide-react';
+import { sendQuestionEmail } from '@/services/emailService';
 
 const faqs = [
   {
@@ -192,7 +193,41 @@ const FAQItem = ({ faq, isOpen, onToggle, index, isVisible }: FAQItemProps) => {
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null); // All FAQs closed by default
   const [isVisible, setIsVisible] = useState(false);
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+  const [naam, setNaam] = useState('');
+  const [email, setEmail] = useState('');
+  const [vraag, setVraag] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+
+  const handleQuestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+
+    if (!email.trim() || !email.includes('@')) {
+      setFormError('Vul een geldig e-mailadres in zodat we je kunnen antwoorden.');
+      return;
+    }
+    if (!vraag.trim() || vraag.trim().length < 3) {
+      setFormError('Typ eerst je vraag.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const ok = await sendQuestionEmail({ naam, email, vraag });
+    setIsSubmitting(false);
+
+    if (ok) {
+      setIsSuccess(true);
+      setNaam('');
+      setEmail('');
+      setVraag('');
+    } else {
+      setFormError('Er ging iets mis bij het versturen. Probeer het opnieuw.');
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -262,6 +297,122 @@ export default function FAQ() {
               isVisible={isVisible}
             />
           ))}
+        </div>
+
+        {/* Stel een vraag sectie */}
+        <div className="mt-12 bg-lavender/30 border border-purple-accent/15 rounded-3xl p-6 md:p-8 text-center">
+          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <MessageCircle className="w-6 h-6 text-purple-accent" />
+          </div>
+          <h3 className="text-xl md:text-2xl font-display font-bold text-charcoal mb-2">
+            Staat je vraag er niet tussen?
+          </h3>
+          <p className="text-sm md:text-base text-charcoal/70 mb-6">
+            Stel gerust je vraag, dan sturen we je zo snel mogelijk een antwoord via mail!
+          </p>
+
+          {!showQuestionForm && !isSuccess && (
+            <button
+              type="button"
+              onClick={() => setShowQuestionForm(true)}
+              className="btn-primary"
+            >
+              Stel een vraag
+            </button>
+          )}
+
+          {isSuccess && (
+            <div className="bg-white rounded-2xl p-6 max-w-md mx-auto border border-green-200">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+              </div>
+              <p className="font-display font-bold text-charcoal mb-1">Je vraag is verstuurd!</p>
+              <p className="text-sm text-charcoal/70 mb-4">
+                We hebben je vraag ontvangen en antwoorden zo snel mogelijk via mail.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSuccess(false);
+                  setShowQuestionForm(false);
+                }}
+                className="text-xs font-medium text-purple-accent hover:underline"
+              >
+                Nog een vraag stellen
+              </button>
+            </div>
+          )}
+
+          {showQuestionForm && !isSuccess && (
+            <form onSubmit={handleQuestionSubmit} className="max-w-lg mx-auto text-left space-y-4 mt-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-charcoal mb-1.5">Je naam</label>
+                  <input
+                    type="text"
+                    value={naam}
+                    onChange={(e) => setNaam(e.target.value)}
+                    placeholder="bv. Emma"
+                    className="w-full px-4 py-3 bg-white rounded-xl border border-charcoal/15 text-sm outline-none focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-charcoal mb-1.5">Je e-mailadres *</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="jouw@email.com"
+                    className="w-full px-4 py-3 bg-white rounded-xl border border-charcoal/15 text-sm outline-none focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-charcoal mb-1.5">Je vraag *</label>
+                <textarea
+                  value={vraag}
+                  onChange={(e) => setVraag(e.target.value)}
+                  required
+                  rows={3}
+                  placeholder="Typ hier je vraag..."
+                  className="w-full px-4 py-3 bg-white rounded-xl border border-charcoal/15 text-sm outline-none focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20 resize-none"
+                />
+              </div>
+
+              {formError && (
+                <p className="text-xs text-red-500">{formError}</p>
+              )}
+
+              <div className="flex justify-end gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowQuestionForm(false)}
+                  className="px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal/70 hover:bg-white/60 transition-all"
+                >
+                  Annuleren
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-charcoal text-white rounded-xl text-sm font-medium hover:bg-charcoal/90 transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Verzenden...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Verstuur vraag
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </section>

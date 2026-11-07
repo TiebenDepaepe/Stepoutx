@@ -151,3 +151,56 @@ export async function sendRegistrationConfirmationEmail(
     console.warn('Fout bij versturen automatische e-mails:', err);
   }
 }
+
+export interface QuestionEmailParams {
+  naam: string;
+  email: string;
+  vraag: string;
+}
+
+/**
+ * Verstuurt een vraag vanuit de FAQ-sectie rechtstreeks naar daria@stepoutx.com.
+ */
+export async function sendQuestionEmail(params: QuestionEmailParams): Promise<boolean> {
+  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+    return false;
+  }
+
+  const senderEmail = params.email.trim();
+  const senderName = params.naam.trim() || 'Bezoeker';
+
+  const message = `Hey Daria,
+
+Er is een nieuwe vraag gesteld via de PlotTwist-website:
+
+Naam: ${senderName}
+E-mailadres: ${senderEmail}
+
+Vraag:
+${params.vraag.trim()}
+
+(Je kunt direct op deze mail antwoorden om terug te mailen naar ${senderEmail}.)`;
+
+  try {
+    await sendEmailJS({
+      to_email: ADMIN_NOTIFICATION_EMAIL,
+      email: ADMIN_NOTIFICATION_EMAIL,
+      user_email: ADMIN_NOTIFICATION_EMAIL,
+      recipient: ADMIN_NOTIFICATION_EMAIL,
+      to_name: 'Daria',
+      name: 'Daria',
+      user_name: 'Daria',
+      voornaam: 'Daria',
+      Voornaam: 'Daria',
+      from_name: senderName,
+      reply_to: senderEmail,
+      subject: `Nieuwe vraag via website van ${senderName}`,
+      message,
+    });
+    return true;
+  } catch (err) {
+    console.warn('Fout bij versturen vraag:', err);
+    return false;
+  }
+}
+
