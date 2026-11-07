@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, ExternalLink, Youtube } from 'lucide-react';
+import { Play, ExternalLink, Instagram } from 'lucide-react';
 
 const trips = [
   {
@@ -7,14 +7,14 @@ const trips = [
     title: 'Expeditie Nederland',
     shortDesc: 'Liften, bij locals slapen en puur avontuur.',
     image: '/images/05WCFuh3KzWfk29snTLJSASWjzs.jpg',
-    videoUrl: 'https://youtu.be/LI2TVbdg-0I?si=CfmQLiVZFYQKg-_K',
+    videoUrl: 'https://www.instagram.com/reel/DblEQjloNAM/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
   },
   {
     id: 2,
     title: 'Backpacken met onbekenden',
     shortDesc: 'Met 8 personen grenzen verleggen en nieuwe vriendschappen sluiten.',
     image: '/images/MVsfi8VMFgYmg2E46x4oNhPzNs.jpg',
-    videoUrl: 'https://youtu.be/pROTltVDn7o?si=HKNbi3d7B0VYDWf9',
+    videoUrl: 'https://www.instagram.com/reel/DZ77pQIIz3M/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==',
   },
 ];
 
@@ -56,16 +56,16 @@ const TripCard = ({ trip, index, isVisible }: TripCardProps) => {
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         
-        {/* YouTube badge */}
+        {/* Instagram badge */}
         <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full">
-          <Youtube className="w-4 h-4 text-red-600" />
+          <Instagram className="w-4 h-4 text-pink-600" />
           <span className="text-xs font-medium text-charcoal">Bekijk video</span>
         </div>
         
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-white">
-            <Play className="w-6 h-6 text-red-600 ml-1" fill="currentColor" />
+            <Play className="w-6 h-6 text-pink-600 ml-1" fill="currentColor" />
           </div>
         </div>
         
@@ -77,7 +77,7 @@ const TripCard = ({ trip, index, isVisible }: TripCardProps) => {
         >
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-charcoal">
             <ExternalLink className="w-3.5 h-3.5" />
-            Open op YouTube
+            Open op Instagram
           </span>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function Trips() {
         {/* Section Header */}
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
-            Bekijk onze <span className="text-purple-accent">avonturen</span> op YouTube
+            Bekijk onze <span className="text-purple-accent">avonturen</span> hieronder
           </h2>
           <p className="text-charcoal/60 text-sm">
             Een kijkje in onze expedities en de herinneringen die we maakten

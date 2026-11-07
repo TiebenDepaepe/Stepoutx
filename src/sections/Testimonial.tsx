@@ -3,47 +3,49 @@ import { Star, ArrowRight, ArrowLeft, Quote } from 'lucide-react';
 
 const testimonials = [
   {
+    quote: "Je begint spontaan aan het avontuur met onbekenden, die je al snel vrienden kunt noemen. Ik heb me geen enkel moment geforceerd of verplicht gevoeld: alles verliep op een natuurlijke en vanzelfsprekende manier.",
+    rating: 5,
+  },
+  {
+    quote: "Perfect om vanaf dag 1 de groep goed te leren kennen en een hechte band te vormen. Ik heb vrienden voor het leven gemaakt en deze reis vergeet ik nooit meer.",
+    rating: 5,
+  },
+  {
+    quote: "Een geweldige ervaring! Ik heb niet alleen nieuwe mensen leren kennen, maar ben ook echt uit mijn comfortzone durven stappen dankzij de fantastische groepssfeer. Het was een avontuur dat ik nooit zal vergeten. Zeker een aanrader! Niet twijfelen, gewoon doen!",
+    rating: 5,
+  },
+  {
+    quote: "Het was een fantastisch avontuur vol verrassingen! Ik heb zoveel leuke ontmoetingen gehad met onbekenden. Ik zou me zo opnieuw inschrijven!",
+    rating: 5,
+  },
+  {
+    quote: "De gastvrijheid van de lokale bewoners heeft mij enorm verbaasd en de toffe sfeer in de groep maakte deze expeditie onvergetelijk!",
+    rating: 5,
+  },
+  {
     quote: "Dit was de meest leerrijke en avontuurlijke expeditie die ik ooit heb gedaan. Je leert je comfortzone achter je te laten en amuseert je tegelijk te pletter.",
-    author: 'Lawrence Penne',
-    location: 'Sint-Niklaas',
-    age: '21 jaar',
     rating: 5,
   },
   {
     quote: "Voor mij was PlotTwist een unieke ervaring. Het gaat niet alleen om uit je comfortzone stappen, maar ook om het beleven van geweldige momenten die je tijdens een gewone vakantie niet snel zou meemaken. Ik heb enorm veel bijgeleerd, ook over mezelf. Ik zou het echt iedereen aanraden!",
-    author: 'Nicole Aguilera',
-    location: 'Wilrijk',
-    age: '23 jaar',
     rating: 5,
   },
   {
     quote: "Heel leuke en originele manier om nieuwe mensen te leren kennen!",
-    author: 'Mauro Devos',
-    location: 'Roeselare',
-    age: '24 jaar',
     rating: 5,
   },
   {
     quote: "Super leuke ervaringen! Nieuwe avonturen, en geweldige mensen leren kennen!",
-    author: 'Emma Demolder',
-    location: 'Aarschot',
-    age: '20 jaar',
     rating: 5,
   },
   {
     quote: "Ik heb zo een onvergetelijke tijd beleefd!!! Je stapt uit je comfortzone door nieuwe mensen te leren kennen en doet leuke activiteiten en praaachtige wandelingen. En het belangrijkste: je houdt er supermooie vriendschappen aan over xoxo",
-    author: 'Luna Ozturk',
-    location: 'Gent',
-    age: '18 jaar',
     rating: 5,
   },
   {
     quote: "Met zes mensen liftte we door Nederland met de leukste activiteiten tussenin en groeiden we als groep snel naar elkaar toe. Het was spannend, verbindend en voor mij echt een onvergetelijk avontuur.",
-    author: 'Antwan Teirbrood',
-    location: 'Antwerpen',
-    age: '18 jaar',
     rating: 5,
-  }
+  },
 ];
 
 export default function Testimonial() {
@@ -102,19 +104,9 @@ export default function Testimonial() {
           </div>
 
           {/* Quote */}
-          <div className="relative min-h-[100px] flex items-center justify-center mb-8">
+          <div className="relative min-h-[100px] flex items-center justify-center">
             <p className="text-xl md:text-2xl text-charcoal text-center leading-relaxed font-medium">
               "{testimonials[currentIndex].quote}"
-            </p>
-          </div>
-
-          {/* Author */}
-          <div className="text-center">
-            <p className="font-display font-bold text-charcoal text-lg">
-              {testimonials[currentIndex].author}
-            </p>
-            <p className="text-sm text-charcoal/60">
-              {testimonials[currentIndex].location} • {testimonials[currentIndex].age}
             </p>
           </div>
 
