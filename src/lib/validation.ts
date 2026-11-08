@@ -143,6 +143,9 @@ export const signupFormSchema = z.object({
   agreement: z.boolean()
     .refine((val) => val === true, 'Je moet akkoord gaan met de voorwaarden'),
 
+  voorwaardenAgreement: z.boolean()
+    .refine((val) => val === true, 'Je moet akkoord gaan met de algemene voorwaarden'),
+
   privacyAgreement: z.boolean()
     .refine((val) => val === true, 'Je moet akkoord gaan met het privacybeleid'),
 });

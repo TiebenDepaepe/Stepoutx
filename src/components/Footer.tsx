@@ -37,6 +37,13 @@ export default function Footer() {
             </p>
             <nav className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 text-sm text-charcoal/70">
               <Link
+                to="/algemene-voorwaarden"
+                className="hover:text-charcoal hover:underline transition-colors"
+              >
+                Algemene voorwaarden
+              </Link>
+              <span aria-hidden="true" className="text-charcoal/30">·</span>
+              <Link
                 to="/privacybeleid"
                 className="hover:text-charcoal hover:underline transition-colors"
               >

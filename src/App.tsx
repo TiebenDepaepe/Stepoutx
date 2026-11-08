@@ -22,6 +22,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 // Legal pages
 import CookiePolicy from './pages/CookiePolicy';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AlgemeneVoorwaarden from './pages/AlgemeneVoorwaarden';
 
 // Main website component
 function MainWebsite() {
@@ -55,6 +56,7 @@ function App() {
           {/* Legal pages */}
           <Route path="/cookiebeleid" element={<CookiePolicy />} />
           <Route path="/privacybeleid" element={<PrivacyPolicy />} />
+          <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

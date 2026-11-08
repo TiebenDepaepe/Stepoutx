@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { compressPhoto, UploadAborted, uploadWithProgress } from '@/lib/upload';
 import { sendRegistrationConfirmationEmail } from '@/services/emailService';
 
 interface FormData {
@@ -59,6 +60,7 @@ interface FormData {
 
   // Akkoord
   agreement: boolean;
+  voorwaardenAgreement: boolean;
   privacyAgreement: boolean;
 }
 
@@ -80,10 +82,6 @@ interface SubmitState {
   isSuccess: boolean;
   isError: boolean;
   error: string | null;
-  uploadProgress: {
-    foto: number;
-    video: number;
-  };
   /** Dutch sentences about uploads that failed while the registration itself was saved. */
   uploadWarnings: string[];
 }
@@ -94,7 +92,23 @@ interface SubmitResult {
   warnings?: string[];
 }
 
-type UploadKind = 'foto' | 'video';
+export type UploadKind = 'foto' | 'video';
+
+export interface UploadStatus {
+  status: 'idle' | 'uploading' | 'done' | 'error';
+  /** Bytes sent so far and in total, for a real progress bar. */
+  loaded: number;
+  total: number;
+}
+
+const IDLE_UPLOAD: UploadStatus = { status: 'idle', loaded: 0, total: 0 };
+
+interface UploadJob {
+  /** The file as the visitor picked it, to recognise it again at submit time. */
+  source: File;
+  promise: Promise<string>;
+  abort: () => void;
+}
 
 /** An upload error whose message is already a finished Dutch sentence. */
 export class UploadFailure extends Error {
@@ -180,49 +194,106 @@ export function useFormSubmit() {
     isSuccess: false,
     isError: false,
     error: null,
-    uploadProgress: { foto: 0, video: 0 },
     uploadWarnings: [],
   });
 
-  const uploadFile = async (
-    file: File,
-    folder: 'photos' | 'videos'
-  ): Promise<string | null> => {
-    const kind: UploadKind = folder === 'photos' ? 'foto' : 'video';
+  const [uploads, setUploads] = useState<Record<UploadKind, UploadStatus>>({
+    foto: IDLE_UPLOAD,
+    video: IDLE_UPLOAD,
+  });
+  const jobs = useRef<Record<UploadKind, UploadJob | null>>({ foto: null, video: null });
 
-    // Bail out early with a message the visitor can act on, instead of letting
-    // Storage reject an empty body with an English API error.
-    await assertFileReadable(file, kind);
+  const setUpload = (kind: UploadKind, next: UploadStatus) =>
+    setUploads((current) => ({ ...current, [kind]: next }));
 
-    // Create unique filename: folder/timestamp_random.ext
-    const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(7);
-    const fileName = `${folder}/${timestamp}_${randomStr}.${fileExt}`;
+  const runUpload = (kind: UploadKind, source: File): UploadJob => {
+    let aborted = false;
+    let abortRequest = () => {};
+    const isCurrent = () => jobs.current[kind]?.source === source && !aborted;
 
-    try {
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+    const promise = (async () => {
+      setUpload(kind, { status: 'uploading', loaded: 0, total: source.size });
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw new UploadFailure(uploadErrorMessage(uploadError.message, kind), uploadError.message);
+      // Bail out early with a message the visitor can act on, instead of letting
+      // Storage reject an empty body with an English API error.
+      await assertFileReadable(source, kind);
+      const file = kind === 'foto' ? await compressPhoto(source) : source;
+      if (aborted) throw new UploadAborted();
+
+      // Unique path: folder/timestamp_random.ext. Bucket is private, so we keep
+      // the path rather than a public URL.
+      const folder = kind === 'foto' ? 'photos' : 'videos';
+      const ext = file.name.split('.').pop()?.toLowerCase() || '';
+      const path = `${folder}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+
+      const request = uploadWithProgress(path, file, (loaded, total) => {
+        if (isCurrent()) setUpload(kind, { status: 'uploading', loaded, total });
+      });
+      abortRequest = request.abort;
+
+      try {
+        await request.promise;
+      } catch (error) {
+        if (error instanceof UploadAborted) throw error;
+        const raw = error instanceof Error ? error.message : String(error);
+        console.error(`Upload error for ${kind}:`, error);
+        throw new UploadFailure(uploadErrorMessage(raw, kind), raw);
       }
+      return path;
+    })();
 
-      // Return the file path (not public URL - bucket is private)
-      return fileName;
-    } catch (error) {
-      // Already translated above - do not run it through the mapper twice.
-      if (error instanceof UploadFailure) throw error;
+    promise.then(
+      () => {
+        if (isCurrent()) {
+          setUploads((current) => ({
+            ...current,
+            [kind]: { status: 'done', loaded: current[kind].total, total: current[kind].total },
+          }));
+        }
+      },
+      (error) => {
+        if (isCurrent() && !(error instanceof UploadAborted)) {
+          setUpload(kind, { ...IDLE_UPLOAD, status: 'error' });
+        }
+      }
+    );
 
-      const raw = error instanceof Error ? error.message : String(error);
-      console.error(`Upload error for ${folder}:`, error);
-      throw new UploadFailure(uploadErrorMessage(raw, kind), raw);
+    return {
+      source,
+      promise,
+      abort: () => {
+        aborted = true;
+        abortRequest();
+      },
+    };
+  };
+
+  /**
+   * Start uploading the moment a file is picked (deel 8), not when the form is
+   * sent. By the time someone has answered deel 9 and ticked the checkboxes,
+   * most of the upload is already behind them. Picking another file cancels
+   * the previous upload; `null` clears it.
+   */
+  const startUpload = (kind: UploadKind, file: File | null) => {
+    jobs.current[kind]?.abort();
+    jobs.current[kind] = file ? runUpload(kind, file) : null;
+    if (!file) setUpload(kind, IDLE_UPLOAD);
+  };
+
+  /** The storage path for this file: reuses the background upload, retrying once if it failed. */
+  const ensureUploaded = async (kind: UploadKind, file: File): Promise<string> => {
+    const existing = jobs.current[kind];
+    if (existing && existing.source === file) {
+      try {
+        return await existing.promise;
+      } catch (error) {
+        // A dropped connection minutes ago says little about now: try again.
+        console.warn(`Background upload of ${kind} failed, retrying at submit:`, error);
+      }
     }
+    const job = runUpload(kind, file);
+    jobs.current[kind] = job;
+    return job.promise;
   };
 
   const submitForm = async (data: FormData): Promise<SubmitResult> => {
@@ -231,14 +302,11 @@ export function useFormSubmit() {
       isSuccess: false,
       isError: false,
       error: null,
-      uploadProgress: { foto: 0, video: 0 },
-      uploadWarnings: [],
+        uploadWarnings: [],
     });
 
     try {
-      // 1. Upload files first (if any)
-      let fotoPath: string | null = null;
-      let videoPath: string | null = null;
+      // 1. Files: usually already uploaded in the background since deel 8
       const warnings: string[] = [];
       const diagnostics: string[] = [];
 
@@ -248,19 +316,11 @@ export function useFormSubmit() {
        * bestand); we slaan de inschrijving dan gewoon op zonder het bestand en
        * vertellen achteraf wat er ontbreekt.
        */
-      const tryUpload = async (
-        file: File,
-        folder: 'photos' | 'videos',
-        kind: UploadKind
-      ): Promise<string | null> => {
-        setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 30 } }));
+      const tryUpload = async (file: File, kind: UploadKind): Promise<string | null> => {
         try {
-          const path = await uploadFile(file, folder);
-          setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 100 } }));
-          return path;
+          return await ensureUploaded(kind, file);
         } catch (uploadError) {
           console.error(`Upload skipped for ${kind}:`, uploadError);
-          setState(s => ({ ...s, uploadProgress: { ...s.uploadProgress, [kind]: 0 } }));
           warnings.push(
             uploadError instanceof Error
               ? uploadError.message
@@ -279,24 +339,36 @@ export function useFormSubmit() {
         }
       };
 
-      if (data.foto) {
-        fotoPath = await tryUpload(data.foto, 'photos', 'foto');
-      }
-
-      if (data.video) {
-        videoPath = await tryUpload(data.video, 'videos', 'video');
-      }
+      // Photo and video side by side: the slower one sets the pace, not the sum.
+      const [fotoPath, videoPath] = await Promise.all([
+        data.foto ? tryUpload(data.foto, 'foto') : Promise.resolve(null),
+        data.video ? tryUpload(data.video, 'video') : Promise.resolve(null),
+      ]);
 
       /**
-       * Mislukte uploads verdwenen tot nu toe spoorloos: de bezoeker zag een
+       * Uploadproblemen verdwenen tot nu toe spoorloos: de bezoeker zag een
        * foutmelding en wij zagen niets. Deze notitie belandt in het admin-veld
-       * bij de inschrijving, zodat de volgende keer meteen duidelijk is wat er
-       * misging en op welk toestel.
+       * bij de inschrijving, zodat meteen duidelijk is wat er misging.
+       *
+       * Ook het geval "helemaal geen foto gekozen" noteren we. Dat is namelijk
+       * de stille variant: gaat de bestandskiezer in een in-app browser niet
+       * open, dan is er nooit een upload om te laten mislukken. Zonder deze
+       * regel zie je enkel een inschrijving zonder foto en weet je niet waarom.
        */
-      const notities = diagnostics.length
+      const notes: string[] = [];
+      if (diagnostics.length) {
+        notes.push('Uploaden mislukt tijdens het inschrijven:', ...diagnostics);
+      }
+      if (!data.foto) {
+        notes.push(
+          'Geen foto gekozen. Komt dit vaker voor bij dezelfde browser hieronder, dan opent de bestandskiezer daar waarschijnlijk niet.'
+        );
+      }
+
+      const notities = notes.length
         ? [
-            'Automatisch genoteerd: uploaden mislukt tijdens het inschrijven.',
-            ...diagnostics,
+            'Automatisch genoteerd:',
+            ...notes,
             `Browser: ${typeof navigator === 'undefined' ? 'onbekend' : navigator.userAgent.slice(0, 300)}`,
           ].join('\n')
         : null;
@@ -380,7 +452,6 @@ export function useFormSubmit() {
         isSuccess: true,
         isError: false,
         error: null,
-        uploadProgress: { foto: 100, video: 100 },
         uploadWarnings: warnings,
       });
 
@@ -397,8 +468,7 @@ export function useFormSubmit() {
         isSuccess: false,
         isError: true,
         error: errorMessage,
-        uploadProgress: { foto: 0, video: 0 },
-        uploadWarnings: [],
+            uploadWarnings: [],
       });
       
       return { success: false, error: errorMessage };
@@ -411,13 +481,14 @@ export function useFormSubmit() {
       isSuccess: false,
       isError: false,
       error: null,
-      uploadProgress: { foto: 0, video: 0 },
-      uploadWarnings: [],
+        uploadWarnings: [],
     });
   };
 
   return {
     ...state,
+    uploads,
+    startUpload,
     submitForm,
     reset,
   };

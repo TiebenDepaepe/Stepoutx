@@ -175,6 +175,7 @@ interface FormData {
 
   // Akkoord
   agreement: boolean;
+  voorwaardenAgreement: boolean;
   privacyAgreement: boolean;
 }
 
@@ -216,6 +217,7 @@ const initialFormData: FormData = {
   vriendenIngeschreven: false,
   vriendenNamen: '',
   agreement: false,
+  voorwaardenAgreement: false,
   privacyAgreement: false,
 };
 
@@ -243,7 +245,7 @@ export default function ContactAndSignup() {
   );
 
   // Form submission hook
-  const { submitForm, isSubmitting, isError, error, uploadProgress, uploadWarnings } = useFormSubmit();
+  const { submitForm, isSubmitting, isError, error, uploads, startUpload, uploadWarnings } = useFormSubmit();
   
   // Form validation errors
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -316,15 +318,16 @@ export default function ContactAndSignup() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'foto' | 'video') => {
     const file = e.target.files?.[0] || null;
-    if (file) {
-      const fileError = validateFile(file, type === 'foto' ? 'image' : 'video');
-      if (fileError) {
-        setFormErrors((prev) => ({ ...prev, [type]: fileError }));
-        e.target.value = '';
-        return;
-      }
+    // Closing the file picker without choosing keeps the file that was already there.
+    if (!file) return;
+    const fileError = validateFile(file, type === 'foto' ? 'image' : 'video');
+    if (fileError) {
+      setFormErrors((prev) => ({ ...prev, [type]: fileError }));
+      e.target.value = '';
+      return;
     }
     setFormData((prev) => ({ ...prev, [type]: file }));
+    startUpload(type, file);
     if (formErrors[type]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev };
@@ -332,6 +335,42 @@ export default function ContactAndSignup() {
         return newErrors;
       });
     }
+  };
+
+  const renderUploadStatus = (kind: 'foto' | 'video') => {
+    const upload = uploads[kind];
+    if (upload.status === 'idle') return null;
+    if (upload.status === 'done') {
+      return (
+        <p className="mt-2 text-xs text-green-700 flex items-center gap-1">
+          <Check className="w-3.5 h-3.5" /> Geüpload
+        </p>
+      );
+    }
+    if (upload.status === 'error') {
+      return (
+        <p className="mt-2 text-xs text-amber-700">
+          Uploaden lukte nog niet. Geen zorgen: we proberen het opnieuw wanneer je je inschrijving verstuurt.
+        </p>
+      );
+    }
+    const percent = upload.total ? Math.round((upload.loaded / upload.total) * 100) : 0;
+    return (
+      <div className="mt-2">
+        <div className="flex justify-between text-xs text-charcoal/60 mb-1">
+          <span>{kind === 'foto' ? 'Foto' : 'Video'} uploaden…</span>
+          <span>
+            {formatFileSize(upload.loaded)} / {formatFileSize(upload.total)} · {percent}%
+          </span>
+        </div>
+        <div className="h-1.5 bg-charcoal/10 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-purple-accent rounded-full transition-all duration-300"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      </div>
+    );
   };
 
   const getFieldError = (fieldName: string) => {
@@ -347,7 +386,7 @@ export default function ContactAndSignup() {
     6: ['ergernissenAnderen', 'typePersoonBotsen'],
     7: ['noodcontactNaam', 'noodcontactGsm'],
     8: ['foto', 'video'],
-    9: ['agreement', 'privacyAgreement'],
+    9: ['agreement', 'voorwaardenAgreement', 'privacyAgreement'],
   };
 
   const validateStep = (step: number): boolean => {
@@ -1639,6 +1678,7 @@ export default function ContactAndSignup() {
                         )}
                       </label>
                     </div>
+                    {renderUploadStatus('foto')}
                     {getFieldError('foto') && (
                       <p className="mt-1.5 text-xs text-red-500">{getFieldError('foto')}</p>
                     )}
@@ -1650,7 +1690,7 @@ export default function ContactAndSignup() {
                       26. Stel jezelf kort voor in een video van max. 30 sec. <span className="text-charcoal/50">(niet verplicht)</span>
                     </label>
                     <p className="text-xs text-charcoal/50 mb-3">
-                      Vertel wie je bent of waarom je zin hebt in PlotTwist. Gewoon jezelf zijn!
+                      Vertel wie je bent of waarom je zin hebt in PlotTwist. Gewoon jezelf zijn! Tip: film in 1080p (niet in 4K), dan gaat het uploaden een stuk sneller.
                     </p>
                     <div className="relative">
                       <input 
@@ -1676,6 +1716,7 @@ export default function ContactAndSignup() {
                         )}
                       </label>
                     </div>
+                    {renderUploadStatus('video')}
                     {getFieldError('video') && (
                       <p className="mt-1.5 text-xs text-red-500">{getFieldError('video')}</p>
                     )}
@@ -1820,6 +1861,44 @@ export default function ContactAndSignup() {
                   </p>
                 )}
 
+                {/* Algemene voorwaarden */}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="voorwaardenAgreement"
+                    checked={formData.voorwaardenAgreement}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, voorwaardenAgreement: e.target.checked }));
+                      if (formErrors.voorwaardenAgreement) {
+                        setFormErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.voorwaardenAgreement;
+                          return newErrors;
+                        });
+                      }
+                    }}
+                    className="w-5 h-5 flex-shrink-0 mt-0.5 text-purple-accent rounded border-charcoal/30 focus:ring-purple-accent/20"
+                  />
+                  <span className="text-sm text-charcoal/80 leading-relaxed">
+                    Ik heb de{' '}
+                    <a
+                      href="#/algemene-voorwaarden"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-accent hover:underline font-medium"
+                    >
+                      algemene voorwaarden
+                    </a>{' '}
+                    gelezen en ga ermee akkoord. *
+                  </span>
+                </label>
+                {getFieldError('voorwaardenAgreement') && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {getFieldError('voorwaardenAgreement')}
+                  </p>
+                )}
+
                 {/* Privacy Agreement */}
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
@@ -1889,12 +1968,16 @@ export default function ContactAndSignup() {
                 </div>
 
                 {isSubmitting && (
-                  <div className="mt-4 space-y-1 text-center">
-                    {uploadProgress.foto > 0 && uploadProgress.foto < 100 && (
-                      <p className="text-xs text-charcoal/50">Foto uploaden...</p>
+                  <div className="mt-4 space-y-3">
+                    {renderUploadStatus('foto')}
+                    {renderUploadStatus('video')}
+                    {uploads.foto.status !== 'uploading' && uploads.video.status !== 'uploading' && (
+                      <p className="text-xs text-charcoal/50 text-center">Inschrijving opslaan…</p>
                     )}
-                    {uploadProgress.video > 0 && uploadProgress.video < 100 && (
-                      <p className="text-xs text-charcoal/50">Video uploaden...</p>
+                    {(uploads.foto.status === 'uploading' || uploads.video.status === 'uploading') && (
+                      <p className="text-xs text-charcoal/50 text-center">
+                        Laat deze pagina open tot het uploaden klaar is.
+                      </p>
                     )}
                   </div>
                 )}
