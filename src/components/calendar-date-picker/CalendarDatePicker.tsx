@@ -14,7 +14,7 @@ export function CalendarDatePicker({
   onChange,
   error 
 }: CalendarDatePickerProps) {
-  const { months, getDaysForMonth, weekDays } = useCalendarDates(2027);
+  const { months, tripWeeks, getDaysForMonth, weekDays } = useCalendarDates(2027);
   const [hoveredTripId, setHoveredTripId] = useState<string | null>(null);
 
   const handleSelectTrip = useCallback((tripId: string) => {
@@ -38,7 +38,7 @@ export function CalendarDatePicker({
       </p>
 
       {/* Legend */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-xs">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 text-xs">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-mint/60 border border-mint" />
@@ -58,9 +58,18 @@ export function CalendarDatePicker({
         
         <div className="flex flex-col gap-1 text-[11px] bg-lavender/35 border border-purple-accent/15 px-3.5 py-2 rounded-xl text-charcoal/80">
           <span className="font-semibold text-purple-accent">Beschikbare datums:</span>
-          <div>• 1 - 6 februari <span className="text-emerald-600 font-bold">(Open)</span></div>
-          <div>• 29 maart - 3 april <span className="text-emerald-600 font-bold">(Open)</span></div>
-          <div>• 5 - 10 april <span className="text-emerald-600 font-bold">(Open)</span></div>
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4">
+            {tripWeeks.map((trip) => (
+              <div key={trip.id}>
+                • {trip.label}{' '}
+                {trip.full ? (
+                  <span className="text-gray-400 font-bold">(Vol)</span>
+                ) : (
+                  <span className="text-emerald-600 font-bold">(Open)</span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
