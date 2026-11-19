@@ -79,6 +79,8 @@ export interface Inschrijving {
   status?: 'nieuw' | 'beoordeeld' | 'goedgekeurd' | 'afgewezen';
   notities?: string | null;
   toegewezen_reis?: string | null;
+  wachtrij_reis?: string | null;
+  beoordeling_kleur?: 'groen' | 'rood' | null;
 }
 
 // For displaying in the admin list - derived from Inschrijving

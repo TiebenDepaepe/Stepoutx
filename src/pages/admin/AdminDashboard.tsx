@@ -89,10 +89,68 @@ export default function AdminDashboard() {
   const handleAssignmentChange = useCallback((ids: string[], toegewezenReis: string | null) => {
     const idSet = new Set(ids);
     setInschrijvingen((prev) =>
-      prev.map((item) => (idSet.has(item.id) ? { ...item, toegewezen_reis: toegewezenReis } : item))
+      prev.map((item) =>
+        idSet.has(item.id)
+          ? {
+              ...item,
+              toegewezen_reis: toegewezenReis,
+              ...(toegewezenReis ? { wachtrij_reis: null } : {}),
+            }
+          : item
+      )
     );
     setSelectedInschrijving((prev) =>
-      prev && idSet.has(prev.id) ? { ...prev, toegewezen_reis: toegewezenReis } : prev
+      prev && idSet.has(prev.id)
+        ? {
+            ...prev,
+            toegewezen_reis: toegewezenReis,
+            ...(toegewezenReis ? { wachtrij_reis: null } : {}),
+          }
+        : prev
+    );
+  }, []);
+
+  const handleWaitlistChange = useCallback((ids: string[], wachtrijReis: string | null) => {
+    const idSet = new Set(ids);
+    setInschrijvingen((prev) =>
+      prev.map((item) =>
+        idSet.has(item.id)
+          ? {
+              ...item,
+              wachtrij_reis: wachtrijReis,
+              ...(wachtrijReis ? { toegewezen_reis: null } : {}),
+            }
+          : item
+      )
+    );
+    setSelectedInschrijving((prev) =>
+      prev && idSet.has(prev.id)
+        ? {
+            ...prev,
+            wachtrij_reis: wachtrijReis,
+            ...(wachtrijReis ? { toegewezen_reis: null } : {}),
+          }
+        : prev
+    );
+  }, []);
+
+  const handleColorChange = useCallback((ids: string[], kleur: 'groen' | 'rood' | null) => {
+    const idSet = new Set(ids);
+    setInschrijvingen((prev) =>
+      prev.map((item) => (idSet.has(item.id) ? { ...item, beoordeling_kleur: kleur } : item))
+    );
+    setSelectedInschrijving((prev) =>
+      prev && idSet.has(prev.id) ? { ...prev, beoordeling_kleur: kleur } : prev
+    );
+  }, []);
+
+  const handleNotesChange = useCallback((ids: string[], notities: string) => {
+    const idSet = new Set(ids);
+    setInschrijvingen((prev) =>
+      prev.map((item) => (idSet.has(item.id) ? { ...item, notities } : item))
+    );
+    setSelectedInschrijving((prev) =>
+      prev && idSet.has(prev.id) ? { ...prev, notities } : prev
     );
   }, []);
 
@@ -361,6 +419,9 @@ export default function AdminDashboard() {
               inschrijvingen={inschrijvingen}
               onOpenDetail={handleSelect}
               onAssignmentChange={handleAssignmentChange}
+              onWaitlistChange={handleWaitlistChange}
+              onColorChange={handleColorChange}
+              onNotesChange={handleNotesChange}
             />
 
             {/* Slide-over paneel om het volledige inschrijfformulier te bekijken zonder het weekoverzicht te verlaten */}

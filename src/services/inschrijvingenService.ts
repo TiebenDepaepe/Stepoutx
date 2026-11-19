@@ -177,13 +177,94 @@ export async function updateInschrijvingenToegewezenReis(
     return { success: true, error: null };
   }
 
+  // Wanneer iemand definitief in een reis wordt geplaatst, haal diegene uit een eventuele wachtrij
+  const updatePayload = toegewezen_reis
+    ? { toegewezen_reis, wachtrij_reis: null }
+    : { toegewezen_reis: null };
+
   const { error } = await supabase
     .from(TABLE_NAME)
-    .update({ toegewezen_reis })
+    .update(updatePayload)
     .in('id', ids);
 
   if (error) {
     console.error('Error updating toegewezen_reis:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
+ * Place one or more inschrijvingen on the waiting list (wachtrij) for a trip week (or pass null to remove from waitlist).
+ */
+export async function updateInschrijvingenWachtrijReis(
+  ids: string[],
+  wachtrij_reis: string | null
+): Promise<{ success: boolean; error: Error | null }> {
+  if (ids.length === 0) {
+    return { success: true, error: null };
+  }
+
+  const updatePayload = wachtrij_reis
+    ? { wachtrij_reis, toegewezen_reis: null }
+    : { wachtrij_reis: null };
+
+  const { error } = await supabase
+    .from(TABLE_NAME)
+    .update(updatePayload)
+    .in('id', ids);
+
+  if (error) {
+    console.error('Error updating wachtrij_reis:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
+ * Set green/red evaluation dot ('groen' | 'rood' | null) for one or more inschrijvingen.
+ */
+export async function updateInschrijvingenBeoordelingKleur(
+  ids: string[],
+  beoordeling_kleur: 'groen' | 'rood' | null
+): Promise<{ success: boolean; error: Error | null }> {
+  if (ids.length === 0) {
+    return { success: true, error: null };
+  }
+
+  const { error } = await supabase
+    .from(TABLE_NAME)
+    .update({ beoordeling_kleur })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Error updating beoordeling_kleur:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
+ * Save notes for one or more inschrijvingen IDs (e.g. deduplicated person rows).
+ */
+export async function updateInschrijvingenNotitiesBulk(
+  ids: string[],
+  notities: string
+): Promise<{ success: boolean; error: Error | null }> {
+  if (ids.length === 0) {
+    return { success: true, error: null };
+  }
+
+  const { error } = await supabase
+    .from(TABLE_NAME)
+    .update({ notities })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Error updating notities bulk:', error);
     return { success: false, error: new Error(error.message) };
   }
 
