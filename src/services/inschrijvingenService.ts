@@ -224,11 +224,11 @@ export async function updateInschrijvingenWachtrijReis(
 }
 
 /**
- * Set green/red evaluation dot ('groen' | 'rood' | null) for one or more inschrijvingen.
+ * Set green/orange/red evaluation dot ('groen' | 'oranje' | 'rood' | null) for one or more inschrijvingen.
  */
 export async function updateInschrijvingenBeoordelingKleur(
   ids: string[],
-  beoordeling_kleur: 'groen' | 'rood' | null
+  beoordeling_kleur: 'groen' | 'oranje' | 'rood' | null
 ): Promise<{ success: boolean; error: Error | null }> {
   if (ids.length === 0) {
     return { success: true, error: null };

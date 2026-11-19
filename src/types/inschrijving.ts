@@ -80,7 +80,7 @@ export interface Inschrijving {
   notities?: string | null;
   toegewezen_reis?: string | null;
   wachtrij_reis?: string | null;
-  beoordeling_kleur?: 'groen' | 'rood' | null;
+  beoordeling_kleur?: 'groen' | 'oranje' | 'rood' | null;
 }
 
 // For displaying in the admin list - derived from Inschrijving

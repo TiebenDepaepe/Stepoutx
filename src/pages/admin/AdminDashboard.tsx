@@ -134,7 +134,7 @@ export default function AdminDashboard() {
     );
   }, []);
 
-  const handleColorChange = useCallback((ids: string[], kleur: 'groen' | 'rood' | null) => {
+  const handleColorChange = useCallback((ids: string[], kleur: 'groen' | 'oranje' | 'rood' | null) => {
     const idSet = new Set(ids);
     setInschrijvingen((prev) =>
       prev.map((item) => (idSet.has(item.id) ? { ...item, beoordeling_kleur: kleur } : item))

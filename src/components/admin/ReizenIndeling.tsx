@@ -38,7 +38,7 @@ interface ReizenIndelingProps {
   onOpenDetail: (inschrijving: Inschrijving) => void;
   onAssignmentChange: (ids: string[], toegewezenReis: string | null) => void;
   onWaitlistChange: (ids: string[], wachtrijReis: string | null) => void;
-  onColorChange: (ids: string[], kleur: 'groen' | 'rood' | null) => void;
+  onColorChange: (ids: string[], kleur: 'groen' | 'oranje' | 'rood' | null) => void;
   onNotesChange: (ids: string[], notities: string) => void;
 }
 
@@ -77,7 +77,7 @@ export interface DeduplicatedPerson {
   allBeschikbaarheid: string[];
   toegewezenReis: string | null;
   wachtrijReis: string | null;
-  beoordelingKleur: 'groen' | 'rood' | null;
+  beoordelingKleur: 'groen' | 'oranje' | 'rood' | null;
   notities: string;
   duplicateCount: number;
 }
@@ -416,7 +416,7 @@ export function ReizenIndeling({
 
   const handleToggleColor = async (
     person: DeduplicatedPerson,
-    targetColor: 'groen' | 'rood'
+    targetColor: 'groen' | 'oranje' | 'rood'
   ) => {
     const newColor = person.beoordelingKleur === targetColor ? null : targetColor;
     // Optimistische UI-update
@@ -467,14 +467,15 @@ export function ReizenIndeling({
   };
 
   /**
-   * Groen / Rood bolletjes naast de naam
+   * Groen / Oranje / Rood bolletjes naast de naam
    */
   const renderColorDots = (person: DeduplicatedPerson) => {
     const isGroen = person.beoordelingKleur === 'groen';
+    const isOranje = person.beoordelingKleur === 'oranje';
     const isRood = person.beoordelingKleur === 'rood';
 
     return (
-      <div className="inline-flex items-center gap-1.5 shrink-0" title="Kies groen of rood bolletje">
+      <div className="inline-flex items-center gap-1.5 shrink-0" title="Kies groen, oranje of rood bolletje">
         <button
           type="button"
           onClick={(e) => {
@@ -487,6 +488,20 @@ export function ReizenIndeling({
             isGroen
               ? 'bg-emerald-500 ring-2 ring-emerald-300 scale-110 shadow-xs'
               : 'bg-emerald-500/25 hover:bg-emerald-500/60 border border-emerald-500/50'
+          }`}
+        />
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggleColor(person, 'oranje');
+          }}
+          aria-label="Markeer oranje"
+          title={isOranje ? 'Oranje geselecteerd (klik om te wissen)' : 'Markeer oranje'}
+          className={`w-4 h-4 rounded-full transition-all flex items-center justify-center ${
+            isOranje
+              ? 'bg-orange-400 ring-2 ring-orange-200 scale-110 shadow-xs'
+              : 'bg-orange-400/25 hover:bg-orange-400/60 border border-orange-400/50'
           }`}
         />
         <button
@@ -1188,9 +1203,11 @@ export function ReizenIndeling({
                                 ? 'bg-lavender/25 border-purple-accent ring-2 ring-purple-accent/30 shadow-sm'
                                 : person.beoordelingKleur === 'groen'
                                   ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-emerald-300'
-                                  : person.beoordelingKleur === 'rood'
-                                    ? 'bg-red-50/35 hover:bg-red-50/60 border-red-300'
-                                    : 'bg-gray-50/70 hover:bg-white border-gray-200/80 hover:border-purple-accent/30';
+                                  : person.beoordelingKleur === 'oranje'
+                                    ? 'bg-orange-50/40 hover:bg-orange-50/70 border-orange-300'
+                                    : person.beoordelingKleur === 'rood'
+                                      ? 'bg-red-50/35 hover:bg-red-50/60 border-red-300'
+                                      : 'bg-gray-50/70 hover:bg-white border-gray-200/80 hover:border-purple-accent/30';
 
                               return (
                                 <div
