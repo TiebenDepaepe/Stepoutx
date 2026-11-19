@@ -31,6 +31,7 @@ import {
   Activity,
   Loader2,
   Save,
+  Video,
 } from 'lucide-react';
 
 interface ReizenIndelingProps {
@@ -79,6 +80,7 @@ export interface DeduplicatedPerson {
   wachtrijReis: string | null;
   beoordelingKleur: 'groen' | 'oranje' | 'rood' | null;
   notities: string;
+  hasVideo: boolean;
   duplicateCount: number;
 }
 
@@ -144,6 +146,7 @@ export function ReizenIndeling({
           wachtrijReis: item.wachtrij_reis || null,
           beoordelingKleur: item.beoordeling_kleur || null,
           notities: item.notities || '',
+          hasVideo: !!item.video_url,
           duplicateCount: 1,
         });
       } else {
@@ -165,6 +168,12 @@ export function ReizenIndeling({
         }
         if (!existing.notities && item.notities) {
           existing.notities = item.notities;
+        }
+        if (!existing.hasVideo && item.video_url) {
+          existing.hasVideo = true;
+          if (!existing.primary.video_url) {
+            existing.primary = { ...existing.primary, video_url: item.video_url };
+          }
         }
       }
     }
@@ -948,7 +957,18 @@ export function ReizenIndeling({
                                   </div>
 
                                   <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                      {person.hasVideo && (
+                                        <button
+                                          type="button"
+                                          onClick={() => onOpenDetail(item)}
+                                          title="Deze kandidaat heeft een video ingezonden (klik om te bekijken)"
+                                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-accent text-white hover:bg-purple-accent/90 text-xs font-semibold transition-colors shadow-2xs"
+                                        >
+                                          <Video className="w-3.5 h-3.5" />
+                                          Video
+                                        </button>
+                                      )}
                                       <button
                                         type="button"
                                         onClick={() => toggleNoteEditor(person)}
@@ -1059,7 +1079,18 @@ export function ReizenIndeling({
                                   </div>
 
                                   <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-100">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                      {person.hasVideo && (
+                                        <button
+                                          type="button"
+                                          onClick={() => onOpenDetail(item)}
+                                          title="Deze kandidaat heeft een video ingezonden (klik om te bekijken)"
+                                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-accent text-white hover:bg-purple-accent/90 text-xs font-semibold transition-colors shadow-2xs"
+                                        >
+                                          <Video className="w-3.5 h-3.5" />
+                                          Video
+                                        </button>
+                                      )}
                                       <button
                                         type="button"
                                         onClick={() => toggleNoteEditor(person)}
@@ -1311,6 +1342,17 @@ export function ReizenIndeling({
                                     </div>
 
                                     <div className="flex items-center gap-1.5 shrink-0">
+                                      {person.hasVideo && (
+                                        <button
+                                          type="button"
+                                          onClick={() => onOpenDetail(item)}
+                                          title="Deze kandidaat heeft een video ingezonden (klik om te bekijken)"
+                                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-accent text-white hover:bg-purple-accent/90 text-xs font-semibold transition-colors shadow-2xs"
+                                        >
+                                          <Video className="w-3.5 h-3.5" />
+                                          Video
+                                        </button>
+                                      )}
                                       <button
                                         type="button"
                                         onClick={() => toggleNoteEditor(person)}

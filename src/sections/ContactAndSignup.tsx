@@ -1722,6 +1722,10 @@ export default function ContactAndSignup() {
                     )}
                   </div>
                 </div>
+
+                <div className="mt-6 p-4 bg-lavender/35 border border-purple-accent/20 rounded-2xl text-xs sm:text-sm text-charcoal/85 leading-relaxed">
+                  We appreciëren video&apos;s enorm! Zo leren we je nog beter kennen en kunnen we de groepen beter matchen. Lukt uploaden niet? Stuur je video dan via Instagram (<span className="font-semibold text-purple-accent">@dariahaha</span>)
+                </div>
               </div>
               )}
 
