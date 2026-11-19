@@ -167,7 +167,8 @@ export function InschrijvingDetail({
                 variant="ghost" 
                 size="icon" 
                 onClick={onBack}
-                className="shrink-0 lg:hidden"
+                className="shrink-0"
+                title="Sluiten / Terug"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -332,6 +333,14 @@ export function InschrijvingDetail({
         <section>
           <SectionTitle>Beschikbaarheid & Bestemming</SectionTitle>
           <div className="space-y-4">
+            {inschrijving.toegewezen_reis && (
+              <InfoRow
+                icon={CheckCircle}
+                label="Ingedeeld in reis"
+                value={inschrijving.toegewezen_reis}
+                fullWidth
+              />
+            )}
             <InfoRow 
               icon={Compass} 
               label="Voorkeur Expeditie" 

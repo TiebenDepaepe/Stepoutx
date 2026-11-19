@@ -78,6 +78,7 @@ export interface Inschrijving {
   // Admin fields (optional - for future use)
   status?: 'nieuw' | 'beoordeeld' | 'goedgekeurd' | 'afgewezen';
   notities?: string | null;
+  toegewezen_reis?: string | null;
 }
 
 // For displaying in the admin list - derived from Inschrijving

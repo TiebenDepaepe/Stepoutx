@@ -166,6 +166,31 @@ export async function updateInschrijvingNotities(
 }
 
 /**
+ * Assign one or more inschrijvingen to a trip week (or pass null to unassign).
+ * Preserves the original beschikbaarheid array.
+ */
+export async function updateInschrijvingenToegewezenReis(
+  ids: string[],
+  toegewezen_reis: string | null
+): Promise<{ success: boolean; error: Error | null }> {
+  if (ids.length === 0) {
+    return { success: true, error: null };
+  }
+
+  const { error } = await supabase
+    .from(TABLE_NAME)
+    .update({ toegewezen_reis })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Error updating toegewezen_reis:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
  * Get status label in Dutch
  */
 export function getStatusLabel(status: NonNullable<Inschrijving['status']>): string {

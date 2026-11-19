@@ -9,6 +9,7 @@ import { InschrijvingList } from '@/components/admin/InschrijvingList';
 import { InschrijvingDetail } from '@/components/admin/InschrijvingDetail';
 import { EmptyState } from '@/components/admin/EmptyState';
 import { EmailList } from '@/components/admin/EmailList';
+import { ReizenIndeling } from '@/components/admin/ReizenIndeling';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -20,7 +21,8 @@ import {
   RefreshCw,
   AlertCircle,
   Users,
-  Mail
+  Mail,
+  Calendar
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -38,7 +40,7 @@ export default function AdminDashboard() {
   const [selectedVideoPath, setSelectedVideoPath] = useState<string | null>(null);
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
   const [videoLoadFailed, setVideoLoadFailed] = useState(false);
-  const [activeView, setActiveView] = useState<'inschrijvingen' | 'emails'>('inschrijvingen');
+  const [activeView, setActiveView] = useState<'inschrijvingen' | 'reizen' | 'emails'>('reizen');
   const [nieuwsbriefEmails, setNieuwsbriefEmails] = useState<NieuwsbriefEmail[]>([]);
   const [isLoadingEmails, setIsLoadingEmails] = useState(false);
 
@@ -76,13 +78,23 @@ export default function AdminDashboard() {
   }, []);
 
   const handleRefresh = () => {
-    if (activeView === 'inschrijvingen') {
+    if (activeView === 'inschrijvingen' || activeView === 'reizen') {
       fetchInschrijvingen();
     } else {
       fetchNieuwsbriefEmails();
       fetchInschrijvingen(); // needed for inschrijving emails in the email list
     }
   };
+
+  const handleAssignmentChange = useCallback((ids: string[], toegewezenReis: string | null) => {
+    const idSet = new Set(ids);
+    setInschrijvingen((prev) =>
+      prev.map((item) => (idSet.has(item.id) ? { ...item, toegewezen_reis: toegewezenReis } : item))
+    );
+    setSelectedInschrijving((prev) =>
+      prev && idSet.has(prev.id) ? { ...prev, toegewezen_reis: toegewezenReis } : prev
+    );
+  }, []);
 
   const handleSignOut = async () => {
     clearSignedUrlCache(); // Clear cached URLs on logout
@@ -198,28 +210,39 @@ export default function AdminDashboard() {
               </div>
 
               {/* View Toggle */}
-              <div className="hidden sm:flex items-center gap-1 ml-4 bg-gray-100 rounded-xl p-1">
+              <div className="flex items-center gap-1 ml-2 sm:ml-4 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setActiveView('reizen')}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                    activeView === 'reizen'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-gray-soft hover:text-charcoal'
+                  }`}
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Reizen Indelen</span>
+                </button>
                 <button
                   onClick={() => setActiveView('inschrijvingen')}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     activeView === 'inschrijvingen'
                       ? 'bg-white text-charcoal shadow-sm'
                       : 'text-gray-soft hover:text-charcoal'
                   }`}
                 >
                   <Users className="w-4 h-4" />
-                  Inschrijvingen
+                  <span>Inschrijvingen</span>
                 </button>
                 <button
                   onClick={() => setActiveView('emails')}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     activeView === 'emails'
                       ? 'bg-white text-charcoal shadow-sm'
                       : 'text-gray-soft hover:text-charcoal'
                   }`}
                 >
                   <Mail className="w-4 h-4" />
-                  Email Lijsten
+                  <span className="hidden md:inline">Email Lijsten</span>
                 </button>
               </div>
             </div>
@@ -331,6 +354,39 @@ export default function AdminDashboard() {
                 </div>
               )}
             </section>
+          </div>
+        ) : activeView === 'reizen' ? (
+          <div className="relative">
+            <ReizenIndeling
+              inschrijvingen={inschrijvingen}
+              onOpenDetail={handleSelect}
+              onAssignmentChange={handleAssignmentChange}
+            />
+
+            {/* Slide-over paneel om het volledige inschrijfformulier te bekijken zonder het weekoverzicht te verlaten */}
+            {selectedInschrijving && (
+              <div
+                className="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-xs flex justify-end"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    setSelectedInschrijving(null);
+                  }
+                }}
+              >
+                <div className="w-full max-w-3xl bg-white h-full shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-right duration-200">
+                  <InschrijvingDetail
+                    inschrijving={selectedInschrijving}
+                    onBack={() => setSelectedInschrijving(null)}
+                    onUpdate={handleUpdate}
+                    isLoadingMedia={isLoadingMedia}
+                    imagePath={selectedImagePath}
+                    videoPath={selectedVideoPath}
+                    imageLoadFailed={imageLoadFailed}
+                    videoLoadFailed={videoLoadFailed}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="h-[calc(100vh-64px)]">
