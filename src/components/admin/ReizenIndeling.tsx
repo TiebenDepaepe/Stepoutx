@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Inschrijving } from '@/types/inschrijving';
 import {
   updateInschrijvingenToegewezenReis,
   updateInschrijvingenWachtrijReis,
   updateInschrijvingenBeoordelingKleur,
   updateInschrijvingenNotitiesBulk,
+  getAllReisBegeleiders,
+  saveReisBegeleider,
 } from '@/services/inschrijvingenService';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -112,6 +114,41 @@ export function ReizenIndeling({
   const [openNoteEditors, setOpenNoteEditors] = useState<Record<string, boolean>>({});
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
   const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
+
+  // Begeleider per week state
+  const [begeleiders, setBegeleiders] = useState<Record<string, string>>({});
+  const [begeleiderDrafts, setBegeleiderDrafts] = useState<Record<string, string>>({});
+  const [savingBegeleiderWeek, setSavingBegeleiderWeek] = useState<string | null>(null);
+  const [savedBegeleiderWeek, setSavedBegeleiderWeek] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAllReisBegeleiders().then((data) => {
+      setBegeleiders(data);
+      setBegeleiderDrafts(data);
+    });
+  }, []);
+
+  const handleSaveBegeleider = async (week: string) => {
+    const draft = (begeleiderDrafts[week] ?? '').trim();
+    const current = (begeleiders[week] ?? '').trim();
+    if (draft === current) return;
+
+    setSavingBegeleiderWeek(week);
+    const { success, error } = await saveReisBegeleider(week, draft);
+    setSavingBegeleiderWeek(null);
+
+    if (!success) {
+      setErrorMsg(error?.message || 'Kon begeleider niet opslaan.');
+      return;
+    }
+
+    setBegeleiders((prev) => ({ ...prev, [week]: draft }));
+    setBegeleiderDrafts((prev) => ({ ...prev, [week]: draft }));
+    setSavedBegeleiderWeek(week);
+    setTimeout(() => {
+      setSavedBegeleiderWeek((prev) => (prev === week ? null : prev));
+    }, 2000);
+  };
 
   // 1. Filter inschrijvingen op periode (vanaf 7 november vs allemaal) en sluit test-inschrijvingen uit
   const scopedInschrijvingen = useMemo(() => {
@@ -818,11 +855,18 @@ export function ReizenIndeling({
                             ? 'Nog geen deelnemers toegewezen aan deze reis'
                             : `${assigned.length} deelnemer${assigned.length === 1 ? '' : 's'} ingedeeld in deze reis`}
                           {waitlisted.length > 0 ? ` • ${waitlisted.length} op wachtrij` : ''}
+                          {begeleiders[week] ? ` • Begeleider: ${begeleiders[week]}` : ''}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
+                      {begeleiders[week] && (
+                        <Badge className="px-3 py-1 text-xs font-semibold bg-[#1F4E37] text-mint border-[#1F4E37]">
+                          <Compass className="w-3.5 h-3.5 mr-1.5" />
+                          Begeleider: {begeleiders[week]}
+                        </Badge>
+                      )}
                       <Badge
                         className={`px-3 py-1 text-xs font-semibold ${
                           assigned.length > 0
@@ -864,18 +908,66 @@ export function ReizenIndeling({
 
                   {isExpanded && (
                     <div className="p-5 sm:p-7 space-y-8">
-                      {/* DEEL 1: TOEGEWEZEN DEELNEMERS IN DEZE REIS */}
+                      {/* DEEL 1: TOEGEWEZEN DEELNEMERS IN DEZE REIS + BEGELEIDER */}
                       <div className="rounded-2xl bg-green-50/50 border border-green-200/80 p-4 sm:p-5">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-green-600" />
-                            <h3 className="text-base sm:text-lg font-display font-bold text-charcoal">
-                              Ingedeeld in deze reis ({assigned.length})
-                            </h3>
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-4 border-b border-green-200/60">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              <h3 className="text-base sm:text-lg font-display font-bold text-charcoal">
+                                Ingedeeld in deze reis ({assigned.length})
+                              </h3>
+                            </div>
+                            <span className="text-xs text-gray-soft">
+                              Deze personen zijn verborgen bij de beschikbare kandidaten van andere weken
+                            </span>
                           </div>
-                          <span className="text-xs text-gray-soft">
-                            Deze personen zijn verborgen bij de beschikbare kandidaten van andere weken
-                          </span>
+
+                          {/* Begeleider invoerveld bovenaan de selectie van deze reis */}
+                          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-green-200 shadow-2xs">
+                            <Compass className="w-4 h-4 text-[#1F4E37] shrink-0" />
+                            <span className="text-xs font-semibold text-charcoal whitespace-nowrap">
+                              Begeleider:
+                            </span>
+                            <input
+                              type="text"
+                              value={begeleiderDrafts[week] ?? ''}
+                              onChange={(e) =>
+                                setBegeleiderDrafts((prev) => ({
+                                  ...prev,
+                                  [week]: e.target.value,
+                                }))
+                              }
+                              onBlur={() => handleSaveBegeleider(week)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleSaveBegeleider(week);
+                                }
+                              }}
+                              placeholder="Typ naam begeleider..."
+                              className="text-xs sm:text-sm text-charcoal font-medium bg-transparent border-b border-transparent focus:border-[#1F4E37] outline-none px-1 py-0.5 w-36 sm:w-44"
+                            />
+                            {savingBegeleiderWeek === week ? (
+                              <Loader2 className="w-3.5 h-3.5 text-[#1F4E37] animate-spin shrink-0" />
+                            ) : savedBegeleiderWeek === week ? (
+                              <span className="text-[11px] text-green-700 font-semibold flex items-center gap-0.5 shrink-0">
+                                <Check className="w-3.5 h-3.5" />
+                                Opgeslagen
+                              </span>
+                            ) : (
+                              (begeleiderDrafts[week] ?? '').trim() !==
+                                (begeleiders[week] ?? '').trim() && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSaveBegeleider(week)}
+                                  className="px-2 py-0.5 rounded-md bg-[#1F4E37] text-white text-[11px] font-semibold hover:bg-[#1F4E37]/90 shrink-0"
+                                >
+                                  Opslaan
+                                </button>
+                              )
+                            )}
+                          </div>
                         </div>
 
                         {assigned.length === 0 ? (

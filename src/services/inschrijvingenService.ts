@@ -272,6 +272,45 @@ export async function updateInschrijvingenNotitiesBulk(
 }
 
 /**
+ * Fetch all saved trip leaders (begeleiders) per week.
+ */
+export async function getAllReisBegeleiders(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from('reis_begeleiders')
+    .select('week, begeleider');
+
+  if (error || !data) {
+    console.warn('Error fetching reis_begeleiders:', error);
+    return {};
+  }
+
+  const map: Record<string, string> = {};
+  for (const row of data as Array<{ week: string; begeleider: string }>) {
+    map[row.week] = row.begeleider || '';
+  }
+  return map;
+}
+
+/**
+ * Save or update the trip leader (begeleider) for a given week.
+ */
+export async function saveReisBegeleider(
+  week: string,
+  begeleider: string
+): Promise<{ success: boolean; error: Error | null }> {
+  const { error } = await supabase
+    .from('reis_begeleiders')
+    .upsert({ week, begeleider: begeleider.trim(), updated_at: new Date().toISOString() }, { onConflict: 'week' });
+
+  if (error) {
+    console.error('Error saving reis_begeleider:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
  * Get status label in Dutch
  */
 export function getStatusLabel(status: NonNullable<Inschrijving['status']>): string {
