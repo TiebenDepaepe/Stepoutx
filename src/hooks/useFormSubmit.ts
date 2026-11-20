@@ -475,6 +475,86 @@ export function useFormSubmit() {
     }
   };
 
+  const submitReturningForm = async (data: {
+    naam: string;
+    beschikbaarheid: string[];
+    expeditieVoorkeur: string;
+  }): Promise<SubmitResult> => {
+    setState({
+      isSubmitting: true,
+      isSuccess: false,
+      isError: false,
+      error: null,
+      uploadWarnings: [],
+    });
+
+    try {
+      const payload = {
+        naam: data.naam.trim(),
+        woonplaats: '',
+        gsm: '',
+        email: '',
+        expeditie_voorkeur: data.expeditieVoorkeur || null,
+        beschikbaarheid: data.beschikbaarheid,
+        motivatie: 'Reeds ingeschreven',
+        doelen: [],
+        persoonlijkheid: [],
+        medisch: false,
+        medisch_uitleg: null,
+        noodcontact_naam: '',
+        noodcontact_gsm: '',
+      };
+
+      const { error: insertError } = await supabase.from('inschrijvingen').insert(payload);
+
+      if (insertError) {
+        console.error('Insert error (returning):', insertError);
+        if (insertError.code === '42501') {
+          throw new Error(
+            'Database RLS Policy Error: De Row Level Security (RLS) policies in de Supabase console blokkeren openbare toevoegingen.'
+          );
+        }
+        throw new Error(`Database fout (${insertError.code}): ${insertError.message}`);
+      }
+
+      await sendRegistrationConfirmationEmail({
+        naam: data.naam.trim(),
+        email: '',
+        gsm: '',
+        woonplaats: '',
+        instagram: '',
+        expeditieVoorkeur: data.expeditieVoorkeur,
+        beschikbaarheid: data.beschikbaarheid,
+        motivatie: 'Reeds ingeschreven',
+      });
+
+      setState({
+        isSubmitting: false,
+        isSuccess: true,
+        isError: false,
+        error: null,
+        uploadWarnings: [],
+      });
+
+      return { success: true, warnings: [] };
+    } catch (error) {
+      let errorMessage = 'Er ging iets mis bij het verzenden. Probeer het later opnieuw.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      setState({
+        isSubmitting: false,
+        isSuccess: false,
+        isError: true,
+        error: errorMessage,
+        uploadWarnings: [],
+      });
+
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const reset = () => {
     setState({
       isSubmitting: false,
@@ -490,6 +570,7 @@ export function useFormSubmit() {
     uploads,
     startUpload,
     submitForm,
+    submitReturningForm,
     reset,
   };
 }

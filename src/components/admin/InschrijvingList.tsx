@@ -24,9 +24,9 @@ export function InschrijvingList({
 
   // Filter inschrijvingen based on search query
   const filteredInschrijvingen = inschrijvingen.filter((inschrijving) => {
-    const naam = inschrijving.naam.toLowerCase();
-    const email = inschrijving.email.toLowerCase();
-    const woonplaats = inschrijving.woonplaats.toLowerCase();
+    const naam = (inschrijving.naam || '').toLowerCase();
+    const email = (inschrijving.email || '').toLowerCase();
+    const woonplaats = (inschrijving.woonplaats || '').toLowerCase();
     const query = searchQuery.toLowerCase();
     
     return naam.includes(query) || email.includes(query) || woonplaats.includes(query);
@@ -99,7 +99,7 @@ export function InschrijvingList({
                     <p className={`text-sm truncate ${
                       selectedId === inschrijving.id ? 'text-white/80' : 'text-gray-soft'
                     }`}>
-                      {inschrijving.email}
+                      {inschrijving.email || 'Al ingeschreven / datum-update'}
                     </p>
                   </div>
                   {inschrijving.status && (
@@ -120,8 +120,12 @@ export function InschrijvingList({
                 }`}>
                   <Calendar className="h-3 w-3" />
                   {format(new Date(inschrijving.created_at), 'd MMM yyyy', { locale: nl })}
-                  <span className="mx-1">•</span>
-                  {inschrijving.woonplaats}
+                  {inschrijving.woonplaats && (
+                    <>
+                      <span className="mx-1">•</span>
+                      {inschrijving.woonplaats}
+                    </>
+                  )}
                 </div>
               </button>
             ))}

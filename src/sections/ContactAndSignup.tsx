@@ -23,6 +23,24 @@ const expeditieOptions = [
   'Italie (+€145)',
 ];
 
+const returningExpeditieOptions = [
+  {
+    value: 'Ik schrijf me opnieuw in voor een Nederland / Duitsland reis',
+    label: 'Ik schrijf me opnieuw in voor een Nederland / Duitsland reis',
+    moreInfo: 'De expeditie zal natuurlijk op een totaal andere locatie zijn dan je vorige expeditie.',
+  },
+  {
+    value: 'Enkel Italië',
+    label: 'Enkel Italië',
+    moreInfo: 'Enkel aangeraden voor degenen met wandelervaring, deze reis zal avontuurlijker zijn.',
+  },
+  {
+    value: 'Aan jou om te kiezen / geen voorkeur',
+    label: 'Aan jou om te kiezen / geen voorkeur',
+    moreInfo: null,
+  },
+];
+
 const personalityOptions = [
   'Rustig',
   'Sociaal',
@@ -230,8 +248,10 @@ const responseOptions = [
 export default function ContactAndSignup() {
   const [isVisible, setIsVisible] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [registrationMode, setRegistrationMode] = useState<'choice' | 'new' | 'returning'>('choice');
   const [currentStep, setCurrentStep] = useState(1);
   const [showTripGuide, setShowTripGuide] = useState(false);
+  const [openReturningMoreInfo, setOpenReturningMoreInfo] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -245,7 +265,7 @@ export default function ContactAndSignup() {
   );
 
   // Form submission hook
-  const { submitForm, isSubmitting, isError, error, uploads, startUpload, uploadWarnings } = useFormSubmit();
+  const { submitForm, submitReturningForm, isSubmitting, isError, error, uploads, startUpload, uploadWarnings } = useFormSubmit();
   
   // Form validation errors
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -466,6 +486,41 @@ export default function ContactAndSignup() {
     }
   };
 
+  const handleReturningSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const returningErrors: Record<string, string> = {};
+    if (!formData.naam || formData.naam.trim().length < 2) {
+      returningErrors.naam = 'Vul je volledige voor- en achternaam in';
+    }
+    if (!formData.beschikbaarheid || formData.beschikbaarheid.length === 0) {
+      returningErrors.beschikbaarheid = 'Selecteer minstens één beschikbare reisweek';
+    }
+
+    if (Object.keys(returningErrors).length > 0) {
+      setFormErrors(returningErrors);
+      const firstErrorField = Object.keys(returningErrors)[0];
+      const errorElement =
+        document.querySelector(`[name="${firstErrorField}"]`) ||
+        document.querySelector(`[data-field="${firstErrorField}"]`);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (errorElement as HTMLElement).focus?.();
+      }
+      return;
+    }
+
+    setFormErrors({});
+    const result = await submitReturningForm({
+      naam: formData.naam,
+      beschikbaarheid: formData.beschikbaarheid,
+      expeditieVoorkeur: formData.expeditieVoorkeur,
+    });
+    if (result.success) {
+      setSubmitted(true);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -585,6 +640,7 @@ export default function ContactAndSignup() {
                   type="button"
                   onClick={() => {
                     setIsFormOpen(true);
+                    setRegistrationMode('choice');
                     setTimeout(() => {
                       formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 50);
@@ -607,6 +663,378 @@ export default function ContactAndSignup() {
           <div className="absolute inset-0 bg-gradient-to-b from-white via-lavender/10 to-white" />
           
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* STAP 0: KEUZE TUSSEN NIEUW OF AL INGESCHREVEN */}
+            {registrationMode === 'choice' && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-soft border border-charcoal/5 animate-fadeIn">
+                <div className="text-center mb-8">
+                  <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-lavender/60 rounded-full text-xs sm:text-sm font-semibold text-purple-accent mb-3">
+                    <Sparkles className="w-4 h-4" />
+                    KIES JE SITUATIE
+                  </span>
+                  <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
+                    Schrijf je je voor de eerste keer in?
+                  </h3>
+                  <p className="text-sm sm:text-base text-charcoal/65 max-w-xl mx-auto">
+                    Kies hieronder wat voor jou van toepassing is om verder te gaan.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Optie 1: Nieuw */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRegistrationMode('new');
+                      setFormErrors({});
+                      setTimeout(() => {
+                        formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 50);
+                    }}
+                    className="group text-left p-6 sm:p-7 rounded-3xl bg-mint/45 hover:bg-mint/80 border-2 border-[#1F4E37]/15 hover:border-[#1F4E37] transition-all duration-300 flex flex-col justify-between gap-5 shadow-xs hover:shadow-md"
+                  >
+                    <div>
+                      <div className="w-12 h-12 rounded-2xl bg-[#1F4E37] text-mint flex items-center justify-center mb-4 shadow-sm group-hover:scale-105 transition-transform">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-lg sm:text-xl font-display font-bold text-charcoal mb-2 leading-snug">
+                        Ik ben nieuw en schrijf me voor de eerste keer in
+                      </h4>
+                      <p className="text-xs sm:text-sm text-charcoal/70 leading-relaxed">
+                        Vul het volledige inschrijfformulier in zodat we je goed leren kennen en kunnen matchen met de juiste groep.
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center gap-2 text-sm font-display font-bold text-[#1F4E37] group-hover:translate-x-1 transition-transform">
+                      Start inschrijving
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </button>
+
+                  {/* Optie 2: Al ingeschreven */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRegistrationMode('returning');
+                      setFormErrors({});
+                      setTimeout(() => {
+                        formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 50);
+                    }}
+                    className="group text-left p-6 sm:p-7 rounded-3xl bg-lavender/40 hover:bg-lavender/75 border-2 border-purple-accent/20 hover:border-purple-accent transition-all duration-300 flex flex-col justify-between gap-5 shadow-xs hover:shadow-md"
+                  >
+                    <div>
+                      <div className="w-12 h-12 rounded-2xl bg-purple-accent text-white flex items-center justify-center mb-4 shadow-sm group-hover:scale-105 transition-transform">
+                        <User className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-lg sm:text-xl font-display font-bold text-charcoal mb-2 leading-snug">
+                        Ik heb me al ingeschreven
+                      </h4>
+                      <p className="text-xs sm:text-sm text-charcoal/70 leading-relaxed">
+                        Vul enkel je voor- en achternaam, je beschikbare datums en (enkel voor ex-deelnemers) je locatievoorkeur in.
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center gap-2 text-sm font-display font-bold text-purple-accent group-hover:translate-x-1 transition-transform">
+                      Datums doorgeven
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* OPTIE B: VERKORT FORMULIER VOOR WIE ZICH AL HEEFT INGESCHREVEN */}
+            {registrationMode === 'returning' && (
+              <div className="animate-fadeIn">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRegistrationMode('choice');
+                      setFormErrors({});
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-charcoal/15 text-xs sm:text-sm font-medium text-charcoal hover:bg-gray-50 transition-all shadow-2xs"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Terug naar keuze
+                  </button>
+
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-lavender/60 text-purple-accent text-xs font-semibold">
+                    <User className="w-3.5 h-3.5" />
+                    Ik heb me al ingeschreven
+                  </span>
+                </div>
+
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-2">
+                    Ik heb me al ingeschreven
+                  </h3>
+                  <p className="text-sm sm:text-base text-charcoal/65">
+                    Vul je voor- en achternaam in en duid zoveel mogelijk openstaande datums aan waarop je kan.
+                  </p>
+                </div>
+
+                <form onSubmit={handleReturningSubmit} noValidate className="space-y-6">
+                  {/* 1. Voor- en achternaam */}
+                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                        <User className="w-5 h-5 text-purple-accent" />
+                      </div>
+                      <h4 className="text-lg font-display font-bold text-charcoal">
+                        1. Voor- en achternaam
+                      </h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-charcoal mb-2">
+                        Wat is je voornaam en achternaam? *
+                      </label>
+                      <input
+                        type="text"
+                        name="naam"
+                        value={formData.naam}
+                        onChange={handleTextChange}
+                        required
+                        className={`w-full px-4 py-3.5 bg-gray-50 rounded-xl border outline-none transition-all ${
+                          getFieldError('naam')
+                            ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                            : 'border-charcoal/10 focus:border-purple-accent focus:ring-2 focus:ring-purple-accent/20'
+                        }`}
+                        placeholder="bv. Laura Janssens"
+                      />
+                      {getFieldError('naam') && (
+                        <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {getFieldError('naam')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 2. Datums dat ze kunnen */}
+                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                        <Compass className="w-5 h-5 text-purple-accent" />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-display font-bold text-charcoal">
+                          2. Welke datums kan je? *
+                        </h4>
+                        <p className="text-xs sm:text-sm text-charcoal/60">
+                          Duid zoveel mogelijk openstaande datums aan waarin je beschikbaar bent.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 shrink-0 text-amber-700" />
+                      <span>
+                        Duid zoveel mogelijk datums aan die voor jou passen — hoe meer datums je aanduidt, hoe groter de kans op een passende match!
+                      </span>
+                    </div>
+
+                    <div
+                      data-field="beschikbaarheid"
+                      className={`p-1 rounded-2xl ${
+                        getFieldError('beschikbaarheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''
+                      }`}
+                    >
+                      <CalendarDatePicker
+                        selectedDates={formData.beschikbaarheid}
+                        onChange={(dates) => {
+                          setFormData((prev) => ({ ...prev, beschikbaarheid: dates }));
+                          if (formErrors.beschikbaarheid) {
+                            setFormErrors((prev) => {
+                              const newErrors = { ...prev };
+                              delete newErrors.beschikbaarheid;
+                              return newErrors;
+                            });
+                          }
+                        }}
+                        error={getFieldError('beschikbaarheid')}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 3. Locatie (Optioneel - Enkel voor ex-deelnemers) */}
+                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-mint rounded-xl flex items-center justify-center">
+                          <Compass className="w-5 h-5 text-[#1F4E37]" />
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-lg font-display font-bold text-charcoal">
+                              3. Locatie
+                            </h4>
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#1F4E37] text-mint text-xs font-semibold">
+                              Enkel voor ex-deelnemers
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-charcoal/70 text-xs font-medium">
+                              Optioneel
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {formData.expeditieVoorkeur && (
+                        <button
+                          type="button"
+                          onClick={() => handleRadioChange('expeditieVoorkeur', '')}
+                          className="text-xs font-medium text-charcoal/50 hover:text-charcoal underline"
+                        >
+                          Keuze wissen
+                        </button>
+                      )}
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-charcoal/65 mb-4">
+                      Deze vraag is <strong>optioneel</strong> en <strong>enkel voor ex-deelnemers</strong> die al eerder op PlotTwist-expeditie zijn geweest.
+                    </p>
+
+                    <div className="space-y-3">
+                      {returningExpeditieOptions.map((option) => {
+                        const isSelected = formData.expeditieVoorkeur === option.value;
+                        const isInfoOpen = !!openReturningMoreInfo[option.value] || isSelected;
+
+                        return (
+                          <div
+                            key={option.value}
+                            className={`rounded-2xl border transition-all ${
+                              isSelected
+                                ? 'ring-2 ring-purple-accent border-purple-accent bg-purple-accent/5'
+                                : 'border-charcoal/10 bg-gray-50 hover:bg-purple-accent/5'
+                            }`}
+                          >
+                            <div className="p-4 flex items-center justify-between gap-3">
+                              <label className="flex items-center gap-3 cursor-pointer flex-1">
+                                <input
+                                  type="radio"
+                                  name="returningExpeditieVoorkeur"
+                                  value={option.value}
+                                  checked={isSelected}
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      handleRadioChange('expeditieVoorkeur', '');
+                                    }
+                                  }}
+                                  onChange={() => {
+                                    handleRadioChange('expeditieVoorkeur', option.value);
+                                    if (option.moreInfo) {
+                                      setOpenReturningMoreInfo((prev) => ({
+                                        ...prev,
+                                        [option.value]: true,
+                                      }));
+                                    }
+                                  }}
+                                  className="w-5 h-5 text-purple-accent shrink-0"
+                                />
+                                <span
+                                  className={`text-sm sm:text-base ${
+                                    isSelected
+                                      ? 'font-semibold text-purple-accent'
+                                      : 'font-medium text-charcoal'
+                                  }`}
+                                >
+                                  {option.label}
+                                </span>
+                              </label>
+
+                              {option.moreInfo && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpenReturningMoreInfo((prev) => ({
+                                      ...prev,
+                                      [option.value]: !isInfoOpen,
+                                    }));
+                                  }}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-purple-accent/25 text-xs font-semibold text-purple-accent hover:bg-lavender/40 transition-colors shrink-0"
+                                >
+                                  <Info className="w-3.5 h-3.5" />
+                                  <span>Meer info</span>
+                                  <ChevronDown
+                                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                                      isInfoOpen ? 'rotate-180' : ''
+                                    }`}
+                                  />
+                                </button>
+                              )}
+                            </div>
+
+                            {option.moreInfo && isInfoOpen && (
+                              <div className="px-4 pb-4 pt-0">
+                                <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200 text-xs sm:text-sm text-amber-950 flex items-start gap-2.5 leading-relaxed">
+                                  <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                                  <span>{option.moreInfo}</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Foutmelding & Verstuur knop */}
+                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5 space-y-4">
+                    {isError && error && (
+                      <div className="p-4 bg-red-50 rounded-2xl border border-red-200 text-sm text-red-700 flex items-start gap-2.5">
+                        <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold">Er ging iets mis bij het versturen:</p>
+                          <p className="mt-0.5 text-xs text-red-600">{error}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-white font-display font-bold text-lg rounded-2xl hover:bg-charcoal/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Bezig met verzenden...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          Verstuur inschrijving
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* OPTIE A: VOLLEDIG FORMULIER VOOR NIEUWE DEELNEMERS */}
+            {registrationMode === 'new' && (
+            <>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setRegistrationMode('choice');
+                  setFormErrors({});
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-charcoal/15 text-xs sm:text-sm font-medium text-charcoal hover:bg-gray-50 transition-all shadow-2xs"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Terug naar keuze
+              </button>
+
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-mint text-[#1F4E37] text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5" />
+                Eerste keer inschrijven
+              </span>
+            </div>
+
             {/* Form Header */}
             <div className="text-center mb-6">
               <h3 className="text-2xl md:text-3xl font-display font-bold text-charcoal mb-4">
@@ -1989,6 +2417,8 @@ export default function ContactAndSignup() {
               </>
               )}
             </form>
+            </>
+            )}
           </div>
         </div>
         )}

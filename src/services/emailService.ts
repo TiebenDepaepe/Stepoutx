@@ -55,6 +55,18 @@ Founder PlotTwist Travel`;
  * Genereert het overzicht voor de melding naar daria@stepoutx.com.
  */
 function buildAdminNotificationMessage(params: ConfirmationEmailParams): string {
+  if (!params.email.trim()) {
+    return `Hey Daria,
+
+Er is net een herinschrijving / datum-update ("Ik heb me al ingeschreven") binnengekomen voor PlotTwist!
+
+Naam: ${params.naam}
+Beschikbaarheid: ${params.beschikbaarheid.join(', ')}
+Locatievoorkeur (ex-deelnemer): ${params.expeditieVoorkeur || 'Niet ingevuld (geen ex-deelnemer / geen voorkeur)'}
+
+Bekijk alle inschrijvingen in het Admin Dashboard op de website.`;
+  }
+
   return `Hey Daria,
 
 Er is net een nieuwe inschrijving binnengekomen voor PlotTwist!
@@ -113,25 +125,31 @@ export async function sendRegistrationConfirmationEmail(
   const adminMessage = buildAdminNotificationMessage(params);
 
   try {
-    await Promise.allSettled([
-      // 1. Bevestigingsmail naar het e-mailadres dat in Deel 1 (vraag 5) is ingevuld
-      sendEmailJS({
-        to_email: recipientEmail,
-        email: recipientEmail,
-        user_email: recipientEmail,
-        recipient: recipientEmail,
-        to_name: params.naam,
-        name: params.naam,
-        user_name: params.naam,
-        voornaam,
-        Voornaam: voornaam,
-        from_name: 'PlotTwist Travel',
-        reply_to: ADMIN_NOTIFICATION_EMAIL,
-        subject: 'YESSS, je hebt je aangemeld voor PlotTwist!',
-        message: participantMessage,
-      }),
+    const emailTasks: Promise<void>[] = [];
 
-      // 2. Melding naar daria@stepoutx.com
+    if (recipientEmail) {
+      // 1. Bevestigingsmail naar het e-mailadres dat in Deel 1 (vraag 5) is ingevuld
+      emailTasks.push(
+        sendEmailJS({
+          to_email: recipientEmail,
+          email: recipientEmail,
+          user_email: recipientEmail,
+          recipient: recipientEmail,
+          to_name: params.naam,
+          name: params.naam,
+          user_name: params.naam,
+          voornaam,
+          Voornaam: voornaam,
+          from_name: 'PlotTwist Travel',
+          reply_to: ADMIN_NOTIFICATION_EMAIL,
+          subject: 'YESSS, je hebt je aangemeld voor PlotTwist!',
+          message: participantMessage,
+        })
+      );
+    }
+
+    // 2. Melding naar daria@stepoutx.com
+    emailTasks.push(
       sendEmailJS({
         to_email: ADMIN_NOTIFICATION_EMAIL,
         email: ADMIN_NOTIFICATION_EMAIL,
@@ -143,11 +161,15 @@ export async function sendRegistrationConfirmationEmail(
         voornaam: 'Daria',
         Voornaam: 'Daria',
         from_name: params.naam,
-        reply_to: recipientEmail,
-        subject: `Nieuwe PlotTwist inschrijving: ${params.naam}`,
+        reply_to: recipientEmail || ADMIN_NOTIFICATION_EMAIL,
+        subject: recipientEmail
+          ? `Nieuwe PlotTwist inschrijving: ${params.naam}`
+          : `PlotTwist datum-update (al ingeschreven): ${params.naam}`,
         message: adminMessage,
-      }),
-    ]);
+      })
+    );
+
+    await Promise.allSettled(emailTasks);
   } catch (err) {
     console.warn('Fout bij versturen automatische e-mails:', err);
   }

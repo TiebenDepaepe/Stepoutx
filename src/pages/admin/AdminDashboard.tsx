@@ -452,7 +452,9 @@ export default function AdminDashboard() {
         ) : (
           <div className="h-[calc(100vh-64px)]">
             <EmailList
-              inschrijvingEmails={inschrijvingen.map(i => ({ email: i.email, created_at: i.created_at }))}
+              inschrijvingEmails={inschrijvingen
+                .filter(i => i.email && i.email.trim().length > 0)
+                .map(i => ({ email: i.email, created_at: i.created_at }))}
               nieuwsbriefEmails={nieuwsbriefEmails}
               isLoading={isLoadingEmails || isLoading}
             />

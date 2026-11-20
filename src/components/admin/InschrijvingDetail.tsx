@@ -179,10 +179,18 @@ export function InschrijvingDetail({
               </h2>
               <p className="text-gray-soft text-sm">
                 Ingeschreven op {format(new Date(inschrijving.created_at), 'd MMMM yyyy', { locale: nl })}
-                <span className="mx-2">•</span>
-                {inschrijving.leeftijd} jaar
-                <span className="mx-2">•</span>
-                {inschrijving.woonplaats}
+                {inschrijving.leeftijd != null && (
+                  <>
+                    <span className="mx-2">•</span>
+                    {inschrijving.leeftijd} jaar
+                  </>
+                )}
+                {inschrijving.woonplaats && (
+                  <>
+                    <span className="mx-2">•</span>
+                    {inschrijving.woonplaats}
+                  </>
+                )}
               </p>
             </div>
           </div>

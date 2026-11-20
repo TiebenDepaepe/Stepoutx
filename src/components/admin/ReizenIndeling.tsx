@@ -68,9 +68,18 @@ const CHRONOLOGICAL_WEEKS = [
 
 const TEST_EMAILS = new Set(['kenisdaria1@gmail.com', 'kenisdaria@gmail.com']);
 
-function getPersonKey(item: Inschrijving): string {
+function normalizePersonName(naam?: string | null): string {
+  return (naam || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function getPersonKey(item: Inschrijving, nameToEmailKey?: Map<string, string>): string {
   const email = (item.email || '').trim().toLowerCase();
   if (email) return `email:${email}`;
+  const normName = normalizePersonName(item.naam);
+  if (normName && nameToEmailKey?.has(normName)) {
+    return nameToEmailKey.get(normName)!;
+  }
+  if (normName) return `naam:${normName}`;
   return `id:${item.id}`;
 }
 
@@ -163,36 +172,95 @@ export function ReizenIndeling({
     });
   }, [inschrijvingen, dateScope]);
 
+  // Map normalized name -> canonical email key and full profile from ALL inschrijvingen
+  // so "Ik heb me al ingeschreven" submissions (which only have naam + datums + optional locatie)
+  // automatically link to the person's existing profile if one exists in the database.
+  const { nameToEmailKey, fullProfileByName } = useMemo(() => {
+    const emailKeyMap = new Map<string, string>();
+    const profileMap = new Map<string, Inschrijving>();
+
+    for (const item of inschrijvingen) {
+      const emailLower = (item.email || '').trim().toLowerCase();
+      if (TEST_EMAILS.has(emailLower)) continue;
+      const normName = normalizePersonName(item.naam);
+      if (!normName) continue;
+
+      if (emailLower) {
+        if (!emailKeyMap.has(normName)) {
+          emailKeyMap.set(normName, `email:${emailLower}`);
+        }
+        if (!profileMap.has(normName)) {
+          profileMap.set(normName, item);
+        }
+      }
+    }
+
+    return { nameToEmailKey: emailKeyMap, fullProfileByName: profileMap };
+  }, [inschrijvingen]);
+
   // 2. Groepeer per unieke persoon
   const persons = useMemo<DeduplicatedPerson[]>(() => {
     const map = new Map<string, DeduplicatedPerson>();
 
     for (const item of scopedInschrijvingen) {
-      const key = getPersonKey(item);
+      const key = getPersonKey(item, nameToEmailKey);
       const existing = map.get(key);
       const cleanWeeks = Array.from(
         new Set((item.beschikbaarheid || []).map((w) => w.trim()).filter(Boolean))
       );
+      const isShortReturningRow = !(item.email || '').trim();
+      const normName = normalizePersonName(item.naam);
+      const fallbackProfile = isShortReturningRow && normName ? fullProfileByName.get(normName) : undefined;
+
+      // Als dit een "Ik heb me al ingeschreven" rij is en we hebben een ouder volledig profiel,
+      // vul dan de profielgegevens aan maar behoud de nieuw doorgegeven datums & locatievoorkeur.
+      const enrichedPrimary: Inschrijving = fallbackProfile
+        ? {
+            ...fallbackProfile,
+            id: item.id,
+            beschikbaarheid: item.beschikbaarheid,
+            expeditie_voorkeur: item.expeditie_voorkeur || fallbackProfile.expeditie_voorkeur,
+            toegewezen_reis: item.toegewezen_reis || fallbackProfile.toegewezen_reis,
+            wachtrij_reis: item.wachtrij_reis || fallbackProfile.wachtrij_reis,
+            beoordeling_kleur: item.beoordeling_kleur || fallbackProfile.beoordeling_kleur,
+            notities: item.notities || fallbackProfile.notities,
+          }
+        : item;
 
       if (!existing) {
         map.set(key, {
-          primary: item,
-          allIds: [item.id],
+          primary: enrichedPrimary,
+          allIds: fallbackProfile && fallbackProfile.id !== item.id ? [item.id, fallbackProfile.id] : [item.id],
           allBeschikbaarheid: cleanWeeks,
-          toegewezenReis: item.toegewezen_reis || null,
-          wachtrijReis: item.wachtrij_reis || null,
-          beoordelingKleur: item.beoordeling_kleur || null,
-          notities: item.notities || '',
-          hasVideo: !!item.video_url,
+          toegewezenReis: enrichedPrimary.toegewezen_reis || null,
+          wachtrijReis: enrichedPrimary.wachtrij_reis || null,
+          beoordelingKleur: enrichedPrimary.beoordeling_kleur || null,
+          notities: enrichedPrimary.notities || '',
+          hasVideo: !!enrichedPrimary.video_url,
           duplicateCount: 1,
         });
       } else {
-        existing.allIds.push(item.id);
+        if (!existing.allIds.includes(item.id)) {
+          existing.allIds.push(item.id);
+        }
         existing.duplicateCount += 1;
         for (const w of cleanWeeks) {
           if (!existing.allBeschikbaarheid.includes(w)) {
             existing.allBeschikbaarheid.push(w);
           }
+        }
+        // Als existing.primary uit het korte formulier kwam (geen email) en deze rij heeft wel het volledige formulier,
+        // gebruik dan het volledige formulier als primary (met behoud van nieuwe locatievoorkeur indien ingevuld).
+        if (!(existing.primary.email || '').trim() && (item.email || '').trim()) {
+          existing.primary = {
+            ...item,
+            expeditie_voorkeur: existing.primary.expeditie_voorkeur || item.expeditie_voorkeur,
+          };
+        } else if (!existing.primary.expeditie_voorkeur && item.expeditie_voorkeur) {
+          existing.primary = {
+            ...existing.primary,
+            expeditie_voorkeur: item.expeditie_voorkeur,
+          };
         }
         if (!existing.toegewezenReis && item.toegewezen_reis) {
           existing.toegewezenReis = item.toegewezen_reis;
@@ -216,15 +284,17 @@ export function ReizenIndeling({
     }
 
     return Array.from(map.values());
-  }, [scopedInschrijvingen]);
+  }, [scopedInschrijvingen, nameToEmailKey, fullProfileByName]);
 
   // 3. Filter op bestemming & zoekterm
   const matchesFilter = (person: DeduplicatedPerson): boolean => {
     const item = person.primary;
+    const prefLower = (item.expeditie_voorkeur || '').toLowerCase();
+    const isGeenVoorkeur = !prefLower || prefLower.includes('geen voorkeur') || prefLower.includes('aan jou');
     if (destinationFilter === 'nl_de') {
-      if (!(item.expeditie_voorkeur || '').toLowerCase().includes('nederland')) return false;
+      if (!prefLower.includes('nederland') && !isGeenVoorkeur) return false;
     } else if (destinationFilter === 'it') {
-      if (!(item.expeditie_voorkeur || '').toLowerCase().includes('itali')) return false;
+      if (!prefLower.includes('itali') && !isGeenVoorkeur) return false;
     }
 
     if (searchQuery.trim()) {
@@ -510,6 +580,37 @@ export function ReizenIndeling({
 
     onNotesChange(person.allIds, textToSave);
     setOpenNoteEditors((prev) => ({ ...prev, [key]: false }));
+  };
+
+  const renderDestinationBadge = (voorkeur?: string | null, small = false) => {
+    const lower = (voorkeur || '').toLowerCase();
+    const sizeClass = small ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]';
+    if (lower.includes('itali')) {
+      return (
+        <span className={`${sizeClass} rounded-full font-semibold shrink-0 bg-amber-100 text-amber-900`}>
+          🇮🇹 Italië
+        </span>
+      );
+    }
+    if (lower.includes('nederland')) {
+      return (
+        <span className={`${sizeClass} rounded-full font-semibold shrink-0 bg-sky-100 text-sky-900`}>
+          🇳🇱🇩🇪 NL / DE
+        </span>
+      );
+    }
+    if (lower.includes('geen voorkeur') || lower.includes('aan jou')) {
+      return (
+        <span className={`${sizeClass} rounded-full font-semibold shrink-0 bg-purple-100 text-purple-900`}>
+          🌍 Geen voorkeur
+        </span>
+      );
+    }
+    return (
+      <span className={`${sizeClass} rounded-full font-semibold shrink-0 bg-gray-100 text-gray-700`}>
+        🔄 Al ingeschreven
+      </span>
+    );
   };
 
   /**
@@ -980,9 +1081,6 @@ export function ReizenIndeling({
                               const item = person.primary;
                               const key = getPersonKey(item);
                               const isRemoving = removingPersonKey === key;
-                              const isItalie = (item.expeditie_voorkeur || '')
-                                .toLowerCase()
-                                .includes('itali');
 
                               return (
                                 <div
@@ -1012,15 +1110,7 @@ export function ReizenIndeling({
                                         </div>
                                       </div>
 
-                                      <span
-                                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 ${
-                                          isItalie
-                                            ? 'bg-amber-100 text-amber-900'
-                                            : 'bg-sky-100 text-sky-900'
-                                        }`}
-                                      >
-                                        {isItalie ? '🇮🇹 Italië' : '🇳🇱🇩🇪 NL / DE'}
-                                      </span>
+                                      {renderDestinationBadge(item.expeditie_voorkeur)}
                                     </div>
 
                                     {/* Persoonlijkheid & vrienden-check */}
@@ -1124,9 +1214,6 @@ export function ReizenIndeling({
                               const item = person.primary;
                               const key = getPersonKey(item);
                               const isBusy = removingPersonKey === key;
-                              const isItalie = (item.expeditie_voorkeur || '')
-                                .toLowerCase()
-                                .includes('itali');
 
                               return (
                                 <div
@@ -1156,15 +1243,7 @@ export function ReizenIndeling({
                                         </div>
                                       </div>
 
-                                      <span
-                                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 ${
-                                          isItalie
-                                            ? 'bg-amber-100 text-amber-900'
-                                            : 'bg-sky-100 text-sky-900'
-                                        }`}
-                                      >
-                                        {isItalie ? '🇮🇹 Italië' : '🇳🇱🇩🇪 NL / DE'}
-                                      </span>
+                                      {renderDestinationBadge(item.expeditie_voorkeur)}
                                     </div>
 
                                     {renderNoteArea(person)}
@@ -1315,9 +1394,6 @@ export function ReizenIndeling({
                               const item = person.primary;
                               const key = getPersonKey(item);
                               const isChecked = selectedSet.has(key);
-                              const isItalie = (item.expeditie_voorkeur || '')
-                                .toLowerCase()
-                                .includes('itali');
                               const otherWeeks = person.allBeschikbaarheid.filter(
                                 (w) => w !== week
                               );
@@ -1367,15 +1443,7 @@ export function ReizenIndeling({
                                             {renderColorDots(person)}
                                           </div>
 
-                                          <span
-                                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${
-                                              isItalie
-                                                ? 'bg-amber-100 text-amber-900'
-                                                : 'bg-sky-100 text-sky-900'
-                                            }`}
-                                          >
-                                            {isItalie ? '🇮🇹 Italië' : '🇳🇱🇩🇪 NL / DE'}
-                                          </span>
+                                          {renderDestinationBadge(item.expeditie_voorkeur, true)}
                                         </div>
 
                                         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-soft mt-0.5">
