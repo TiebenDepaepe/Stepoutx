@@ -475,6 +475,31 @@ export function ReizenIndeling({
     });
   }, [allWeeks, persons, begeleiders, destinationFilter, searchQuery]);
 
+  // Lijst van alle mogelijke reis-bestemmingen (alle datums + eventuele Reis 2 / Reis 3 slots) om iemand naar te verplaatsen
+  const allMoveTargetSlots = useMemo(() => {
+    const slotMap = new Map<string, { tripKey: string; baseWeek: string; label: string; count: number }>();
+
+    for (const w of CHRONOLOGICAL_WEEKS) {
+      slotMap.set(w, { tripKey: w, baseWeek: w, label: w, count: 0 });
+    }
+    for (const bucket of weekBuckets) {
+      for (const slot of bucket.tripSlots) {
+        const label =
+          bucket.tripSlots.length > 1
+            ? `${bucket.week} — Reis ${slot.tripNumber}`
+            : bucket.week;
+        slotMap.set(slot.tripKey, {
+          tripKey: slot.tripKey,
+          baseWeek: bucket.week,
+          label,
+          count: slot.assigned.length,
+        });
+      }
+    }
+
+    return Array.from(slotMap.values());
+  }, [weekBuckets]);
+
   const totalAssignedCount = useMemo(
     () => persons.filter((p) => !!p.toegewezenReis).length,
     [persons]
@@ -1445,6 +1470,66 @@ export function ReizenIndeling({
                                                 Naar Reis {other.tripNumber}
                                               </button>
                                             ))}
+
+                                            {/* Dropdown om deelnemer te verplaatsen naar een andere datum/reis */}
+                                            <div className="relative inline-flex items-center">
+                                              <ArrowRightLeft className="w-3 h-3 text-[#1F4E37] absolute left-2.5 pointer-events-none" />
+                                              <select
+                                                disabled={isRemoving}
+                                                value=""
+                                                onChange={(e) => {
+                                                  const targetKey = e.target.value;
+                                                  if (targetKey) {
+                                                    handleMovePersonToTrip(person, targetKey);
+                                                  }
+                                                }}
+                                                aria-label={`Verplaats ${item.naam} naar een andere datum`}
+                                                className="pl-7 pr-6 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[#1F4E37] text-xs font-semibold transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-[#1F4E37]/30 disabled:opacity-50 max-w-[185px] truncate"
+                                              >
+                                                <option value="" disabled>
+                                                  Verplaats naar datum...
+                                                </option>
+                                                {(() => {
+                                                  const availableTargets = allMoveTargetSlots.filter(
+                                                    (t) =>
+                                                      t.tripKey !== tripKey &&
+                                                      person.allBeschikbaarheid
+                                                        .map((w) => getBaseWeek(w))
+                                                        .includes(t.baseWeek)
+                                                  );
+                                                  const otherTargets = allMoveTargetSlots.filter(
+                                                    (t) =>
+                                                      t.tripKey !== tripKey &&
+                                                      !person.allBeschikbaarheid
+                                                        .map((w) => getBaseWeek(w))
+                                                        .includes(t.baseWeek)
+                                                  );
+
+                                                  return (
+                                                    <>
+                                                      {availableTargets.length > 0 && (
+                                                        <optgroup label="✓ Beschikbare datums van deelnemer">
+                                                          {availableTargets.map((t) => (
+                                                            <option key={t.tripKey} value={t.tripKey}>
+                                                              ★ {t.label} ({t.count} in reis)
+                                                            </option>
+                                                          ))}
+                                                        </optgroup>
+                                                      )}
+                                                      {otherTargets.length > 0 && (
+                                                        <optgroup label="Alle overige datums">
+                                                          {otherTargets.map((t) => (
+                                                            <option key={t.tripKey} value={t.tripKey}>
+                                                              {t.label} ({t.count} in reis)
+                                                            </option>
+                                                          ))}
+                                                        </optgroup>
+                                                      )}
+                                                    </>
+                                                  );
+                                                })()}
+                                              </select>
+                                            </div>
 
                                             <button
                                               type="button"
