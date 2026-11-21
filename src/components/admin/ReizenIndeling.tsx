@@ -7,6 +7,7 @@ import {
   updateInschrijvingenNotitiesBulk,
   getAllReisBegeleiders,
   saveReisBegeleider,
+  deleteReisBegeleider,
 } from '@/services/inschrijvingenService';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,9 @@ import {
   Loader2,
   Save,
   Video,
+  Plus,
+  Trash2,
+  ArrowRightLeft,
 } from 'lucide-react';
 
 interface ReizenIndelingProps {
@@ -70,6 +74,35 @@ const TEST_EMAILS = new Set(['kenisdaria1@gmail.com', 'kenisdaria@gmail.com']);
 
 function normalizePersonName(naam?: string | null): string {
   return (naam || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/**
+ * Haalt de basis-weekdatum uit een toegewezen_reis sleutel.
+ * Voorbeeld: "20 - 25 juni (Reis 2)" -> "20 - 25 juni"
+ */
+function getBaseWeek(reisKey: string): string {
+  return reisKey.replace(/\s*\(Reis\s+\d+\)$/i, '').trim();
+}
+
+/**
+ * Geeft het reisnummer terug (1 voor "20 - 25 juni", 2 voor "20 - 25 juni (Reis 2)", enz.)
+ */
+function getTripNumber(reisKey: string): number {
+  const match = reisKey.match(/\(Reis\s+(\d+)\)$/i);
+  return match ? parseInt(match[1], 10) : 1;
+}
+
+/**
+ * Bouwt de database-sleutel voor een specifieke reis binnen een datum/week.
+ */
+function makeTripKey(baseWeek: string, tripNumber: number): string {
+  return tripNumber <= 1 ? baseWeek : `${baseWeek} (Reis ${tripNumber})`;
+}
+
+export interface TripSlot {
+  tripKey: string;
+  tripNumber: number;
+  assigned: DeduplicatedPerson[];
 }
 
 function getPersonKey(item: Inschrijving, nameToEmailKey?: Map<string, string>): string {
@@ -137,13 +170,13 @@ export function ReizenIndeling({
     });
   }, []);
 
-  const handleSaveBegeleider = async (week: string) => {
-    const draft = (begeleiderDrafts[week] ?? '').trim();
-    const current = (begeleiders[week] ?? '').trim();
-    if (draft === current) return;
+  const handleSaveBegeleider = async (tripKey: string) => {
+    const draft = (begeleiderDrafts[tripKey] ?? '').trim();
+    const current = (begeleiders[tripKey] ?? '').trim();
+    if (draft === current && Object.prototype.hasOwnProperty.call(begeleiders, tripKey)) return;
 
-    setSavingBegeleiderWeek(week);
-    const { success, error } = await saveReisBegeleider(week, draft);
+    setSavingBegeleiderWeek(tripKey);
+    const { success, error } = await saveReisBegeleider(tripKey, draft);
     setSavingBegeleiderWeek(null);
 
     if (!success) {
@@ -151,12 +184,62 @@ export function ReizenIndeling({
       return;
     }
 
-    setBegeleiders((prev) => ({ ...prev, [week]: draft }));
-    setBegeleiderDrafts((prev) => ({ ...prev, [week]: draft }));
-    setSavedBegeleiderWeek(week);
+    setBegeleiders((prev) => ({ ...prev, [tripKey]: draft }));
+    setBegeleiderDrafts((prev) => ({ ...prev, [tripKey]: draft }));
+    setSavedBegeleiderWeek(tripKey);
     setTimeout(() => {
-      setSavedBegeleiderWeek((prev) => (prev === week ? null : prev));
+      setSavedBegeleiderWeek((prev) => (prev === tripKey ? null : prev));
     }, 2000);
+  };
+
+  /**
+   * Maakt een tweede (of extra) reis aan voor dezelfde datum en slaat deze direct op in de database.
+   */
+  const handleCreateExtraTripForWeek = async (baseWeek: string, currentMaxTripNum: number) => {
+    const nextTripNum = currentMaxTripNum + 1;
+    const newTripKey = makeTripKey(baseWeek, nextTripNum);
+
+    setSavingBegeleiderWeek(newTripKey);
+    setErrorMsg(null);
+
+    const { success, error } = await saveReisBegeleider(newTripKey, '');
+    setSavingBegeleiderWeek(null);
+
+    if (!success) {
+      setErrorMsg(error?.message || 'Kon tweede reis niet aanmaken in de database.');
+      return;
+    }
+
+    setBegeleiders((prev) => ({ ...prev, [newTripKey]: '' }));
+    setBegeleiderDrafts((prev) => ({ ...prev, [newTripKey]: '' }));
+    setExpandedWeeks((prev) => ({ ...prev, [baseWeek]: true }));
+  };
+
+  /**
+   * Verwijdert een lege extra reis (Reis 2, Reis 3...) uit de database.
+   */
+  const handleDeleteExtraTrip = async (tripKey: string) => {
+    setSavingBegeleiderWeek(tripKey);
+    setErrorMsg(null);
+
+    const { success, error } = await deleteReisBegeleider(tripKey);
+    setSavingBegeleiderWeek(null);
+
+    if (!success) {
+      setErrorMsg(error?.message || 'Kon extra reis niet verwijderen.');
+      return;
+    }
+
+    setBegeleiders((prev) => {
+      const next = { ...prev };
+      delete next[tripKey];
+      return next;
+    });
+    setBegeleiderDrafts((prev) => {
+      const next = { ...prev };
+      delete next[tripKey];
+      return next;
+    });
   };
 
   // 1. Filter inschrijvingen op periode (vanaf 7 november vs allemaal) en sluit test-inschrijvingen uit
@@ -313,26 +396,30 @@ export function ReizenIndeling({
     const presentWeeks = new Set<string>();
     for (const p of persons) {
       for (const w of p.allBeschikbaarheid) {
-        presentWeeks.add(w);
+        presentWeeks.add(getBaseWeek(w));
       }
       if (p.toegewezenReis) {
-        presentWeeks.add(p.toegewezenReis);
+        presentWeeks.add(getBaseWeek(p.toegewezenReis));
       }
       if (p.wachtrijReis) {
-        presentWeeks.add(p.wachtrijReis);
+        presentWeeks.add(getBaseWeek(p.wachtrijReis));
       }
+    }
+    for (const key of Object.keys(begeleiders)) {
+      presentWeeks.add(getBaseWeek(key));
     }
 
     const ordered = CHRONOLOGICAL_WEEKS.filter((w) => presentWeeks.has(w));
     const extra = Array.from(presentWeeks).filter((w) => !CHRONOLOGICAL_WEEKS.includes(w));
     return [...ordered, ...extra];
-  }, [persons]);
+  }, [persons, begeleiders]);
 
   // 5. Bouw de data per week op:
-  // - assigned: personen definitief toegewezen aan DEZE week
-  // - waitlisted: personen op de wachtrij voor DEZE week
-  // - available: personen beschikbaar voor deze week die nog niet zijn toegewezen en niet op de wachtrij staan
-  // - assignedElsewhere: personen beschikbaar voor deze week die al in een andere week (of wachtrij) zitten
+  // - tripSlots: alle reizen (Reis 1, Reis 2, ...) binnen deze datum/week
+  // - assigned: alle personen definitief toegewezen aan een reis op DEZE datum
+  // - waitlisted: personen op de wachtrij voor DEZE datum
+  // - available: personen beschikbaar voor deze datum die nog niet zijn toegewezen en niet op de wachtrij staan
+  // - assignedElsewhere: personen beschikbaar voor deze datum die al op een andere datum (of wachtrij) zitten
   const weekBuckets = useMemo(() => {
     return allWeeks.map((week) => {
       const assigned: DeduplicatedPerson[] = [];
@@ -340,12 +427,23 @@ export function ReizenIndeling({
       const available: DeduplicatedPerson[] = [];
       const assignedElsewhere: DeduplicatedPerson[] = [];
 
+      // Bepaal welke reisnummers (1, 2, ...) bestaan voor deze datum
+      const tripNumbersSet = new Set<number>([1]);
+      for (const key of Object.keys(begeleiders)) {
+        if (getBaseWeek(key) === week) {
+          tripNumbersSet.add(getTripNumber(key));
+        }
+      }
+
       for (const person of persons) {
         const isAvailableThisWeek = person.allBeschikbaarheid.includes(week);
+        const assignedBaseWeek = person.toegewezenReis ? getBaseWeek(person.toegewezenReis) : null;
+        const waitlistBaseWeek = person.wachtrijReis ? getBaseWeek(person.wachtrijReis) : null;
 
-        if (person.toegewezenReis === week) {
+        if (person.toegewezenReis && assignedBaseWeek === week) {
           assigned.push(person);
-        } else if (person.wachtrijReis === week) {
+          tripNumbersSet.add(getTripNumber(person.toegewezenReis));
+        } else if (person.wachtrijReis && waitlistBaseWeek === week) {
           waitlisted.push(person);
         } else if (isAvailableThisWeek) {
           if (person.toegewezenReis || person.wachtrijReis) {
@@ -356,15 +454,26 @@ export function ReizenIndeling({
         }
       }
 
+      const sortedTripNumbers = Array.from(tripNumbersSet).sort((a, b) => a - b);
+      const tripSlots: TripSlot[] = sortedTripNumbers.map((num) => {
+        const tripKey = makeTripKey(week, num);
+        return {
+          tripKey,
+          tripNumber: num,
+          assigned: assigned.filter((p) => (p.toegewezenReis || '') === tripKey),
+        };
+      });
+
       return {
         week,
+        tripSlots,
         assigned,
         waitlisted,
         available,
         assignedElsewhere,
       };
     });
-  }, [allWeeks, persons, destinationFilter, searchQuery]);
+  }, [allWeeks, persons, begeleiders, destinationFilter, searchQuery]);
 
   const totalAssignedCount = useMemo(
     () => persons.filter((p) => !!p.toegewezenReis).length,
@@ -414,9 +523,11 @@ export function ReizenIndeling({
     });
   };
 
-  const handleConfirmAssignment = async (week: string) => {
+  const handleConfirmAssignment = async (week: string, targetTripKey?: string) => {
     const selectedKeys = selectedByWeek[week];
     if (!selectedKeys || selectedKeys.size === 0) return;
+
+    const finalTripKey = targetTripKey || week;
 
     const idsToAssign: string[] = [];
     for (const person of persons) {
@@ -428,10 +539,17 @@ export function ReizenIndeling({
 
     if (idsToAssign.length === 0) return;
 
-    setSavingWeek(week);
+    setSavingWeek(finalTripKey);
     setErrorMsg(null);
 
-    const { success, error } = await updateInschrijvingenToegewezenReis(idsToAssign, week);
+    // Als dit een tweede/extra reis is die nog niet in reis_begeleiders stond, registreer hem ook daar
+    if (getTripNumber(finalTripKey) > 1 && !Object.prototype.hasOwnProperty.call(begeleiders, finalTripKey)) {
+      await saveReisBegeleider(finalTripKey, '');
+      setBegeleiders((prev) => ({ ...prev, [finalTripKey]: '' }));
+      setBegeleiderDrafts((prev) => ({ ...prev, [finalTripKey]: '' }));
+    }
+
+    const { success, error } = await updateInschrijvingenToegewezenReis(idsToAssign, finalTripKey);
     setSavingWeek(null);
 
     if (!success) {
@@ -442,7 +560,25 @@ export function ReizenIndeling({
     }
 
     clearSelectedKeysAcrossAllWeeks(selectedKeys);
-    onAssignmentChange(idsToAssign, week);
+    onAssignmentChange(idsToAssign, finalTripKey);
+  };
+
+  const handleMovePersonToTrip = async (person: DeduplicatedPerson, targetTripKey: string) => {
+    const key = getPersonKey(person.primary);
+    setRemovingPersonKey(key);
+    setErrorMsg(null);
+
+    const { success, error } = await updateInschrijvingenToegewezenReis(person.allIds, targetTripKey);
+    setRemovingPersonKey(null);
+
+    if (!success) {
+      setErrorMsg(
+        error?.message || 'Kon de deelnemer niet verplaatsen naar de andere reis.'
+      );
+      return;
+    }
+
+    onAssignmentChange(person.allIds, targetTripKey);
   };
 
   const handleAddToWaitlist = async (week: string) => {
@@ -888,7 +1024,7 @@ export function ReizenIndeling({
 
         {/* Sneloverzicht chips per week */}
         <div className="flex flex-wrap gap-2">
-          {weekBuckets.map(({ week, assigned, waitlisted, available }) => (
+          {weekBuckets.map(({ week, tripSlots, assigned, waitlisted, available }) => (
             <button
               key={week}
               type="button"
@@ -904,6 +1040,11 @@ export function ReizenIndeling({
               }`}
             >
               <span className="font-semibold">{week}</span>
+              {tripSlots.length > 1 && (
+                <span className="px-1.5 py-0.5 rounded-md bg-[#1F4E37] text-mint text-[11px] font-bold">
+                  {tripSlots.length} reizen
+                </span>
+              )}
               {assigned.length > 0 && (
                 <span className="px-1.5 py-0.5 rounded-md bg-green-600 text-white text-[11px] font-bold">
                   {assigned.length} in reis
@@ -924,12 +1065,14 @@ export function ReizenIndeling({
         {/* Weekkaarten */}
         <div className="space-y-5">
           {weekBuckets.map(
-            ({ week, assigned, waitlisted, available, assignedElsewhere }, index) => {
+            ({ week, tripSlots, assigned, waitlisted, available, assignedElsewhere }, index) => {
               const isExpanded = isWeekExpanded(week, index);
               const selectedSet = selectedByWeek[week] || new Set<string>();
               const selectedCount = selectedSet.size;
-              const isSavingThisWeek = savingWeek === week;
+              const isSavingThisWeek = savingWeek !== null && getBaseWeek(savingWeek) === week;
               const isSavingWaitlistThisWeek = savingWaitlistWeek === week;
+              const maxTripNumber = tripSlots[tripSlots.length - 1]?.tripNumber || 1;
+              const hasMultipleTrips = tripSlots.length > 1;
 
               return (
                 <div
@@ -938,35 +1081,76 @@ export function ReizenIndeling({
                   className="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden"
                 >
                   {/* Week Header */}
-                  <button
-                    type="button"
+                  <div
                     onClick={() => toggleWeekExpanded(week)}
-                    className="w-full px-5 sm:px-7 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-white via-lavender/15 to-mint/20 hover:bg-lavender/20 transition-colors text-left border-b border-gray-100"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleWeekExpanded(week);
+                      }
+                    }}
+                    className="w-full px-5 sm:px-7 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-white via-lavender/15 to-mint/20 hover:bg-lavender/20 transition-colors text-left border-b border-gray-100 cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-2xl bg-[#1F4E37] text-mint flex items-center justify-center shrink-0 shadow-sm">
                         <Calendar className="w-5 h-5" />
                       </div>
                       <div>
-                        <h2 className="text-lg sm:text-xl font-display font-bold text-charcoal">
-                          Week: {week}
-                        </h2>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h2 className="text-lg sm:text-xl font-display font-bold text-charcoal">
+                            Week: {week}
+                          </h2>
+                          {hasMultipleTrips && (
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#1F4E37] text-mint text-xs font-bold">
+                              {tripSlots.length} reizen op deze datum
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs sm:text-sm text-gray-soft">
                           {assigned.length === 0
-                            ? 'Nog geen deelnemers toegewezen aan deze reis'
-                            : `${assigned.length} deelnemer${assigned.length === 1 ? '' : 's'} ingedeeld in deze reis`}
+                            ? 'Nog geen deelnemers toegewezen aan deze datum'
+                            : hasMultipleTrips
+                              ? tripSlots
+                                  .map((s) => `Reis ${s.tripNumber}: ${s.assigned.length} deelnemers`)
+                                  .join(' • ')
+                              : `${assigned.length} deelnemer${assigned.length === 1 ? '' : 's'} ingedeeld in deze reis`}
                           {waitlisted.length > 0 ? ` • ${waitlisted.length} op wachtrij` : ''}
-                          {begeleiders[week] ? ` • Begeleider: ${begeleiders[week]}` : ''}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
-                      {begeleiders[week] && (
-                        <Badge className="px-3 py-1 text-xs font-semibold bg-[#1F4E37] text-mint border-[#1F4E37]">
-                          <Compass className="w-3.5 h-3.5 mr-1.5" />
-                          Begeleider: {begeleiders[week]}
-                        </Badge>
+                      <button
+                        type="button"
+                        disabled={savingBegeleiderWeek === makeTripKey(week, maxTripNumber + 1)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCreateExtraTripForWeek(week, maxTripNumber);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-mint text-xs font-display font-bold transition-all shadow-2xs shrink-0 disabled:opacity-50"
+                        title="Maak een extra reis aan voor dezelfde datum"
+                      >
+                        {savingBegeleiderWeek === makeTripKey(week, maxTripNumber + 1) ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Plus className="w-3.5 h-3.5" />
+                        )}
+                        {maxTripNumber === 1 ? 'Extra reis' : `+ Reis ${maxTripNumber + 1}`}
+                      </button>
+
+                      {tripSlots.map((slot) =>
+                        begeleiders[slot.tripKey] ? (
+                          <Badge
+                            key={`beg-${slot.tripKey}`}
+                            className="px-3 py-1 text-xs font-semibold bg-[#1F4E37] text-mint border-[#1F4E37]"
+                          >
+                            <Compass className="w-3.5 h-3.5 mr-1.5" />
+                            {hasMultipleTrips ? `Reis ${slot.tripNumber}: ` : 'Begeleider: '}
+                            {begeleiders[slot.tripKey]}
+                          </Badge>
+                        ) : null
                       )}
                       <Badge
                         className={`px-3 py-1 text-xs font-semibold ${
@@ -1005,193 +1189,286 @@ export function ReizenIndeling({
                         )}
                       </div>
                     </div>
-                  </button>
+                  </div>
 
                   {isExpanded && (
                     <div className="p-5 sm:p-7 space-y-8">
-                      {/* DEEL 1: TOEGEWEZEN DEELNEMERS IN DEZE REIS + BEGELEIDER */}
-                      <div className="rounded-2xl bg-green-50/50 border border-green-200/80 p-4 sm:p-5">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-4 border-b border-green-200/60">
+                      {/* DEEL 1: REIZEN VOOR DEZE DATUM (REIS 1, REIS 2, ...) + BEGELEIDER PER REIS */}
+                      <div className="space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div>
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="w-5 h-5 text-green-600" />
-                              <h3 className="text-base sm:text-lg font-display font-bold text-charcoal">
-                                Ingedeeld in deze reis ({assigned.length})
-                              </h3>
-                            </div>
-                            <span className="text-xs text-gray-soft">
-                              Deze personen zijn verborgen bij de beschikbare kandidaten van andere weken
-                            </span>
+                            <h3 className="text-sm sm:text-base font-display font-bold text-charcoal flex items-center gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-green-600" />
+                              Reizen op datum {week} ({tripSlots.length}{' '}
+                              {tripSlots.length === 1 ? 'reis' : 'reizen'})
+                            </h3>
+                            <p className="text-xs text-gray-soft">
+                              Je kan voor dezelfde datum een tweede (of extra) reis aanmaken met een eigen begeleider en deelnemers.
+                            </p>
                           </div>
 
-                          {/* Begeleider invoerveld bovenaan de selectie van deze reis */}
-                          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-green-200 shadow-2xs">
-                            <Compass className="w-4 h-4 text-[#1F4E37] shrink-0" />
-                            <span className="text-xs font-semibold text-charcoal whitespace-nowrap">
-                              Begeleider:
-                            </span>
-                            <input
-                              type="text"
-                              value={begeleiderDrafts[week] ?? ''}
-                              onChange={(e) =>
-                                setBegeleiderDrafts((prev) => ({
-                                  ...prev,
-                                  [week]: e.target.value,
-                                }))
-                              }
-                              onBlur={() => handleSaveBegeleider(week)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleSaveBegeleider(week);
-                                }
-                              }}
-                              placeholder="Typ naam begeleider..."
-                              className="text-xs sm:text-sm text-charcoal font-medium bg-transparent border-b border-transparent focus:border-[#1F4E37] outline-none px-1 py-0.5 w-36 sm:w-44"
-                            />
-                            {savingBegeleiderWeek === week ? (
-                              <Loader2 className="w-3.5 h-3.5 text-[#1F4E37] animate-spin shrink-0" />
-                            ) : savedBegeleiderWeek === week ? (
-                              <span className="text-[11px] text-green-700 font-semibold flex items-center gap-0.5 shrink-0">
-                                <Check className="w-3.5 h-3.5" />
-                                Opgeslagen
-                              </span>
+                          <button
+                            type="button"
+                            disabled={savingBegeleiderWeek === makeTripKey(week, maxTripNumber + 1)}
+                            onClick={() => handleCreateExtraTripForWeek(week, maxTripNumber)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-mint text-xs sm:text-sm font-display font-bold transition-all shadow-xs shrink-0 disabled:opacity-50"
+                          >
+                            {savingBegeleiderWeek === makeTripKey(week, maxTripNumber + 1) ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
-                              (begeleiderDrafts[week] ?? '').trim() !==
-                                (begeleiders[week] ?? '').trim() && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleSaveBegeleider(week)}
-                                  className="px-2 py-0.5 rounded-md bg-[#1F4E37] text-white text-[11px] font-semibold hover:bg-[#1F4E37]/90 shrink-0"
-                                >
-                                  Opslaan
-                                </button>
-                              )
+                              <Plus className="w-4 h-4" />
                             )}
-                          </div>
+                            {maxTripNumber === 1
+                              ? 'Tweede reis maken voor deze datum'
+                              : `Reis ${maxTripNumber + 1} maken voor deze datum`}
+                          </button>
                         </div>
 
-                        {assigned.length === 0 ? (
-                          <p className="text-sm text-gray-soft italic py-2">
-                            Nog niemand toegewezen aan {week}. Vink hieronder beschikbare kandidaten aan en klik op &ldquo;Bevestig plaatsing&rdquo;.
-                          </p>
-                        ) : (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {assigned.map((person) => {
-                              const item = person.primary;
-                              const key = getPersonKey(item);
-                              const isRemoving = removingPersonKey === key;
+                        {tripSlots.map((slot) => {
+                          const { tripKey, tripNumber } = slot;
+                          const slotAssigned = slot.assigned;
+                          const otherSlots = tripSlots.filter((s) => s.tripKey !== tripKey);
 
-                              return (
-                                <div
-                                  key={key}
-                                  className="bg-white rounded-2xl p-4 border border-green-200 shadow-xs flex flex-col justify-between gap-3"
-                                >
-                                  <div>
-                                    <div className="flex items-start justify-between gap-3">
-                                      <div className="min-w-0">
-                                        <div className="flex items-center gap-2">
-                                          <button
-                                            type="button"
-                                            onClick={() => onOpenDetail(item)}
-                                            className="text-left font-display font-bold text-charcoal hover:text-purple-accent hover:underline text-base inline-flex items-center gap-1.5 group truncate"
-                                          >
-                                            <span className="truncate">{item.naam}</span>
-                                          </button>
-                                          {renderColorDots(person)}
-                                        </div>
-                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-soft mt-0.5">
-                                          {item.leeftijd && <span>{item.leeftijd} jaar</span>}
-                                          {item.woonplaats && (
-                                            <span className="inline-flex items-center gap-0.5">
-                                              • <MapPin className="w-3 h-3" /> {item.woonplaats}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      {renderDestinationBadge(item.expeditie_voorkeur)}
-                                    </div>
-
-                                    {/* Persoonlijkheid & vrienden-check */}
-                                    <div className="flex flex-wrap gap-1.5 mt-3">
-                                      {(item.persoonlijkheid || []).map((trait) => (
-                                        <span
-                                          key={trait}
-                                          className="px-2 py-0.5 rounded-md bg-lavender/50 text-purple-accent text-[11px] font-medium"
-                                        >
-                                          {trait}
-                                        </span>
-                                      ))}
-                                      {item.km_wandelen && (
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-charcoal/70 text-[11px]">
-                                          🥾 {item.km_wandelen}
-                                        </span>
-                                      )}
-                                      {item.vrienden_ingeschreven && (
-                                        <span className="px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200 text-[11px] font-medium">
-                                          ⚠️ Vriend(in): {item.vrienden_namen || 'Ja'}
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {renderNoteArea(person)}
+                          return (
+                            <div
+                              key={tripKey}
+                              className={`rounded-2xl border p-4 sm:p-5 ${
+                                tripNumber === 1
+                                  ? 'bg-green-50/50 border-green-200/80'
+                                  : 'bg-emerald-50/60 border-emerald-300/80'
+                              }`}
+                            >
+                              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-4 border-b border-green-200/60">
+                                <div>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                    <h3 className="text-base sm:text-lg font-display font-bold text-charcoal">
+                                      {hasMultipleTrips
+                                        ? `Reis ${tripNumber} (${week}) — Ingedeeld (${slotAssigned.length})`
+                                        : `Ingedeeld in deze reis (${slotAssigned.length})`}
+                                    </h3>
+                                    {hasMultipleTrips && (
+                                      <span className="px-2.5 py-0.5 rounded-full bg-[#1F4E37] text-mint text-xs font-semibold">
+                                        Reis {tripNumber}
+                                      </span>
+                                    )}
                                   </div>
+                                  <span className="text-xs text-gray-soft">
+                                    Deze personen zijn verborgen bij de beschikbare kandidaten van andere weken
+                                  </span>
+                                </div>
 
-                                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
-                                    <div className="flex flex-wrap items-center gap-1.5">
-                                      {person.hasVideo && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {/* Begeleider invoerveld voor deze specifieke reis */}
+                                  <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-green-200 shadow-2xs">
+                                    <Compass className="w-4 h-4 text-[#1F4E37] shrink-0" />
+                                    <span className="text-xs font-semibold text-charcoal whitespace-nowrap">
+                                      Begeleider{hasMultipleTrips ? ` Reis ${tripNumber}` : ''}:
+                                    </span>
+                                    <input
+                                      type="text"
+                                      value={begeleiderDrafts[tripKey] ?? ''}
+                                      onChange={(e) =>
+                                        setBegeleiderDrafts((prev) => ({
+                                          ...prev,
+                                          [tripKey]: e.target.value,
+                                        }))
+                                      }
+                                      onBlur={() => handleSaveBegeleider(tripKey)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          handleSaveBegeleider(tripKey);
+                                        }
+                                      }}
+                                      placeholder="Typ naam begeleider..."
+                                      className="text-xs sm:text-sm text-charcoal font-medium bg-transparent border-b border-transparent focus:border-[#1F4E37] outline-none px-1 py-0.5 w-36 sm:w-44"
+                                    />
+                                    {savingBegeleiderWeek === tripKey ? (
+                                      <Loader2 className="w-3.5 h-3.5 text-[#1F4E37] animate-spin shrink-0" />
+                                    ) : savedBegeleiderWeek === tripKey ? (
+                                      <span className="text-[11px] text-green-700 font-semibold flex items-center gap-0.5 shrink-0">
+                                        <Check className="w-3.5 h-3.5" />
+                                        Opgeslagen
+                                      </span>
+                                    ) : (
+                                      (begeleiderDrafts[tripKey] ?? '').trim() !==
+                                        (begeleiders[tripKey] ?? '').trim() && (
                                         <button
                                           type="button"
-                                          onClick={() => onOpenDetail(item)}
-                                          title="Deze kandidaat heeft een video ingezonden (klik om te bekijken)"
-                                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-accent text-white hover:bg-purple-accent/90 text-xs font-semibold transition-colors shadow-2xs"
+                                          onClick={() => handleSaveBegeleider(tripKey)}
+                                          className="px-2 py-0.5 rounded-md bg-[#1F4E37] text-white text-[11px] font-semibold hover:bg-[#1F4E37]/90 shrink-0"
                                         >
-                                          <Video className="w-3.5 h-3.5" />
-                                          Video
+                                          Opslaan
                                         </button>
-                                      )}
-                                      <button
-                                        type="button"
-                                        onClick={() => toggleNoteEditor(person)}
-                                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors ${
-                                          person.notities
-                                            ? 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100'
-                                            : 'bg-white border-gray-200 text-charcoal/70 hover:bg-gray-50'
-                                        }`}
-                                      >
-                                        <StickyNote className="w-3.5 h-3.5" />
-                                        Notitie
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => onOpenDetail(item)}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-purple-accent/10 border border-gray-200 text-xs font-medium text-purple-accent transition-colors"
-                                      >
-                                        <Eye className="w-3.5 h-3.5" />
-                                        Formulier
-                                      </button>
-                                    </div>
+                                      )
+                                    )}
+                                  </div>
 
+                                  {/* Verwijder-knop voor een lege extra reis (Reis 2+) */}
+                                  {tripNumber > 1 && slotAssigned.length === 0 && (
                                     <button
                                       type="button"
-                                      disabled={isRemoving}
-                                      onClick={() => handleUnassignPerson(person)}
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition-colors disabled:opacity-50"
+                                      disabled={savingBegeleiderWeek === tripKey}
+                                      onClick={() => handleDeleteExtraTrip(tripKey)}
+                                      title={`Verwijder lege Reis ${tripNumber}`}
+                                      className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-medium transition-colors"
                                     >
-                                      {isRemoving ? (
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                      ) : (
-                                        <Undo2 className="w-3.5 h-3.5" />
-                                      )}
-                                      Haal uit reis
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                      Verwijder Reis {tripNumber}
                                     </button>
-                                  </div>
+                                  )}
                                 </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                              </div>
+
+                              {slotAssigned.length === 0 ? (
+                                <p className="text-sm text-gray-soft italic py-2">
+                                  Nog niemand toegewezen aan{' '}
+                                  {hasMultipleTrips ? `Reis ${tripNumber} (${week})` : week}. Vink
+                                  hieronder beschikbare kandidaten aan en klik op{' '}
+                                  {hasMultipleTrips
+                                    ? `“Plaats in Reis ${tripNumber}”`
+                                    : '“Bevestig plaatsing”'}
+                                  .
+                                </p>
+                              ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {slotAssigned.map((person) => {
+                                    const item = person.primary;
+                                    const key = getPersonKey(item);
+                                    const isRemoving = removingPersonKey === key;
+
+                                    return (
+                                      <div
+                                        key={key}
+                                        className="bg-white rounded-2xl p-4 border border-green-200 shadow-xs flex flex-col justify-between gap-3"
+                                      >
+                                        <div>
+                                          <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                              <div className="flex items-center gap-2">
+                                                <button
+                                                  type="button"
+                                                  onClick={() => onOpenDetail(item)}
+                                                  className="text-left font-display font-bold text-charcoal hover:text-purple-accent hover:underline text-base inline-flex items-center gap-1.5 group truncate"
+                                                >
+                                                  <span className="truncate">{item.naam}</span>
+                                                </button>
+                                                {renderColorDots(person)}
+                                              </div>
+                                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-soft mt-0.5">
+                                                {item.leeftijd && <span>{item.leeftijd} jaar</span>}
+                                                {item.woonplaats && (
+                                                  <span className="inline-flex items-center gap-0.5">
+                                                    • <MapPin className="w-3 h-3" /> {item.woonplaats}
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+
+                                            {renderDestinationBadge(item.expeditie_voorkeur)}
+                                          </div>
+
+                                          {/* Persoonlijkheid & vrienden-check */}
+                                          <div className="flex flex-wrap gap-1.5 mt-3">
+                                            {(item.persoonlijkheid || []).map((trait) => (
+                                              <span
+                                                key={trait}
+                                                className="px-2 py-0.5 rounded-md bg-lavender/50 text-purple-accent text-[11px] font-medium"
+                                              >
+                                                {trait}
+                                              </span>
+                                            ))}
+                                            {item.km_wandelen && (
+                                              <span className="px-2 py-0.5 rounded-md bg-gray-100 text-charcoal/70 text-[11px]">
+                                                🥾 {item.km_wandelen}
+                                              </span>
+                                            )}
+                                            {item.vrienden_ingeschreven && (
+                                              <span className="px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200 text-[11px] font-medium">
+                                                ⚠️ Vriend(in): {item.vrienden_namen || 'Ja'}
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          {renderNoteArea(person)}
+                                        </div>
+
+                                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-100">
+                                          <div className="flex flex-wrap items-center gap-1.5">
+                                            {person.hasVideo && (
+                                              <button
+                                                type="button"
+                                                onClick={() => onOpenDetail(item)}
+                                                title="Deze kandidaat heeft een video ingezonden (klik om te bekijken)"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-accent text-white hover:bg-purple-accent/90 text-xs font-semibold transition-colors shadow-2xs"
+                                              >
+                                                <Video className="w-3.5 h-3.5" />
+                                                Video
+                                              </button>
+                                            )}
+                                            <button
+                                              type="button"
+                                              onClick={() => toggleNoteEditor(person)}
+                                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors ${
+                                                person.notities
+                                                  ? 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100'
+                                                  : 'bg-white border-gray-200 text-charcoal/70 hover:bg-gray-50'
+                                              }`}
+                                            >
+                                              <StickyNote className="w-3.5 h-3.5" />
+                                              Notitie
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => onOpenDetail(item)}
+                                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-purple-accent/10 border border-gray-200 text-xs font-medium text-purple-accent transition-colors"
+                                            >
+                                              <Eye className="w-3.5 h-3.5" />
+                                              Formulier
+                                            </button>
+                                          </div>
+
+                                          <div className="flex flex-wrap items-center gap-1.5">
+                                            {otherSlots.map((other) => (
+                                              <button
+                                                key={other.tripKey}
+                                                type="button"
+                                                disabled={isRemoving}
+                                                onClick={() =>
+                                                  handleMovePersonToTrip(person, other.tripKey)
+                                                }
+                                                title={`Verplaats naar Reis ${other.tripNumber}`}
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[#1F4E37] text-xs font-semibold transition-colors disabled:opacity-50"
+                                              >
+                                                <ArrowRightLeft className="w-3 h-3" />
+                                                Naar Reis {other.tripNumber}
+                                              </button>
+                                            ))}
+
+                                            <button
+                                              type="button"
+                                              disabled={isRemoving}
+                                              onClick={() => handleUnassignPerson(person)}
+                                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium transition-colors disabled:opacity-50"
+                                            >
+                                              {isRemoving ? (
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                              ) : (
+                                                <Undo2 className="w-3.5 h-3.5" />
+                                              )}
+                                              Haal uit reis
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* DEEL 1B: WACHTRIJ VOOR DEZE REIS */}
@@ -1284,18 +1561,23 @@ export function ReizenIndeling({
                                       </button>
                                     </div>
 
-                                    <div className="flex items-center gap-1.5">
-                                      <button
-                                        type="button"
-                                        disabled={isBusy}
-                                        onClick={() =>
-                                          handlePromoteFromWaitlistToReis(person, week)
-                                        }
-                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-semibold transition-colors disabled:opacity-50"
-                                      >
-                                        <UserPlus className="w-3.5 h-3.5" />
-                                        Plaats in reis
-                                      </button>
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                      {tripSlots.map((slot) => (
+                                        <button
+                                          key={slot.tripKey}
+                                          type="button"
+                                          disabled={isBusy}
+                                          onClick={() =>
+                                            handlePromoteFromWaitlistToReis(person, slot.tripKey)
+                                          }
+                                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                                        >
+                                          <UserPlus className="w-3.5 h-3.5" />
+                                          {hasMultipleTrips
+                                            ? `Plaats in Reis ${slot.tripNumber}`
+                                            : 'Plaats in reis'}
+                                        </button>
+                                      ))}
                                       <button
                                         type="button"
                                         disabled={isBusy}
@@ -1323,7 +1605,7 @@ export function ReizenIndeling({
                               Beschikbare kandidaten voor {week} ({available.length})
                             </h3>
                             <p className="text-xs text-gray-soft">
-                              Vink kandidaten aan en kies &ldquo;Bevestig plaatsing&rdquo; of &ldquo;Aan wachtrij toevoegen&rdquo;.
+                              Vink kandidaten aan en kies in welke reis van {week} (of wachtrij) je ze wilt plaatsen.
                             </p>
                           </div>
 
@@ -1357,29 +1639,59 @@ export function ReizenIndeling({
                                 ) : (
                                   <>
                                     <Clock className="w-3.5 h-3.5 mr-1.5" />
-                                    Aan wachtrij toevoegen ({selectedCount})
+                                    Aan wachtrij ({selectedCount})
                                   </>
                                 )}
                               </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
-                                onClick={() => handleConfirmAssignment(week)}
-                                className="h-8 bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-white text-xs sm:text-sm font-semibold rounded-xl"
-                              >
-                                {isSavingThisWeek ? (
-                                  <>
-                                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                                    Bevestigen...
-                                  </>
-                                ) : (
-                                  <>
-                                    <UserPlus className="w-3.5 h-3.5 mr-1.5" />
-                                    Bevestig plaatsing ({selectedCount})
-                                  </>
-                                )}
-                              </Button>
+
+                              {tripSlots.map((slot) => (
+                                <Button
+                                  key={slot.tripKey}
+                                  type="button"
+                                  size="sm"
+                                  disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
+                                  onClick={() => handleConfirmAssignment(week, slot.tripKey)}
+                                  className="h-8 bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-white text-xs sm:text-sm font-semibold rounded-xl"
+                                >
+                                  {savingWeek === slot.tripKey ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                                      Bevestigen...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+                                      {hasMultipleTrips
+                                        ? `Plaats in Reis ${slot.tripNumber} (${selectedCount})`
+                                        : `Bevestig plaatsing (${selectedCount})`}
+                                    </>
+                                  )}
+                                </Button>
+                              ))}
+
+                              {!hasMultipleTrips && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
+                                  onClick={() =>
+                                    handleConfirmAssignment(week, makeTripKey(week, 2))
+                                  }
+                                  className="h-8 bg-purple-accent hover:bg-purple-accent/90 text-white text-xs sm:text-sm font-semibold rounded-xl"
+                                >
+                                  {savingWeek === makeTripKey(week, 2) ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                                      Reis 2 maken...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Plus className="w-3.5 h-3.5 mr-1.5" />
+                                      Plaats in Tweede Reis ({selectedCount})
+                                    </>
+                                  )}
+                                </Button>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1562,24 +1874,53 @@ export function ReizenIndeling({
                                 </>
                               )}
                             </Button>
-                            <Button
-                              type="button"
-                              disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
-                              onClick={() => handleConfirmAssignment(week)}
-                              className="bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-white font-semibold rounded-xl px-6"
-                            >
-                              {isSavingThisWeek ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                  Plaatsing opslaan...
-                                </>
-                              ) : (
-                                <>
-                                  <UserPlus className="w-4 h-4 mr-2" />
-                                  Bevestig plaatsing in {week} ({selectedCount})
-                                </>
-                              )}
-                            </Button>
+
+                            {tripSlots.map((slot) => (
+                              <Button
+                                key={slot.tripKey}
+                                type="button"
+                                disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
+                                onClick={() => handleConfirmAssignment(week, slot.tripKey)}
+                                className="bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-white font-semibold rounded-xl px-6"
+                              >
+                                {savingWeek === slot.tripKey ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Plaatsing opslaan...
+                                  </>
+                                ) : (
+                                  <>
+                                    <UserPlus className="w-4 h-4 mr-2" />
+                                    {hasMultipleTrips
+                                      ? `Plaats in Reis ${slot.tripNumber} (${selectedCount})`
+                                      : `Bevestig plaatsing in ${week} (${selectedCount})`}
+                                  </>
+                                )}
+                              </Button>
+                            ))}
+
+                            {!hasMultipleTrips && (
+                              <Button
+                                type="button"
+                                disabled={isSavingThisWeek || isSavingWaitlistThisWeek}
+                                onClick={() =>
+                                  handleConfirmAssignment(week, makeTripKey(week, 2))
+                                }
+                                className="bg-purple-accent hover:bg-purple-accent/90 text-white font-semibold rounded-xl px-5"
+                              >
+                                {savingWeek === makeTripKey(week, 2) ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Reis 2 maken...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Plaats in Tweede Reis ({selectedCount})
+                                  </>
+                                )}
+                              </Button>
+                            )}
                           </div>
                         )}
                       </div>

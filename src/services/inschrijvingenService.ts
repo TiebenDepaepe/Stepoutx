@@ -311,6 +311,25 @@ export async function saveReisBegeleider(
 }
 
 /**
+ * Delete a trip leader / extra trip slot entry from reis_begeleiders.
+ */
+export async function deleteReisBegeleider(
+  week: string
+): Promise<{ success: boolean; error: Error | null }> {
+  const { error } = await supabase
+    .from('reis_begeleiders')
+    .delete()
+    .eq('week', week);
+
+  if (error) {
+    console.error('Error deleting reis_begeleider:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
  * Get status label in Dutch
  */
 export function getStatusLabel(status: NonNullable<Inschrijving['status']>): string {
