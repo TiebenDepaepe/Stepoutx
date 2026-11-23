@@ -10,6 +10,7 @@ import { InschrijvingDetail } from '@/components/admin/InschrijvingDetail';
 import { EmptyState } from '@/components/admin/EmptyState';
 import { EmailList } from '@/components/admin/EmailList';
 import { ReizenIndeling } from '@/components/admin/ReizenIndeling';
+import { AdminPlanning } from '@/components/admin/AdminPlanning';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -22,7 +23,8 @@ import {
   AlertCircle,
   Users,
   Mail,
-  Calendar
+  Calendar,
+  ListTodo
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -40,7 +42,7 @@ export default function AdminDashboard() {
   const [selectedVideoPath, setSelectedVideoPath] = useState<string | null>(null);
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
   const [videoLoadFailed, setVideoLoadFailed] = useState(false);
-  const [activeView, setActiveView] = useState<'inschrijvingen' | 'reizen' | 'emails'>('reizen');
+  const [activeView, setActiveView] = useState<'inschrijvingen' | 'reizen' | 'emails' | 'planning'>('reizen');
   const [nieuwsbriefEmails, setNieuwsbriefEmails] = useState<NieuwsbriefEmail[]>([]);
   const [isLoadingEmails, setIsLoadingEmails] = useState(false);
 
@@ -302,6 +304,17 @@ export default function AdminDashboard() {
                   <Mail className="w-4 h-4" />
                   <span className="hidden md:inline">Email Lijsten</span>
                 </button>
+                <button
+                  onClick={() => setActiveView('planning')}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                    activeView === 'planning'
+                      ? 'bg-white text-charcoal shadow-sm'
+                      : 'text-gray-soft hover:text-charcoal'
+                  }`}
+                >
+                  <ListTodo className="w-4 h-4" />
+                  <span>Planning</span>
+                </button>
               </div>
             </div>
 
@@ -449,6 +462,8 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
+        ) : activeView === 'planning' ? (
+          <AdminPlanning />
         ) : (
           <div className="h-[calc(100vh-64px)]">
             <EmailList

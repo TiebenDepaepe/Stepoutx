@@ -8,6 +8,8 @@ import {
   getAllReisBegeleiders,
   saveReisBegeleider,
   deleteReisBegeleider,
+  getAllReisNotities,
+  saveReisNotitie,
 } from '@/services/inschrijvingenService';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,12 +165,55 @@ export function ReizenIndeling({
   const [savingBegeleiderWeek, setSavingBegeleiderWeek] = useState<string | null>(null);
   const [savedBegeleiderWeek, setSavedBegeleiderWeek] = useState<string | null>(null);
 
+  // Notities per reis/week state (enkel zichtbaar wanneer op 'Notitie' van die week/reis wordt geklikt)
+  const [reisNotities, setReisNotities] = useState<Record<string, string>>({});
+  const [reisNotitieDrafts, setReisNotitieDrafts] = useState<Record<string, string>>({});
+  const [openReisNotities, setOpenReisNotities] = useState<Record<string, boolean>>({});
+  const [savingReisNotitieKey, setSavingReisNotitieKey] = useState<string | null>(null);
+  const [savedReisNotitieKey, setSavedReisNotitieKey] = useState<string | null>(null);
+
   useEffect(() => {
     getAllReisBegeleiders().then((data) => {
       setBegeleiders(data);
       setBegeleiderDrafts(data);
     });
+    getAllReisNotities().then((data) => {
+      setReisNotities(data);
+      setReisNotitieDrafts(data);
+    });
   }, []);
+
+  const toggleReisNotitieOpen = (tripKey: string) => {
+    const isCurrentlyOpen = !!openReisNotities[tripKey];
+    if (!isCurrentlyOpen) {
+      setReisNotitieDrafts((prev) => ({
+        ...prev,
+        [tripKey]: prev[tripKey] !== undefined ? prev[tripKey] : reisNotities[tripKey] || '',
+      }));
+    }
+    setOpenReisNotities((prev) => ({ ...prev, [tripKey]: !isCurrentlyOpen }));
+  };
+
+  const handleSaveReisNotitie = async (tripKey: string) => {
+    const draft = reisNotitieDrafts[tripKey] ?? '';
+    setSavingReisNotitieKey(tripKey);
+    setErrorMsg(null);
+
+    const { success, error } = await saveReisNotitie(tripKey, draft);
+    setSavingReisNotitieKey(null);
+
+    if (!success) {
+      setErrorMsg(error?.message || 'Kon reisnotitie niet opslaan.');
+      return;
+    }
+
+    setReisNotities((prev) => ({ ...prev, [tripKey]: draft }));
+    setReisNotitieDrafts((prev) => ({ ...prev, [tripKey]: draft }));
+    setSavedReisNotitieKey(tripKey);
+    setTimeout(() => {
+      setSavedReisNotitieKey((prev) => (prev === tripKey ? null : prev));
+    }, 2000);
+  };
 
   const handleSaveBegeleider = async (tripKey: string) => {
     const draft = (begeleiderDrafts[tripKey] ?? '').trim();
@@ -453,6 +498,10 @@ export function ReizenIndeling({
           }
         }
       }
+
+      // Sorteer beschikbare kandidaten van MINST aantal aangeduide datums (bovenaan) naar MEEST
+      available.sort((a, b) => a.allBeschikbaarheid.length - b.allBeschikbaarheid.length);
+      waitlisted.sort((a, b) => a.allBeschikbaarheid.length - b.allBeschikbaarheid.length);
 
       const sortedTripNumbers = Array.from(tripNumbersSet).sort((a, b) => a - b);
       const tripSlots: TripSlot[] = sortedTripNumbers.map((num) => {
@@ -1149,6 +1198,28 @@ export function ReizenIndeling({
                     <div className="flex flex-wrap items-center gap-2.5">
                       <button
                         type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleReisNotitieOpen(week);
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-display font-bold transition-all shadow-2xs shrink-0 ${
+                          openReisNotities[week]
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : (reisNotities[week] || '').trim()
+                              ? 'bg-amber-100 hover:bg-amber-200/80 text-amber-900 border-amber-300'
+                              : 'bg-white hover:bg-amber-50 text-charcoal border-gray-200'
+                        }`}
+                        title="Open of sluit notities voor deze week"
+                      >
+                        <StickyNote className="w-3.5 h-3.5" />
+                        Notitie
+                        {(reisNotities[week] || '').trim() && !openReisNotities[week] && (
+                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
                         disabled={savingBegeleiderWeek === makeTripKey(week, maxTripNumber + 1)}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1215,6 +1286,64 @@ export function ReizenIndeling({
                       </div>
                     </div>
                   </div>
+
+                  {/* Uitklapbaar notitieveld voor deze week/reis (enkel zichtbaar na klik op 'Notitie' in de balk) */}
+                  {openReisNotities[week] && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-5 sm:px-7 py-4 bg-amber-50/70 border-b border-amber-200/80 space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label className="text-xs sm:text-sm font-display font-bold text-amber-950 flex items-center gap-2">
+                          <StickyNote className="w-4 h-4 text-amber-700" />
+                          Notities voor reisweek {week}
+                        </label>
+                        <div className="flex items-center gap-2">
+                          {savedReisNotitieKey === week && (
+                            <span className="text-xs text-green-700 font-semibold flex items-center gap-1">
+                              <Check className="w-3.5 h-3.5" />
+                              Opgeslagen!
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setOpenReisNotities((prev) => ({ ...prev, [week]: false }))
+                            }
+                            className="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-50 border border-amber-200 text-xs font-medium text-charcoal transition-colors"
+                          >
+                            Sluiten
+                          </button>
+                          <button
+                            type="button"
+                            disabled={savingReisNotitieKey === week}
+                            onClick={() => handleSaveReisNotitie(week)}
+                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#1F4E37] hover:bg-[#1F4E37]/90 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                          >
+                            {savingReisNotitieKey === week ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Save className="w-3.5 h-3.5" />
+                            )}
+                            Notitie opslaan
+                          </button>
+                        </div>
+                      </div>
+                      <Textarea
+                        value={reisNotitieDrafts[week] ?? ''}
+                        onChange={(e) =>
+                          setReisNotitieDrafts((prev) => ({ ...prev, [week]: e.target.value }))
+                        }
+                        onBlur={() => {
+                          if ((reisNotitieDrafts[week] ?? '') !== (reisNotities[week] ?? '')) {
+                            handleSaveReisNotitie(week);
+                          }
+                        }}
+                        placeholder={`Schrijf hier overzichtelijk je eigen notities, puzzelwerk of opmerkingen voor de reis van ${week}...`}
+                        className="min-h-[120px] bg-white text-sm leading-relaxed border-amber-200 focus:border-[#1F4E37]"
+                      />
+                    </div>
+                  )}
 
                   {isExpanded && (
                     <div className="p-5 sm:p-7 space-y-8">

@@ -311,6 +311,45 @@ export async function saveReisBegeleider(
 }
 
 /**
+ * Fetch all saved trip notes (notities) per week/trip.
+ */
+export async function getAllReisNotities(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from('reis_begeleiders')
+    .select('week, notities');
+
+  if (error || !data) {
+    console.warn('Error fetching reis_notities:', error);
+    return {};
+  }
+
+  const map: Record<string, string> = {};
+  for (const row of data as Array<{ week: string; notities?: string | null }>) {
+    map[row.week] = row.notities || '';
+  }
+  return map;
+}
+
+/**
+ * Save or update the trip note (notities) for a given week/trip.
+ */
+export async function saveReisNotitie(
+  week: string,
+  notities: string
+): Promise<{ success: boolean; error: Error | null }> {
+  const { error } = await supabase
+    .from('reis_begeleiders')
+    .upsert({ week, notities, updated_at: new Date().toISOString() }, { onConflict: 'week' });
+
+  if (error) {
+    console.error('Error saving reis_notitie:', error);
+    return { success: false, error: new Error(error.message) };
+  }
+
+  return { success: true, error: null };
+}
+
+/**
  * Delete a trip leader / extra trip slot entry from reis_begeleiders.
  */
 export async function deleteReisBegeleider(
