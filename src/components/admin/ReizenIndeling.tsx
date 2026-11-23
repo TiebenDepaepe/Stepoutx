@@ -414,6 +414,21 @@ export function ReizenIndeling({
     return [...ordered, ...extra];
   }, [persons, begeleiders]);
 
+  // Helper om het aantal unieke aangeduide reisweken van een persoon te tellen
+  const getAvailableTripCount = (person: DeduplicatedPerson): number => {
+    const uniqueBaseWeeks = new Set(
+      (person.allBeschikbaarheid || []).map((w) => getBaseWeek(w)).filter(Boolean)
+    );
+    return uniqueBaseWeeks.size;
+  };
+
+  // Sorteer kandidaten oplopend op aantal aangeduide reizen (minst aangeduid bovenaan)
+  const sortByLeastAvailableTrips = (a: DeduplicatedPerson, b: DeduplicatedPerson): number => {
+    const countDiff = getAvailableTripCount(a) - getAvailableTripCount(b);
+    if (countDiff !== 0) return countDiff;
+    return (a.primary.naam || '').localeCompare(b.primary.naam || '', 'nl');
+  };
+
   // 5. Bouw de data per week op:
   // - tripSlots: alle reizen (Reis 1, Reis 2, ...) binnen deze datum/week
   // - assigned: alle personen definitief toegewezen aan een reis op DEZE datum
@@ -453,6 +468,12 @@ export function ReizenIndeling({
           }
         }
       }
+
+      // Sorteer zodat mensen die de minste reizen kunnen (bv. maar 1 of 2 datums aangeduid) altijd bovenaan staan
+      available.sort(sortByLeastAvailableTrips);
+      waitlisted.sort(sortByLeastAvailableTrips);
+      assigned.sort(sortByLeastAvailableTrips);
+      assignedElsewhere.sort(sortByLeastAvailableTrips);
 
       const sortedTripNumbers = Array.from(tripNumbersSet).sort((a, b) => a - b);
       const tripSlots: TripSlot[] = sortedTripNumbers.map((num) => {
@@ -1885,15 +1906,15 @@ export function ReizenIndeling({
                                       {otherWeeks.length === 0 ? (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100/80 text-amber-900 text-[11px] font-semibold">
                                           <Sparkles className="w-3 h-3" />
-                                          Enkel deze week!
+                                          1 reis • Enkel deze week!
                                         </span>
                                       ) : (
                                         <span
                                           className="text-[11px] text-gray-soft truncate block"
-                                          title={`Ook beschikbaar in: ${otherWeeks.join(', ')}`}
+                                          title={`Totaal ${otherWeeks.length + 1} reizen aangeduid. Ook beschikbaar in: ${otherWeeks.join(', ')}`}
                                         >
-                                          +{otherWeeks.length} andere{' '}
-                                          {otherWeeks.length === 1 ? 'week' : 'weken'}
+                                          <strong className="text-charcoal/80">{otherWeeks.length + 1} reizen</strong> (+{otherWeeks.length} andere{' '}
+                                          {otherWeeks.length === 1 ? 'week' : 'weken'})
                                         </span>
                                       )}
                                     </div>
