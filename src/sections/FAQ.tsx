@@ -96,7 +96,7 @@ const faqs = [
         </div>
 
         <div className="space-y-2">
-          <p className="font-semibold text-charcoal">Waarom kost het dan €450?</p>
+          <p className="font-semibold text-charcoal">Waarom kost het dan €475?</p>
           <p>
             Omdat er achter die zes dagen veel meer zit dan wat je onderweg ziet. Van het samenstellen van de groepen en het uitstippelen van de routes tot de activiteiten, begeleiding en volledige voorbereiding.
           </p>

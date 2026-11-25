@@ -100,7 +100,7 @@ export const VOORWAARDEN_BLOKKEN: VoorwaardenBlock[] = [
   {
     "type": "ul",
     "items": [
-      "€450 voor een 6-daagse expeditie;",
+      "€475 voor een 6-daagse expeditie (early bird: €450, uitverkocht);",
       "€350 voor een 4-daagse expeditie."
     ]
   },

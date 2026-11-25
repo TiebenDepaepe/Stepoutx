@@ -35,9 +35,9 @@ export interface CalendarDay {
 
 // Parse the available dates from the form
 const rawTripData = [
-  { date: '1 - 6 februari', disabled: false, full: false },
-  { date: '29 maart - 3 april', disabled: false, full: false },
-  { date: '5 - 10 april', disabled: false, full: false },
+  { date: '1 - 6 februari', disabled: true, full: true },
+  { date: '29 maart - 3 april', disabled: true, full: true },
+  { date: '5 - 10 april', disabled: true, full: true },
   // Zomer 2027: telkens zondag t/m vrijdag
   { date: '20 - 25 juni', disabled: false, full: false },
   { date: '27 juni - 2 juli', disabled: false, full: false },

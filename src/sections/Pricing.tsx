@@ -153,14 +153,25 @@ export default function Pricing() {
                 JOUW PLOTTWIST EXPEDITIE
               </span>
 
-              {/* Grote prijs + per persoon · incl. btw */}
-              <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline gap-1 sm:gap-3 mb-5">
-                <span className="text-6xl sm:text-7xl md:text-8xl font-display font-bold text-white tracking-tight leading-none">
-                  €450
-                </span>
-                <span className="text-sm sm:text-base text-mint/85 italic">
-                  per persoon · incl. btw
-                </span>
+              {/* Early bird uitverkocht + Grote prijs €475 */}
+              <div className="flex flex-col items-center justify-center mb-5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-mint/85 text-xs sm:text-sm mb-2">
+                  <span className="line-through decoration-red-400/90 decoration-2 text-white/70 font-medium">
+                    Early bird: €450
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-red-500/90 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wide">
+                    uitverkocht
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center sm:items-baseline gap-1 sm:gap-3">
+                  <span className="text-6xl sm:text-7xl md:text-8xl font-display font-bold text-white tracking-tight leading-none">
+                    €475
+                  </span>
+                  <span className="text-sm sm:text-base text-mint/85 italic">
+                    per persoon · incl. btw
+                  </span>
+                </div>
               </div>
 
               {/* Daaronder in het vet */}
@@ -270,20 +281,32 @@ export default function Pricing() {
             {/* Prijzen op twee overzichtelijke regels */}
             <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#1F4E37]/10 divide-y divide-charcoal/10 mb-5">
               <div className="flex items-center justify-between gap-4 pb-3.5 sm:pb-4">
-                <span className="text-sm sm:text-base md:text-lg font-display font-bold text-charcoal">
-                  PlotTwist-expeditie (6 dagen)
-                </span>
+                <div>
+                  <span className="text-sm sm:text-base md:text-lg font-display font-bold text-charcoal block">
+                    PlotTwist-expeditie (6 dagen)
+                  </span>
+                  <span className="text-xs text-charcoal/50">
+                    <span className="line-through">Early bird: €450</span>{' '}
+                    <span className="text-red-500 font-semibold">(uitverkocht)</span>
+                  </span>
+                </div>
                 <span className="text-xl sm:text-2xl font-display font-bold text-[#1F4E37] shrink-0">
-                  €450
+                  €475
                 </span>
               </div>
 
               <div className="flex items-center justify-between gap-4 pt-3.5 sm:pt-4">
-                <span className="text-sm sm:text-base md:text-lg font-display font-bold text-charcoal">
-                  Italie + busvervoer (7 dagen)
-                </span>
+                <div>
+                  <span className="text-sm sm:text-base md:text-lg font-display font-bold text-charcoal block">
+                    Italie + busvervoer (7 dagen)
+                  </span>
+                  <span className="text-xs text-charcoal/50">
+                    <span className="line-through">Early bird: €595</span>{' '}
+                    <span className="text-red-500 font-semibold">(uitverkocht)</span>
+                  </span>
+                </div>
                 <span className="text-xl sm:text-2xl font-display font-bold text-[#1F4E37] shrink-0">
-                  €595
+                  €620
                 </span>
               </div>
             </div>

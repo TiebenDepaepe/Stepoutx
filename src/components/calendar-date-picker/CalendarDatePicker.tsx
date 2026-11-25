@@ -60,10 +60,10 @@ export function CalendarDatePicker({
           <span className="font-semibold text-purple-accent">Beschikbare datums:</span>
           <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4">
             {tripWeeks.map((trip) => (
-              <div key={trip.id}>
-                • {trip.label}{' '}
+              <div key={trip.id} className={trip.full ? 'text-charcoal/45' : ''}>
+                • <span className={trip.full ? 'line-through' : ''}>{trip.label}</span>{' '}
                 {trip.full ? (
-                  <span className="text-gray-400 font-bold">(Vol)</span>
+                  <span className="text-red-500 font-bold">(Vol)</span>
                 ) : (
                   <span className="text-emerald-600 font-bold">(Open)</span>
                 )}
