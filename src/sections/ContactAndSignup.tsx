@@ -398,8 +398,8 @@ export default function ContactAndSignup() {
   };
 
   const stepFields: Record<number, string[]> = {
-    1: ['naam', 'geboortedatum', 'woonplaats', 'gsm', 'email', 'instagram', 'huidigeBezigheid'],
-    2: ['expeditieVoorkeur', 'beschikbaarheid'],
+    1: ['expeditieVoorkeur', 'beschikbaarheid'],
+    2: ['naam', 'geboortedatum', 'woonplaats', 'gsm', 'email', 'instagram', 'huidigeBezigheid'],
     3: ['persoonlijkheid', 'nieuweGroep', 'rolVriendengroep', 'sociaalMeerdaagse', 'vrijeTijdInteresses'],
     4: ['motivatie', 'doelen'],
     5: ['kmWandelen', 'meerdereDagenWandelen'],
@@ -421,7 +421,7 @@ export default function ContactAndSignup() {
       }
     }
 
-    if (step === 1) {
+    if (step === 2) {
       if ((formData.huidigeBezigheid === 'Ik studeer' || formData.huidigeBezigheid === 'Ik studeer en werk') && !formData.studieUitleg.trim()) {
         stepErrors.studieUitleg = 'Vul in wat je studeert';
       }
@@ -1070,20 +1070,166 @@ export default function ContactAndSignup() {
                   </div>
 
                   <form onSubmit={handleSubmit} noValidate className="space-y-8 mt-6">
-                    {/* Deel 1: Even kennismaken */}
+                    {/* Deel 1: Jouw expeditie */}
                     {currentStep === 1 && (
+                      <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
+                            <Compass className="w-5 h-5 text-purple-accent" />
+                          </div>
+                          <h4 className="text-lg font-display font-bold text-charcoal">Deel 1: Jouw expeditie</h4>
+                        </div>
+
+                        {/* 1. Welke expeditie heeft jouw voorkeur? */}
+                        <div className="mb-8">
+                          <label className="block text-base font-semibold text-charcoal mb-1">
+                            1. Welke expeditie heeft jouw voorkeur? *
+                          </label>
+                          <p className="text-xs text-charcoal/60 mb-3">
+                            We houden zoveel mogelijk rekening met je voorkeur, maar kunnen niet garanderen dat je op deze bestemming terechtkomt.
+                          </p>
+
+                          <div data-field="expeditieVoorkeur" className={`grid sm:grid-cols-2 gap-3 p-1 rounded-xl ${getFieldError('expeditieVoorkeur') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                            {expeditieOptions.map((option) => (
+                              <label
+                                key={option}
+                                className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer transition-all border ${formData.expeditieVoorkeur === option
+                                    ? 'ring-2 ring-purple-accent border-purple-accent bg-purple-accent/5 font-semibold text-purple-accent'
+                                    : 'border-charcoal/10 hover:bg-purple-accent/5 text-charcoal'
+                                  }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="expeditieVoorkeur"
+                                  value={option}
+                                  checked={formData.expeditieVoorkeur === option}
+                                  onChange={(e) => handleRadioChange('expeditieVoorkeur', e.target.value)}
+                                  required
+                                  className="w-5 h-5 text-purple-accent"
+                                />
+                                <span>{option}</span>
+                              </label>
+                            ))}
+                          </div>
+                          {getFieldError('expeditieVoorkeur') && (
+                            <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3" />
+                              {getFieldError('expeditieVoorkeur')}
+                            </p>
+                          )}
+
+                          {/* Automatische informatie bij keuze voor Italie */}
+                          {isItalie && (
+                            <div className="mt-4 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-sm text-charcoal/80 space-y-2 animate-fadeIn">
+                              <div className="flex items-center gap-2 font-bold text-amber-900">
+                                <Info className="w-4 h-4 text-amber-700 shrink-0" />
+                                <span>Extra vervoerskost: €145</span>
+                              </div>
+                              <p className="leading-relaxed text-amber-900/90 text-xs sm:text-sm">
+                                Voor Italië voorzien we nachtelijk busvervoer. Het is ongeveer 18 uur rijden met de bus en je vertrekt 1 dag vroeger dan bij de andere expedities. Meer praktische informatie ontvang je later.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Collapsible gids: Welke reis past het best bij jou? */}
+                          <div className="mt-4">
+                            <button
+                              type="button"
+                              onClick={() => setShowTripGuide(!showTripGuide)}
+                              className="w-full flex items-center justify-between p-3.5 bg-lavender/40 hover:bg-lavender/60 border border-purple-accent/20 rounded-xl text-left transition-all"
+                            >
+                              <span className="text-sm font-semibold text-charcoal flex items-center gap-2">
+                                <Compass className="w-4 h-4 text-purple-accent" />
+                                Welke reis past het best bij jou?
+                              </span>
+                              <ChevronDown className={`w-4 h-4 text-purple-accent transition-transform duration-300 ${showTripGuide ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {showTripGuide && (
+                              <div className="mt-3 p-4 md:p-5 bg-lavender/20 border border-purple-accent/15 rounded-2xl space-y-4 text-xs sm:text-sm text-charcoal/80">
+                                <div>
+                                  <p className="font-bold text-purple-accent text-sm mb-1">Nederland / Duitsland – Aanrader!</p>
+                                  <p className="leading-relaxed">
+                                    De ideale eerste PlotTwist! De focus ligt hier nog meer op elkaar leren kennen en de connectie met de locals, dankzij de vertrouwde taal en omgeving. Wij raden deze reis sterk aan!
+                                  </p>
+                                </div>
+                                <div className="pt-3 border-t border-purple-accent/10">
+                                  <p className="font-bold text-purple-accent text-sm mb-1">Italie (+€145) – Voor de echte avonturiers!</p>
+                                  <p className="leading-relaxed">
+                                    Een avontuurlijke reis door prachtige berglandschappen! Deze expeditie is fysiek uitdagender en ideaal voor wie graag een stapje verder gaat.
+                                  </p>
+                                </div>
+                                <div className="pt-3 border-t border-purple-accent/10">
+                                  <p className="text-xs text-charcoal/70 leading-relaxed">
+                                    <span className="font-bold text-charcoal">Let op:</span> We houden zoveel mogelijk rekening met je reisvoorkeur, maar kunnen niet garanderen dat je ook op deze bestemming terechtkomt.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* 2. Wanneer ben je beschikbaar? */}
+                        <div className="pt-6 border-t border-charcoal/5">
+                          <label className="block text-base font-semibold text-charcoal mb-1">
+                            2. Wanneer ben je beschikbaar? *
+                          </label>
+                          <p className="text-xs text-charcoal/60 mb-3">
+                            Selecteer alle weken waarin je mee kan gaan.
+                          </p>
+
+                          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-3 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 shrink-0 text-amber-700" />
+                            <span>Hoe meer datums je aanduidt, hoe groter de kans op een passende match!</span>
+                          </div>
+
+                          {isItalie && (
+                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-4 flex items-center gap-2">
+                              <Info className="w-4 h-4 shrink-0 text-amber-700" />
+                              <span>Let op: de expedities naar Italie vertrekken 1 dag vroeger.</span>
+                            </div>
+                          )}
+
+                          <div data-field="beschikbaarheid" className={`p-1 rounded-2xl ${getFieldError('beschikbaarheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
+                            <CalendarDatePicker
+                              selectedDates={formData.beschikbaarheid}
+                              onChange={(dates) => {
+                                setFormData((prev) => ({ ...prev, beschikbaarheid: dates }));
+                                if (formErrors.beschikbaarheid) {
+                                  setFormErrors((prev) => {
+                                    const newErrors = { ...prev };
+                                    delete newErrors.beschikbaarheid;
+                                    return newErrors;
+                                  });
+                                }
+                              }}
+                              error={getFieldError('beschikbaarheid')}
+                            />
+                          </div>
+                          {getFieldError('beschikbaarheid') && (
+                            <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3" />
+                              {getFieldError('beschikbaarheid')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Deel 2: Even kennismaken */}
+                    {currentStep === 2 && (
                       <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
                         <div className="flex items-center gap-3 mb-6">
                           <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
                             <User className="w-5 h-5 text-purple-accent" />
                           </div>
-                          <h4 className="text-lg font-display font-bold text-charcoal">Deel 1: Even kennismaken</h4>
+                          <h4 className="text-lg font-display font-bold text-charcoal">Deel 2: Even kennismaken</h4>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-4">
-                          {/* 1. Wat is je voornaam en achternaam? */}
+                          {/* 3. Wat is je voornaam en achternaam? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">1. Wat is je voornaam en achternaam? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">3. Wat is je voornaam en achternaam? *</label>
                             <input
                               type="text"
                               name="naam"
@@ -1105,9 +1251,9 @@ export default function ContactAndSignup() {
                             )}
                           </div>
 
-                          {/* 2. Wat is je geboortedatum? */}
+                          {/* 4. Wat is je geboortedatum? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">2. Wat is je geboortedatum? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">4. Wat is je geboortedatum? *</label>
                             <input
                               type="date"
                               name="geboortedatum"
@@ -1130,9 +1276,9 @@ export default function ContactAndSignup() {
                             )}
                           </div>
 
-                          {/* 3. Waar woon je? */}
+                          {/* 5. Waar woon je? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">3. Waar woon je? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">5. Waar woon je? *</label>
                             <input
                               type="text"
                               name="woonplaats"
@@ -1154,9 +1300,9 @@ export default function ContactAndSignup() {
                             )}
                           </div>
 
-                          {/* 4. Wat is je gsm-nummer? */}
+                          {/* 6. Wat is je gsm-nummer? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">4. Wat is je gsm-nummer? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">6. Wat is je gsm-nummer? *</label>
                             <input
                               type="tel"
                               name="gsm"
@@ -1178,9 +1324,9 @@ export default function ContactAndSignup() {
                             )}
                           </div>
 
-                          {/* 5. Wat is je e-mailadres? */}
+                          {/* 7. Wat is je e-mailadres? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">5. Wat is je e-mailadres? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">7. Wat is je e-mailadres? *</label>
                             <input
                               type="email"
                               name="email"
@@ -1202,9 +1348,9 @@ export default function ContactAndSignup() {
                             )}
                           </div>
 
-                          {/* 6. Wat is je Instagram? */}
+                          {/* 8. Wat is je Instagram? */}
                           <div>
-                            <label className="block text-sm font-medium text-charcoal mb-2">6. Wat is je Instagram? *</label>
+                            <label className="block text-sm font-medium text-charcoal mb-2">8. Wat is je Instagram? *</label>
                             <input
                               type="text"
                               name="instagram"
@@ -1227,9 +1373,9 @@ export default function ContactAndSignup() {
                           </div>
                         </div>
 
-                        {/* 7. Wat doe je momenteel? */}
+                        {/* 9. Wat doe je momenteel? */}
                         <div className="mt-6">
-                          <label className="block text-sm font-medium text-charcoal mb-3">7. Wat doe je momenteel? *</label>
+                          <label className="block text-sm font-medium text-charcoal mb-3">9. Wat doe je momenteel? *</label>
                           <div data-field="huidigeBezigheid" className={`grid sm:grid-cols-2 gap-2.5 rounded-xl p-1 ${getFieldError('huidigeBezigheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
                             {huidigeBezigheidOptions.map((option) => (
                               <label key={option} className={`flex items-center gap-3 p-3.5 bg-gray-50 rounded-xl cursor-pointer transition-all hover:bg-purple-accent/5 ${formData.huidigeBezigheid === option ? 'ring-2 ring-purple-accent bg-purple-accent/5' : ''}`}>
@@ -1323,152 +1469,6 @@ export default function ContactAndSignup() {
                                 </p>
                               )}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Deel 2: Jouw expeditie */}
-                    {currentStep === 2 && (
-                      <div className="bg-white rounded-3xl p-6 md:p-8 shadow-soft border border-charcoal/5">
-                        <div className="flex items-center gap-3 mb-6">
-                          <div className="w-10 h-10 bg-lavender rounded-xl flex items-center justify-center">
-                            <Compass className="w-5 h-5 text-purple-accent" />
-                          </div>
-                          <h4 className="text-lg font-display font-bold text-charcoal">Deel 2: Jouw expeditie</h4>
-                        </div>
-
-                        {/* 8. Welke expeditie heeft jouw voorkeur? */}
-                        <div className="mb-8">
-                          <label className="block text-base font-semibold text-charcoal mb-1">
-                            8. Welke expeditie heeft jouw voorkeur? *
-                          </label>
-                          <p className="text-xs text-charcoal/60 mb-3">
-                            We houden zoveel mogelijk rekening met je voorkeur, maar kunnen niet garanderen dat je op deze bestemming terechtkomt.
-                          </p>
-
-                          <div data-field="expeditieVoorkeur" className={`grid sm:grid-cols-2 gap-3 p-1 rounded-xl ${getFieldError('expeditieVoorkeur') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                            {expeditieOptions.map((option) => (
-                              <label
-                                key={option}
-                                className={`flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer transition-all border ${formData.expeditieVoorkeur === option
-                                    ? 'ring-2 ring-purple-accent border-purple-accent bg-purple-accent/5 font-semibold text-purple-accent'
-                                    : 'border-charcoal/10 hover:bg-purple-accent/5 text-charcoal'
-                                  }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="expeditieVoorkeur"
-                                  value={option}
-                                  checked={formData.expeditieVoorkeur === option}
-                                  onChange={(e) => handleRadioChange('expeditieVoorkeur', e.target.value)}
-                                  required
-                                  className="w-5 h-5 text-purple-accent"
-                                />
-                                <span>{option}</span>
-                              </label>
-                            ))}
-                          </div>
-                          {getFieldError('expeditieVoorkeur') && (
-                            <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {getFieldError('expeditieVoorkeur')}
-                            </p>
-                          )}
-
-                          {/* Automatische informatie bij keuze voor Italie */}
-                          {isItalie && (
-                            <div className="mt-4 p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-sm text-charcoal/80 space-y-2 animate-fadeIn">
-                              <div className="flex items-center gap-2 font-bold text-amber-900">
-                                <Info className="w-4 h-4 text-amber-700 shrink-0" />
-                                <span>Extra vervoerskost: €145</span>
-                              </div>
-                              <p className="leading-relaxed text-amber-900/90 text-xs sm:text-sm">
-                                Voor Italië voorzien we nachtelijk busvervoer. Het is ongeveer 18 uur rijden met de bus en je vertrekt 1 dag vroeger dan bij de andere expedities. Meer praktische informatie ontvang je later.
-                              </p>
-                            </div>
-                          )}
-
-                          {/* Collapsible gids: Welke reis past het best bij jou? */}
-                          <div className="mt-4">
-                            <button
-                              type="button"
-                              onClick={() => setShowTripGuide(!showTripGuide)}
-                              className="w-full flex items-center justify-between p-3.5 bg-lavender/40 hover:bg-lavender/60 border border-purple-accent/20 rounded-xl text-left transition-all"
-                            >
-                              <span className="text-sm font-semibold text-charcoal flex items-center gap-2">
-                                <Compass className="w-4 h-4 text-purple-accent" />
-                                Welke reis past het best bij jou?
-                              </span>
-                              <ChevronDown className={`w-4 h-4 text-purple-accent transition-transform duration-300 ${showTripGuide ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {showTripGuide && (
-                              <div className="mt-3 p-4 md:p-5 bg-lavender/20 border border-purple-accent/15 rounded-2xl space-y-4 text-xs sm:text-sm text-charcoal/80">
-                                <div>
-                                  <p className="font-bold text-purple-accent text-sm mb-1">Nederland / Duitsland – Aanrader!</p>
-                                  <p className="leading-relaxed">
-                                    De ideale eerste PlotTwist! De focus ligt hier nog meer op elkaar leren kennen en de connectie met de locals, dankzij de vertrouwde taal en omgeving. Wij raden deze reis sterk aan!
-                                  </p>
-                                </div>
-                                <div className="pt-3 border-t border-purple-accent/10">
-                                  <p className="font-bold text-purple-accent text-sm mb-1">Italie (+€145) – Voor de echte avonturiers!</p>
-                                  <p className="leading-relaxed">
-                                    Een avontuurlijke reis door prachtige berglandschappen! Deze expeditie is fysiek uitdagender en ideaal voor wie graag een stapje verder gaat.
-                                  </p>
-                                </div>
-                                <div className="pt-3 border-t border-purple-accent/10">
-                                  <p className="text-xs text-charcoal/70 leading-relaxed">
-                                    <span className="font-bold text-charcoal">Let op:</span> We houden zoveel mogelijk rekening met je reisvoorkeur, maar kunnen niet garanderen dat je ook op deze bestemming terechtkomt.
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* 9. Wanneer ben je beschikbaar? */}
-                        <div className="pt-6 border-t border-charcoal/5">
-                          <label className="block text-base font-semibold text-charcoal mb-1">
-                            9. Wanneer ben je beschikbaar? *
-                          </label>
-                          <p className="text-xs text-charcoal/60 mb-3">
-                            Selecteer alle weken waarin je mee kan gaan.
-                          </p>
-
-                          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-3 flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 shrink-0 text-amber-700" />
-                            <span>Hoe meer datums je aanduidt, hoe groter de kans op een passende match!</span>
-                          </div>
-
-                          {isItalie && (
-                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm font-medium text-amber-900 mb-4 flex items-center gap-2">
-                              <Info className="w-4 h-4 shrink-0 text-amber-700" />
-                              <span>Let op: de expedities naar Italie vertrekken 1 dag vroeger.</span>
-                            </div>
-                          )}
-
-                          <div data-field="beschikbaarheid" className={`p-1 rounded-2xl ${getFieldError('beschikbaarheid') ? 'ring-2 ring-red-300 bg-red-50/30' : ''}`}>
-                            <CalendarDatePicker
-                              selectedDates={formData.beschikbaarheid}
-                              onChange={(dates) => {
-                                setFormData((prev) => ({ ...prev, beschikbaarheid: dates }));
-                                if (formErrors.beschikbaarheid) {
-                                  setFormErrors((prev) => {
-                                    const newErrors = { ...prev };
-                                    delete newErrors.beschikbaarheid;
-                                    return newErrors;
-                                  });
-                                }
-                              }}
-                              error={getFieldError('beschikbaarheid')}
-                            />
-                          </div>
-                          {getFieldError('beschikbaarheid') && (
-                            <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {getFieldError('beschikbaarheid')}
-                            </p>
                           )}
                         </div>
                       </div>
